@@ -39,9 +39,10 @@ class Printful_Integration_For_Fluentcart_Admin {
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
 
-		add_action( 'admin_menu', array( $this, 'register_settings_page' ) );
-		add_action( 'admin_post_printful_fluentcart_save_settings', array( $this, 'handle_save_settings' ) );
-	}
+               add_action( 'admin_menu', array( $this, 'register_settings_page' ) );
+               add_action( 'admin_post_printful_fluentcart_save_settings', array( $this, 'handle_save_settings' ) );
+               add_action( 'admin_init', array( $this, 'maybe_redirect_broken_slug' ) );
+       }
 
 	/**
 	 * Register stylesheet in admin when needed.
@@ -95,17 +96,66 @@ class Printful_Integration_For_Fluentcart_Admin {
 			return;
 		}
 
-		$parent_slug = class_exists( '\FluentCart\App\App' ) ? 'fluent-cart' : 'options-general.php';
+               $parent_slug = class_exists( '\FluentCart\App\App' ) ? 'fluent-cart' : 'options-general.php';
 
-		add_submenu_page(
-			$parent_slug,
-			__( 'Printful Integration', 'printful-integration-for-fluentcart' ),
-			__( 'Printful Integration', 'printful-integration-for-fluentcart' ),
-			'manage_options',
-			'printful-fluentcart',
-			array( $this, 'render_settings_page' )
-		);
-	}
+               add_submenu_page(
+                       $parent_slug,
+                       __( 'Printful Integration', 'printful-integration-for-fluentcart' ),
+                       __( 'Printful Integration', 'printful-integration-for-fluentcart' ),
+                       'manage_options',
+                       'printful-fluentcart',
+                       array( $this, 'render_settings_page' )
+               );
+       }
+
+       /**
+        * Ensure broken FluentCart submenu links redirect to the correct URL.
+        *
+        * Some FluentCart builds mutate submenu links which can drop the
+        * `admin.php?page=` portion of the URL. When that happens WordPress ends
+        * up handling the request as `/wp-admin/printful-fluentcart` which
+        * produces a 404. Detect that request and redirect to the canonical
+        * settings URL so the screen loads normally.
+        *
+        * @return void
+        */
+       public function maybe_redirect_broken_slug() {
+               if ( ! is_admin() ) {
+                       return;
+               }
+
+               if ( headers_sent() ) {
+                       return;
+               }
+
+               $request_uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+
+               if ( '' === $request_uri ) {
+                       return;
+               }
+
+               $request_path = strtok( $request_uri, '?' );
+               $admin_path   = wp_parse_url( admin_url(), PHP_URL_PATH );
+
+               if ( false === $admin_path ) {
+                       $admin_path = '/wp-admin/';
+               }
+
+               $admin_path = trailingslashit( $admin_path );
+
+               if ( $request_path !== $admin_path . 'printful-fluentcart' && $request_path !== $admin_path . 'printful-fluentcart/' ) {
+                       return;
+               }
+
+               $target_url = admin_url( 'admin.php?page=printful-fluentcart' );
+
+               if ( $target_url === home_url( $request_uri ) ) {
+                       return;
+               }
+
+               wp_safe_redirect( $target_url, 301 );
+               exit;
+       }
 
 	/**
 	 * Render settings form.
