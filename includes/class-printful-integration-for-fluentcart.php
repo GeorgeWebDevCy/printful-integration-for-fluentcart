@@ -58,6 +58,27 @@ class Printful_Integration_For_Fluentcart {
 	protected $version;
 
 	/**
+	 * Order sync handler instance.
+	 *
+	 * @var Printful_Integration_For_Fluentcart_Order_Sync|null
+	 */
+	protected $order_sync = null;
+
+	/**
+	 * Sync manager instance.
+	 *
+	 * @var Printful_Integration_For_Fluentcart_Sync_Manager|null
+	 */
+	protected $sync_manager = null;
+
+	/**
+	 * Webhook controller instance.
+	 *
+	 * @var Printful_Integration_For_Fluentcart_Webhook_Controller|null
+	 */
+	protected $webhook_controller = null;
+
+	/**
 	 * Define the core functionality of the plugin.
 	 *
 	 * Set the plugin name and the plugin version that can be used throughout the plugin.
@@ -78,6 +99,7 @@ class Printful_Integration_For_Fluentcart {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
+		$this->define_integration_bootstrap();
 
 	}
 
@@ -104,6 +126,13 @@ class Printful_Integration_For_Fluentcart {
 		 * core plugin.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-loader.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-settings.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-api.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-product-mapping.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-sync-queue.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-sync-manager.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-webhook-controller.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-order-sync.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
@@ -173,6 +202,55 @@ class Printful_Integration_For_Fluentcart {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
+	}
+
+	/**
+	 * Register bootstrap hook that wires up the FluentCart integration layer.
+	 *
+	 * We wait until all plugins are loaded to make sure FluentCart classes are
+	 * available before instantiating the sync layer.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function define_integration_bootstrap() {
+		$this->loader->add_action( 'plugins_loaded', $this, 'maybe_bootstrap_integration', 20 );
+	}
+
+	/**
+	 * Instantiate order sync logic once WordPress + FluentCart are ready.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function maybe_bootstrap_integration() {
+		if ( ! class_exists( '\FluentCart\App\Models\Order' ) ) {
+			return;
+		}
+
+		$settings = Printful_Integration_For_Fluentcart_Settings::all();
+		$api_key  = isset( $settings['api_key'] ) ? trim( $settings['api_key'] ) : '';
+
+		if ( empty( $api_key ) ) {
+			return;
+		}
+
+		$api = new Printful_Integration_For_Fluentcart_Api(
+			$api_key,
+			isset( $settings['api_base'] ) ? $settings['api_base'] : 'https://api.printful.com',
+			! empty( $settings['log_api_calls'] )
+		);
+
+		$this->order_sync = new Printful_Integration_For_Fluentcart_Order_Sync( $api, $settings );
+		$this->order_sync->register();
+
+		$this->sync_manager = new Printful_Integration_For_Fluentcart_Sync_Manager( $api, $settings );
+		$this->sync_manager->register();
+
+		$this->webhook_controller = new Printful_Integration_For_Fluentcart_Webhook_Controller( $this->sync_manager, $settings );
+		$this->webhook_controller->register();
 	}
 
 	/**

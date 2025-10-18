@@ -31,6 +31,12 @@ class Printful_Integration_For_Fluentcart_Deactivator {
 	 */
 	public static function deactivate() {
 
+		if ( class_exists( 'Printful_Integration_For_Fluentcart_Sync_Manager' ) ) {
+			wp_clear_scheduled_hook( Printful_Integration_For_Fluentcart_Sync_Manager::CRON_HOOK );
+		} else {
+			wp_clear_scheduled_hook( 'printful_fluentcart_sync_orders' );
+		}
+
 	}
 
 }
