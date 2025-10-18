@@ -200,8 +200,8 @@ class Printful_Integration_For_Fluentcart_Shipping {
 			return $cached;
 		}
 
-		$request = array(
-			'recipient' => array(
+                $request = array(
+                        'recipient' => array(
 				'name'         => $address['full_name'],
 				'address1'     => $address['address_1'],
 				'address2'     => $address['address_2'],
@@ -212,7 +212,7 @@ class Printful_Integration_For_Fluentcart_Shipping {
 				'phone'        => Arr::get( $address, 'phone', '' ),
 			),
 			'items'     => $items,
-			'currency'  => $cart->currency ?? Helper::shopConfig( 'currency' ),
+                        'currency'  => $cart->currency ? $cart->currency : $this->get_store_currency(),
 			'locale'    => get_locale(),
 		);
 
@@ -267,8 +267,8 @@ class Printful_Integration_For_Fluentcart_Shipping {
 	 * @return array
 	 */
 	protected function transform_rates_to_methods( array $rates, Cart $cart ) {
-		$methods        = array();
-		$currency       = $cart->currency ?? Helper::shopConfig( 'currency' );
+                $methods        = array();
+                $currency       = $cart->currency ? $cart->currency : $this->get_store_currency();
 		$markup_percent = isset( $this->settings['shipping_markup_percent'] ) ? floatval( $this->settings['shipping_markup_percent'] ) : 0;
 
 		foreach ( $rates as $rate ) {
@@ -423,9 +423,9 @@ class Printful_Integration_For_Fluentcart_Shipping {
 			$address['state'] = $state;
 		}
 
-		if ( empty( Arr::get( $address, 'country' ) ) && $timezone ) {
-			$address['country'] = LocalizationManager::guessCountryFromTimezone( $timezone );
-		}
+                if ( empty( Arr::get( $address, 'country' ) ) && $timezone && class_exists( '\\FluentCart\\App\\Services\\LocalizationManager' ) ) {
+                        $address['country'] = \FluentCart\App\Services\LocalizationManager::guessCountryFromTimezone( $timezone );
+                }
 
 		$required = array( 'address_1', 'city', 'state', 'postcode', 'country' );
 		foreach ( $required as $field ) {
@@ -448,10 +448,31 @@ class Printful_Integration_For_Fluentcart_Shipping {
 	 *
 	 * @return Cart|null
 	 */
-	protected function get_active_cart() {
-		$cart = CartHelper::getCart();
+        protected function get_active_cart() {
+                $cart = CartHelper::getCart();
 
-		return $cart instanceof Cart ? $cart : null;
-	}
+                return $cart instanceof Cart ? $cart : null;
+        }
+
+        /**
+         * Retrieve store currency with graceful fallbacks.
+         *
+         * @return string
+         */
+        protected function get_store_currency() {
+                if ( class_exists( '\\FluentCart\\App\\Services\\Helper' ) && method_exists( '\\FluentCart\\App\\Services\\Helper', 'shopConfig' ) ) {
+                        $currency = \FluentCart\App\Services\Helper::shopConfig( 'currency' );
+                        if ( $currency ) {
+                                return $currency;
+                        }
+                }
+
+                $currency = get_option( 'woocommerce_currency' );
+                if ( $currency ) {
+                        return $currency;
+                }
+
+                return 'USD';
+        }
 }
 
