@@ -1139,7 +1139,95 @@ class Printful_Integration_For_Fluentcart_Admin {
 			}
 		}
 
-		Printful_Integration_For_Fluentcart_Settings::set( 'mapped_products', $new_mappings );
+			Printful_Integration_For_Fluentcart_Settings::set( 'mapped_products', $new_mappings );
+
+		if ( class_exists( 'Printful_Integration_For_Fluentcart_Sync_Manager' ) ) {
+			wp_clear_scheduled_hook( Printful_Integration_For_Fluentcart_Sync_Manager::CRON_HOOK );
+		}
+
+		foreach ( $general_errors as $error ) {
+			add_settings_error( 'printful_fluentcart', 'printful_fluentcart_general_error_' . md5( $error ), $error, 'error' );
+		}
+
+		if ( $mapping_errors ) {
+			foreach ( $mapping_errors as $error ) {
+				add_settings_error( 'printful_fluentcart', 'printful_fluentcart_mapping_error_' . md5( $error ), $error, 'error' );
+			}
+		} elseif ( empty( $general_errors ) ) {
+			add_settings_error(
+				'printful_fluentcart',
+				'printful_fluentcart_saved',
+				esc_html__( 'Settings saved.', 'printful-integration-for-fluentcart' ),
+				'updated'
+			);
+		}
+
+		// Always redirect to admin.php since we have a standalone menu
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'page'             => 'printful-fluentcart',
+					'settings-updated' => 'true',
+				),
+				admin_url( 'admin.php' )
+			)
+		);
+		exit;
+	}
+
+	/**
+	 * AJAX: Test connectivity to Printful using saved API key.
+	 *
+	 * @return void
+	 */
+	public function handle_test_connection() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'printful-integration-for-fluentcart' ) ), 403 );
+		}
+
+		check_ajax_referer( 'printful_fluentcart_admin', 'nonce' );
+
+		$settings = Printful_Integration_For_Fluentcart_Settings::all();
+		$api_key  = isset( $settings['api_key'] ) ? trim( $settings['api_key'] ) : '';
+
+		if ( '' === $api_key ) {
+			wp_send_json_error( array( 'message' => __( 'Please provide an API key first.', 'printful-integration-for-fluentcart' ) ) );
+		}
+
+		$api      = new Printful_Integration_For_Fluentcart_Api( $api_key, isset( $settings['api_base'] ) ? $settings['api_base'] : 'https://api.printful.com', ! empty( $settings['log_api_calls'] ) );
+		$response = $api->get( 'store' );
+
+		if ( is_wp_error( $response ) ) {
+			wp_send_json_error(
+				array(
+					'message' => $response->get_error_message(),
+				)
+			);
+		}
+
+		$result = isset( $response['result'] ) ? $response['result'] : $response;
+		$label  = isset( $result['name'] ) ? $result['name'] : __( 'Connected', 'printful-integration-for-fluentcart' );
+
+		wp_send_json_success(
+			array(
+				'message' => sprintf(
+					/* translators: %s: Printful store name */
+					__( 'Connected to Printful store: %s', 'printful-integration-for-fluentcart' ),
+					$label
+				),
+			)
+		);
+	}
+
+	/**
+	 * AJAX: Pull Printful catalog and cache it for mapping.
+	 *
+	 * @return void
+	 */
+	public function handle_sync_catalog() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'printful-integration-for-fluentcart' ) ), 403 );
+		}
 
 		check_ajax_referer( 'printful_fluentcart_admin', 'nonce' );
 
