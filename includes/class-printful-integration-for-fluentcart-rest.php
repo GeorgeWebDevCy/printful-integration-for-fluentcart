@@ -29,11 +29,11 @@ class Printful_Integration_For_Fluentcart_Rest {
 	 * @return void
 	 */
 	public static function routes() {
-		register_rest_route(
-			self::NAMESPACE,
-			'/health',
-			array(
-				'methods'             => \WP_REST_Server::READABLE,
+                register_rest_route(
+                        self::NAMESPACE,
+                        '/health',
+                        array(
+                                'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( __CLASS__, 'health' ),
 				'permission_callback' => array( __CLASS__, 'permission' ),
 			)
@@ -79,11 +79,11 @@ class Printful_Integration_For_Fluentcart_Rest {
 			)
 		);
 
-		register_rest_route(
-			self::NAMESPACE,
-			'/settings',
-			array(
-				'methods'             => \WP_REST_Server::EDITABLE,
+                register_rest_route(
+                        self::NAMESPACE,
+                        '/settings',
+                        array(
+                                'methods'             => \WP_REST_Server::EDITABLE,
 				'callback'            => array( __CLASS__, 'settings_update' ),
 				'permission_callback' => array( __CLASS__, 'permission' ),
 			)
@@ -105,6 +105,26 @@ class Printful_Integration_For_Fluentcart_Rest {
                         array(
                                 'methods'             => \WP_REST_Server::READABLE,
                                 'callback'            => array( __CLASS__, 'products' ),
+                                'permission_callback' => array( __CLASS__, 'permission' ),
+                        )
+                );
+
+                register_rest_route(
+                        self::NAMESPACE,
+                        '/status-checklist',
+                        array(
+                                'methods'             => \WP_REST_Server::READABLE,
+                                'callback'            => array( __CLASS__, 'status_checklist' ),
+                                'permission_callback' => array( __CLASS__, 'permission' ),
+                        )
+                );
+
+                register_rest_route(
+                        self::NAMESPACE,
+                        '/status',
+                        array(
+                                'methods'             => \WP_REST_Server::READABLE,
+                                'callback'            => array( __CLASS__, 'status' ),
                                 'permission_callback' => array( __CLASS__, 'permission' ),
                         )
                 );
@@ -136,20 +156,34 @@ class Printful_Integration_For_Fluentcart_Rest {
 	 *
 	 * @return \WP_REST_Response
 	 */
-	public static function health( $request ) {
-		$settings = Printful_Integration_For_Fluentcart_Settings::all();
+        public static function health( $request ) {
+                $settings = Printful_Integration_For_Fluentcart_Settings::all();
 
-		$data = array(
-			'api_key_present'   => ! empty( $settings['api_key'] ),
-			'webhooks_enabled'  => ! empty( $settings['enable_webhooks'] ) && ! empty( $settings['webhook_secret'] ),
-			'polling_enabled'   => ! empty( $settings['enable_polling'] ),
-			'queue_length'      => count( Printful_Integration_For_Fluentcart_Sync_Queue::all() ),
-			'catalog_products'  => count( isset( $settings['mapped_products'] ) ? $settings['mapped_products'] : array() ),
-			'signature_failures'=> class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? Printful_Integration_For_Fluentcart_Logger::signature_failures() : 0,
-		);
+                $data = array(
+                        'api_key_present'   => ! empty( $settings['api_key'] ),
+                        'webhooks_enabled'  => ! empty( $settings['enable_webhooks'] ) && ! empty( $settings['webhook_secret'] ),
+                        'polling_enabled'   => ! empty( $settings['enable_polling'] ),
+                        'queue_length'      => count( Printful_Integration_For_Fluentcart_Sync_Queue::all() ),
+                        'catalog_products'  => count( isset( $settings['mapped_products'] ) ? $settings['mapped_products'] : array() ),
+                        'signature_failures'=> class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? Printful_Integration_For_Fluentcart_Logger::signature_failures() : 0,
+                        'request_logging'   => ! empty( $settings['enable_request_logging'] ),
+                );
 
-		return new \WP_REST_Response( $data, 200 );
-	}
+                return new \WP_REST_Response( $data, 200 );
+        }
+
+        /**
+         * Diagnostic status payload for external monitors.
+         *
+         * @param \WP_REST_Request $request Request.
+         *
+         * @return \WP_REST_Response
+         */
+        public static function status( $request ) {
+                $snapshot = class_exists( 'Printful_Integration_For_Fluentcart_Diagnostics' ) ? Printful_Integration_For_Fluentcart_Diagnostics::snapshot() : array();
+
+                return new \WP_REST_Response( $snapshot, 200 );
+        }
 
 	/**
 	 * Config payload.
@@ -328,12 +362,12 @@ class Printful_Integration_For_Fluentcart_Rest {
 	 *
 	 * @return \WP_REST_Response
 	 */
-	public static function variant_map( $request ) {
-		$product_id = isset( $request['id'] ) ? absint( $request['id'] ) : 0;
+        public static function variant_map( $request ) {
+                $product_id = isset( $request['id'] ) ? absint( $request['id'] ) : 0;
 
-		if ( ! $product_id ) {
-			return new \WP_REST_Response( array( 'map' => array() ), 200 );
-		}
+                if ( ! $product_id ) {
+                        return new \WP_REST_Response( array( 'map' => array() ), 200 );
+                }
 
 		$map = get_post_meta( $product_id, PIFC_Variant_Meta::META_KEY, true );
 
@@ -341,8 +375,21 @@ class Printful_Integration_For_Fluentcart_Rest {
 			array(
 				'product_id' => $product_id,
 				'map'        => $map ? $map : array(),
-			),
-			200
-		);
-	}
+                        ),
+                        200
+                );
+        }
+
+        /**
+         * Expose checklist items for remote monitoring.
+         *
+         * @param \WP_REST_Request $request Request.
+         *
+         * @return \WP_REST_Response
+         */
+        public static function status_checklist( $request ) {
+                $items = class_exists( 'Printful_Integration_For_Fluentcart_Status_Checklist' ) ? Printful_Integration_For_Fluentcart_Status_Checklist::items() : array();
+
+                return new \WP_REST_Response( array( 'items' => $items ), 200 );
+        }
 }

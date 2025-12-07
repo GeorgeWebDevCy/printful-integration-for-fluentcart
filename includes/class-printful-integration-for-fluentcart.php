@@ -150,8 +150,9 @@ class Printful_Integration_For_Fluentcart {
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-webhook-controller.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-order-sync.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-shipping.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-logger.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-rest.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-logger.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-request-log.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-rest.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-size-guide.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-product-importer.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/settings/class-pifc-shipping-settings.php';
@@ -173,7 +174,9 @@ class Printful_Integration_For_Fluentcart {
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-printful-integration-for-fluentcart-admin.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/diagnostics/class-printful-integration-for-fluentcart-diagnostics.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/includes/class-printful-integration-for-fluentcart-status-checklist.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-printful-integration-for-fluentcart-admin.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing

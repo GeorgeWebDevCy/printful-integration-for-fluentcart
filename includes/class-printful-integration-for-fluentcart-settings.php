@@ -60,13 +60,14 @@ class Printful_Integration_For_Fluentcart_Settings {
 					'country'   => '',
 					'phone'     => '',
 				),
-				'origin_overrides'        => array(),
-				'enable_printful_tax'     => false,
-				'tax_inclusive_prices'    => false,
-				'enable_designer_embed'   => false,
-				'last_migration'          => array(),
-			)
-		);
+                                'origin_overrides'        => array(),
+                                'enable_printful_tax'     => false,
+                                'tax_inclusive_prices'    => false,
+                                'enable_designer_embed'   => false,
+                                'last_migration'          => array(),
+                                'enable_request_logging'  => false,
+                        )
+                );
 
 		return wp_parse_args( is_array( $stored ) ? $stored : array(), $defaults );
 	}
