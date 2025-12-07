@@ -1141,18 +1141,6 @@ class Printful_Integration_For_Fluentcart_Admin {
 
 		Printful_Integration_For_Fluentcart_Settings::set( 'mapped_products', $new_mappings );
 
-		if ( class_exists( 'Printful_Integration_For_Fluentcart_Sync_Manager' ) ) {
-			wp_clear_scheduled_hook( Printful_Integration_For_Fluentcart_Sync_Manager::CRON_HOOK );
-		}
-
-		foreach ( $general_errors as $error ) {
-			add_settings_error( 'printful_fluentcart', 'printful_fluentcart_general_error_' . md5( $error ), $error, 'error' );
-	 */
-	public function handle_sync_catalog() {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'printful-integration-for-fluentcart' ) ), 403 );
-		}
-
 		check_ajax_referer( 'printful_fluentcart_admin', 'nonce' );
 
 		$settings = Printful_Integration_For_Fluentcart_Settings::all();
