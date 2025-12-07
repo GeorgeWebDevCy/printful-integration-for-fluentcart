@@ -17,6 +17,7 @@ class Printful_Integration_For_Fluentcart_Product_Mapping {
 	const META_KEY_DISABLE   = '_printful_fulfilment_mode';
 	const META_KEY_SERVICE   = '_printful_service_code';
 	const META_KEY_ORIGIN    = '_printful_origin_index';
+	const META_KEY_MOCKUP    = '_printful_mockup_url';
 
 	/**
 	 * Persist a Printful product ID against a FluentCart product (post).
@@ -84,6 +85,18 @@ class Printful_Integration_For_Fluentcart_Product_Mapping {
 		$value = get_post_meta( $product_id, self::META_KEY_SERVICE, true );
 
 		return $value ? sanitize_text_field( $value ) : null;
+	}
+
+	/**
+	 * Get mockup preview URL for product.
+	 *
+	 * @param int $product_id Product ID.
+	 *
+	 * @return string
+	 */
+	public static function get_product_mockup( $product_id ) {
+		$value = get_post_meta( $product_id, self::META_KEY_MOCKUP, true );
+		return $value ? esc_url( $value ) : '';
 	}
 
 	/**

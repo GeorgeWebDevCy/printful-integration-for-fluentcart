@@ -3,7 +3,7 @@ Contributors: georgenicolaou
 Tags: ecommerce, fluentcart, printful, dropshipping
 Requires at least: 5.8
 Tested up to: 6.7
-Stable tag: 2.3.0
+Stable tag: 2.4.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -155,3 +155,6 @@ Markdown uses email style notation for blockquotes and I've been told:
 
 = 2.3.0 =
 * Added log-level filtering in diagnostics and REST logs endpoint.
+
+= 2.4.0 =
+* Added mockup preview URL storage and REST exposure; per-product origin selection retained.

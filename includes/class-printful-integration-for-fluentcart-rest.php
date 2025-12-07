@@ -269,6 +269,7 @@ class Printful_Integration_For_Fluentcart_Rest {
 					'service'      => Printful_Integration_For_Fluentcart_Product_Mapping::get_product_service( $product->ID ),
 					'origin_index' => Printful_Integration_For_Fluentcart_Product_Mapping::get_product_origin( $product->ID ),
 					'designer_url' => Printful_Integration_For_Fluentcart_Product_Mapping::get_designer_link( $product->ID ),
+					'mockup_url'   => Printful_Integration_For_Fluentcart_Product_Mapping::get_product_mockup( $product->ID ),
 				);
 			}
 		}

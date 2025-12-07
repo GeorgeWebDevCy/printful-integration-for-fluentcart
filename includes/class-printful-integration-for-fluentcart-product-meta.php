@@ -15,6 +15,7 @@ class Printful_Integration_For_Fluentcart_Product_Meta {
 	const META_FULFILMENT = '_printful_fulfilment_mode';
 	const META_SERVICE    = '_printful_service_code';
 	const META_ORIGIN     = '_printful_origin_index';
+	const META_MOCKUP     = '_printful_mockup_url';
 
 	/**
 	 * Register hooks.
@@ -55,6 +56,7 @@ class Printful_Integration_For_Fluentcart_Product_Meta {
 		$service = get_post_meta( $post->ID, self::META_SERVICE, true );
 		$printful_id = Printful_Integration_For_Fluentcart_Product_Mapping::get_product_mapping( $post->ID );
 		$origin_index = get_post_meta( $post->ID, self::META_ORIGIN, true );
+		$mockup_url = get_post_meta( $post->ID, self::META_MOCKUP, true );
 		$origins = Printful_Integration_For_Fluentcart_Settings::all( array() );
 		$origin_overrides = isset( $origins['origin_overrides'] ) && is_array( $origins['origin_overrides'] ) ? $origins['origin_overrides'] : array();
 
@@ -83,6 +85,12 @@ class Printful_Integration_For_Fluentcart_Product_Meta {
 			<p><a class="button" href="<?php echo esc_url( 'https://www.printful.com/dashboard/store/products/' . rawurlencode( $printful_id ) ); ?>" target="_blank" rel="noreferrer"><?php esc_html_e( 'Open in Printful', 'printful-integration-for-fluentcart' ); ?></a></p>
 			<p><a class="button button-secondary" href="<?php echo esc_url( 'https://www.printful.com/dashboard/designer?product=' . rawurlencode( $printful_id ) ); ?>" target="_blank" rel="noreferrer"><?php esc_html_e( 'Design / Mockup', 'printful-integration-for-fluentcart' ); ?></a></p>
 		<?php endif; ?>
+		<p><label for="printful_mockup_url"><strong><?php esc_html_e( 'Mockup preview URL', 'printful-integration-for-fluentcart' ); ?></strong></label><br/>
+			<input type="url" id="printful_mockup_url" name="printful_mockup_url" class="widefat" value="<?php echo esc_attr( $mockup_url ); ?>" placeholder="https://..." />
+		</p>
+		<?php if ( $mockup_url ) : ?>
+			<p><img src="<?php echo esc_url( $mockup_url ); ?>" alt="<?php esc_attr_e( 'Mockup preview', 'printful-integration-for-fluentcart' ); ?>" style="max-width:100%;height:auto;border:1px solid #e2e8f0;padding:4px;" /></p>
+		<?php endif; ?>
 		<?php
 	}
 
@@ -109,6 +117,7 @@ class Printful_Integration_For_Fluentcart_Product_Meta {
 		$mode    = isset( $_POST['printful_fulfilment_mode'] ) ? sanitize_text_field( wp_unslash( $_POST['printful_fulfilment_mode'] ) ) : '';
 		$service = isset( $_POST['printful_service_code'] ) ? sanitize_text_field( wp_unslash( $_POST['printful_service_code'] ) ) : '';
 		$origin  = isset( $_POST['printful_origin_index'] ) ? sanitize_text_field( wp_unslash( $_POST['printful_origin_index'] ) ) : '';
+		$mockup  = isset( $_POST['printful_mockup_url'] ) ? esc_url_raw( wp_unslash( $_POST['printful_mockup_url'] ) ) : '';
 
 		if ( $mode ) {
 			update_post_meta( $post_id, self::META_FULFILMENT, $mode );
@@ -126,6 +135,12 @@ class Printful_Integration_For_Fluentcart_Product_Meta {
 			update_post_meta( $post_id, self::META_ORIGIN, $origin );
 		} else {
 			delete_post_meta( $post_id, self::META_ORIGIN );
+		}
+
+		if ( $mockup ) {
+			update_post_meta( $post_id, self::META_MOCKUP, $mockup );
+		} else {
+			delete_post_meta( $post_id, self::META_MOCKUP );
 		}
 	}
 }
