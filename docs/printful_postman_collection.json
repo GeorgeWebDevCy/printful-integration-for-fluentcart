@@ -1,0 +1,5720 @@
+{
+	"info": {
+		"_postman_id": "1ea59246-5ae0-47bc-9b07-43fed610c276",
+		"name": "Printful API External",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "45963270",
+		"_collection_link": "https://printify-api.postman.co/workspace/408c2616-11e9-48ea-8be3-a9dce7d82241/collection/45963270-1ea59246-5ae0-47bc-9b07-43fed610c276?action=share&source=collection_link&creator=45963270"
+	},
+	"item": [
+		{
+			"name": "V1",
+			"item": [
+				{
+					"name": "Oauth",
+					"item": [
+						{
+							"name": "Get scopes for token",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.printful.com/oauth/scopes",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"oauth",
+										"scopes"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Get scopes for token",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/oauth/scopes",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"oauth",
+												"scopes"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [
+										{
+											"expires": "Invalid Date"
+										}
+									],
+									"body": ""
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Catalog",
+					"item": [
+						{
+							"name": "Get Products",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Save a random catalog product id value from the response to a collection variable",
+											"var randomCatalogProductId = pm.response.json().result[Math.floor(Math.random() * pm.response.json().result.length)].id;",
+											"pm.collectionVariables.set(\"randomCatalogProductIdV1\", randomCatalogProductId);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/products",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"products"
+									],
+									"query": [
+										{
+											"key": "category_id",
+											"value": "10",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Get Products",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/products",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"products"
+											],
+											"query": [
+												{
+													"key": "category_id",
+													"value": "10",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "Get Variant",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/products/variant/{{variant_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"products",
+										"variant",
+										"{{variant_id}}"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Get Variant",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/products/variant/:variant_id",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"products",
+												"variant",
+												":variant_id"
+											],
+											"variable": [
+												{
+													"key": "variant_id",
+													"value": "4011"
+												}
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "Get Product",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/products/{{product_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"products",
+										"{{product_id}}"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Get Product",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/products/:product_id",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"products",
+												":product_id"
+											],
+											"variable": [
+												{
+													"key": "product_id",
+													"value": "{{randomCatalogProductIdV1}}"
+												}
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "Get Product Size Guide",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/products/{{product_id}}/sizes",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"products",
+										"{{product_id}}",
+										"sizes"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Get Product Size Guide",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/products/:product_id/sizes",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"products",
+												":product_id",
+												"sizes"
+											],
+											"variable": [
+												{
+													"key": "product_id",
+													"value": "71"
+												}
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "Get Categories",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/categories",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"categories"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Get Categories",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/categories",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"categories"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "Get Category",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/categories/{{category_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"categories",
+										"{{category_id}}"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Get Category",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/categories/1",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"categories",
+												"1"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"The response body is not empty\", function () {",
+									"    pm.expect(pm.response.text()).to.not.be.empty;",
+									"});",
+									"",
+									"pm.test(\"Response body is JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Product Templates",
+					"item": [
+						{
+							"name": "Get list of Product Templates",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/product-templates?limit=10&offset=0",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"product-templates"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "offset",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get single Product Template",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/product-templates/{{product_template_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"product-templates",
+										"{{product_template_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Product Template",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/product-templates/{{product_template_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"product-templates",
+										"{{product_template_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Orders",
+					"item": [
+						{
+							"name": "Get list of orders",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/orders?limit=10&offset=0",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"orders"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "offset",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a new order",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"     pm.expect(pm.response.code).to.equal(200);",
+											"});",
+											"",
+											"const response = pm.response.json();",
+											"",
+											"pm.collectionVariables.set('order_idV1', response.result.id)",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"external_id\": {{external_order_id}},\n  \"shipping\": \"STANDARD\",\n  \"recipient\": {\n    \"name\": \"John Smith\",\n    \"company\": \"John Smith Inc\",\n    \"address1\": \"19749 Dearborn St\",\n    \"address2\": \"string\",\n    \"city\": \"Chatsworth\",\n    \"state_code\": \"CA\",\n    \"state_name\": \"California\",\n    \"country_code\": \"US\",\n    \"country_name\": \"United States\",\n    \"zip\": \"91311\",\n    \"phone\": \"2312322334\",\n    \"email\": \"firstname.secondname@domain.com\",\n    \"tax_number\": \"123.456.789-10\"\n  },\n  \"items\": [\n    {\n      \"id\": 1,\n      \"external_id\": \"item-1\",\n      \"variant_id\": 1,\n      \"sync_variant_id\": 1,\n      \"external_variant_id\": \"variant-1\",\n      \"warehouse_product_variant_id\": 1,\n      \"product_template_id\": 1,\n      \"external_product_id\": \"template-123\",\n      \"quantity\": 1,\n      \"price\": \"13.00\",\n      \"retail_price\": \"13.00\",\n      \"name\": \"Enhanced Matte Paper Poster 18×24\",\n      \"product\": {\n        \"variant_id\": 3001,\n        \"product_id\": 301,\n        \"image\": \"https://files.cdn.printful.com/products/71/5309_1581412541.jpg\",\n        \"name\": \"Bella + Canvas 3001 Unisex Short Sleeve Jersey T-Shirt with Tear Away Label (White / 4XL)\"\n      },\n      \"files\": [\n        {\n          \"type\": \"default\",\n          \"url\": \"​https://www.example.com/files/tshirts/example.png\",\n          \"options\": [\n            {\n              \"id\": \"template_type\",\n              \"value\": \"native\"\n            }\n          ],\n          \"filename\": \"shirt1.png\",\n          \"visible\": true,\n          \"position\": {\n            \"area_width\": 1800,\n            \"area_height\": 2400,\n            \"width\": 1800,\n            \"height\": 1800,\n            \"top\": 300,\n            \"left\": 0,\n            \"limit_to_print_area\": true\n          }\n        }\n      ],\n      \"options\": [\n        {\n          \"id\": \"OptionKey\",\n          \"value\": \"OptionValue\"\n        }\n      ],\n      \"sku\": null,\n      \"discontinued\": true,\n      \"out_of_stock\": true\n    }\n  ],\n  \"retail_costs\": {\n    \"currency\": \"USD\",\n    \"subtotal\": \"10.00\",\n    \"discount\": \"0.00\",\n    \"shipping\": \"5.00\",\n    \"tax\": \"0.00\"\n  },\n  \"gift\": {\n    \"subject\": \"To John\",\n    \"message\": \"Have a nice day\"\n  },\n  \"packing_slip\": {\n    \"email\": \"your-name@your-domain.com\",\n    \"phone\": \"+371 28888888\",\n    \"message\": \"Message on packing slip\",\n    \"logo_url\": \"​http://www.your-domain.com/packing-logo.png\",\n    \"store_name\": \"Your store name\",\n    \"custom_order_id\": \"kkk2344lm\"\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/orders",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"orders"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "With Embroidery technique using Unlimited Color",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"shipping\": \"STANDARD\",\n    \"recipient\": {\n        \"name\": \"John Smith\",\n        \"address1\": \"19749 Dearborn St\",\n        \"city\": \"Chatsworth\",\n        \"country_code\": \"US\",\n        \"state_code\": \"CA\",\n        \"zip\": \"91311\"\n    },\n    \"items\": [\n        {\n            \"variant_id\": 4011,\n            \"files\": [\n                {\n                    \"type\": \"embroidery_chest_left\",\n                    \"url\": \"{{image_url}}\",\n                    \"options\": [\n                        {\n                            \"id\": \"full_color\",\n                            \"value\": true\n                        }\n                    ]\n                }\n            ]\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://https://api.printful.com/orders",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"orders"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "With Embroidery technique using Auto Thread Colors",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"shipping\": \"STANDARD\",\n    \"recipient\": {\n        \"name\": \"John Smith\",\n        \"address1\": \"19749 Dearborn St\",\n        \"city\": \"Chatsworth\",\n        \"country_code\": \"US\",\n        \"state_code\": \"CA\",\n        \"zip\": \"91311\"\n    },\n    \"items\": [\n        {\n            \"variant_id\": 4011,\n            \"files\": [\n                {\n                    \"type\": \"embroidery_chest_left\",\n                    \"url\": \"{{image_url}}\",\n                    \"options\": [\n                        {\n                            \"id\": \"auto_thread_color\",\n                            \"value\": true\n                        }\n                    ]\n                }\n            ]\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://https://api.printful.com/orders",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"orders"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "With customization",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"shipping\": \"STANDARD\",\n    \"recipient\": {\n        \"name\": \"John Smith\",\n        \"address1\": \"19749 Dearborn St\",\n        \"city\": \"Chatsworth\",\n        \"country_code\": \"US\",\n        \"state_code\": \"CA\",\n        \"zip\": \"91311\"\n    },\n    \"items\": [\n        {\n            \"variant_id\": 4011,\n            \"files\": [\n                {\n                    \"type\": \"front\",\n                    \"url\": \"{{image_url}}\"\n                }\n            ]\n        }\n    ],\n    \"retail_costs\": {\n        \"currency\": \"USD\",\n        \"subtotal\": \"10.00\",\n        \"discount\": \"0.00\",\n        \"shipping\": \"5.00\",\n        \"tax\": \"0.00\"\n    },\n    \"gift\": {\n        \"subject\": \"To John\",\n        \"message\": \"Have a nice day\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://https://api.printful.com/orders",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"orders"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "Get order data",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/orders/{{order_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"orders",
+										"{{order_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Cancel an order",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/orders/{{order_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"orders",
+										"{{order_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update order data",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"external_id\": \"{{external_order_id}}\",\n  \"shipping\": \"STANDARD\",\n  \"recipient\": {\n    \"name\": \"John Smith\",\n    \"company\": \"John Smith Inc\",\n    \"address1\": \"19749 Dearborn St\",\n    \"address2\": \"string\",\n    \"city\": \"Chatsworth\",\n    \"state_code\": \"CA\",\n    \"state_name\": \"California\",\n    \"country_code\": \"US\",\n    \"country_name\": \"United States\",\n    \"zip\": \"91311\",\n    \"phone\": \"2312322334\",\n    \"email\": \"firstname.secondname@domain.com\",\n    \"tax_number\": \"123.456.789-10\"\n  },\n  \"items\": [\n    {\n      \"id\": 1,\n      \"external_id\": \"item-1\",\n      \"variant_id\": 1,\n      \"sync_variant_id\": 1,\n      \"external_variant_id\": \"variant-1\",\n      \"warehouse_product_variant_id\": 1,\n      \"product_template_id\": 1,\n      \"external_product_id\": \"template-123\",\n      \"quantity\": 1,\n      \"price\": \"13.00\",\n      \"retail_price\": \"13.00\",\n      \"name\": \"Enhanced Matte Paper Poster 18×24\",\n      \"product\": {\n        \"variant_id\": 3001,\n        \"product_id\": 301,\n        \"image\": \"https://files.cdn.printful.com/products/71/5309_1581412541.jpg\",\n        \"name\": \"Bella + Canvas 3001 Unisex Short Sleeve Jersey T-Shirt with Tear Away Label (White / 4XL)\"\n      },\n      \"files\": [\n        {\n          \"type\": \"default\",\n          \"url\": \"​https://www.example.com/files/tshirts/example.png\",\n          \"options\": [\n            {\n              \"id\": \"template_type\",\n              \"value\": \"native\"\n            }\n          ],\n          \"filename\": \"shirt1.png\",\n          \"visible\": true,\n          \"position\": {\n            \"area_width\": 1800,\n            \"area_height\": 2400,\n            \"width\": 1800,\n            \"height\": 1800,\n            \"top\": 300,\n            \"left\": 0,\n            \"limit_to_print_area\": true\n          }\n        }\n      ],\n      \"options\": [\n        {\n          \"id\": \"OptionKey\",\n          \"value\": \"OptionValue\"\n        }\n      ],\n      \"sku\": null,\n      \"discontinued\": true,\n      \"out_of_stock\": true\n    }\n  ],\n  \"retail_costs\": {\n    \"currency\": \"USD\",\n    \"subtotal\": \"10.00\",\n    \"discount\": \"0.00\",\n    \"shipping\": \"5.00\",\n    \"tax\": \"0.00\"\n  },\n  \"gift\": {\n    \"subject\": \"To John\",\n    \"message\": \"Have a nice day\"\n  },\n  \"packing_slip\": {\n    \"email\": \"your-name@your-domain.com\",\n    \"phone\": \"+371 28888888\",\n    \"message\": \"Message on packing slip\",\n    \"logo_url\": \"​http://www.your-domain.com/packing-logo.png\",\n    \"store_name\": \"Your store name\",\n    \"custom_order_id\": \"kkk2344lm\"\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/orders/",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"orders",
+										""
+									],
+									"query": [
+										{
+											"key": "order_id",
+											"value": "{{order_id}}",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Order (with sync variant)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"shipping\": \"STANDARD\",\n    \"recipient\": {\n        \"name\": \"John Smith\",\n        \"address1\": \"19749 Dearborn St\",\n        \"city\": \"Chatsworth\",\n        \"country_code\": \"US\",\n        \"state_code\": \"CA\",\n        \"zip\": \"91311\"\n    },\n    \"items\": [\n        {\n            \"sync_variant_id\": \"434703597eight\",\n            \"quantity\": 10\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/orders",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"orders"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "With Embroidery technique using Unlimited Color",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"shipping\": \"STANDARD\",\n    \"recipient\": {\n        \"name\": \"John Smith\",\n        \"address1\": \"19749 Dearborn St\",\n        \"city\": \"Chatsworth\",\n        \"country_code\": \"US\",\n        \"state_code\": \"CA\",\n        \"zip\": \"91311\"\n    },\n    \"items\": [\n        {\n            \"variant_id\": 4011,\n            \"files\": [\n                {\n                    \"type\": \"embroidery_chest_left\",\n                    \"url\": \"{{image_url}}\",\n                    \"options\": [\n                        {\n                            \"id\": \"full_color\",\n                            \"value\": true\n                        }\n                    ]\n                }\n            ]\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://https://api.printful.com/orders",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"orders"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "With Embroidery technique using Auto Thread Colors",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"shipping\": \"STANDARD\",\n    \"recipient\": {\n        \"name\": \"John Smith\",\n        \"address1\": \"19749 Dearborn St\",\n        \"city\": \"Chatsworth\",\n        \"country_code\": \"US\",\n        \"state_code\": \"CA\",\n        \"zip\": \"91311\"\n    },\n    \"items\": [\n        {\n            \"variant_id\": 4011,\n            \"files\": [\n                {\n                    \"type\": \"embroidery_chest_left\",\n                    \"url\": \"{{image_url}}\",\n                    \"options\": [\n                        {\n                            \"id\": \"auto_thread_color\",\n                            \"value\": true\n                        }\n                    ]\n                }\n            ]\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://https://api.printful.com/orders",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"orders"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "With customization",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"shipping\": \"STANDARD\",\n    \"recipient\": {\n        \"name\": \"John Smith\",\n        \"address1\": \"19749 Dearborn St\",\n        \"city\": \"Chatsworth\",\n        \"country_code\": \"US\",\n        \"state_code\": \"CA\",\n        \"zip\": \"91311\"\n    },\n    \"items\": [\n        {\n            \"variant_id\": 4011,\n            \"files\": [\n                {\n                    \"type\": \"front\",\n                    \"url\": \"{{image_url}}\"\n                }\n            ]\n        }\n    ],\n    \"retail_costs\": {\n        \"currency\": \"USD\",\n        \"subtotal\": \"10.00\",\n        \"discount\": \"0.00\",\n        \"shipping\": \"5.00\",\n        \"tax\": \"0.00\"\n    },\n    \"gift\": {\n        \"subject\": \"To John\",\n        \"message\": \"Have a nice day\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://https://api.printful.com/orders",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"orders"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "Confirm draft for fulfillment",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/orders/{{order_id}}/confirm",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"orders",
+										"{{order_id}}",
+										"confirm"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Estimate order costs",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"external_id\": {{external_order_id}},\n  \"shipping\": \"STANDARD\",\n  \"recipient\": {\n    \"name\": \"John Smith\",\n    \"company\": \"John Smith Inc\",\n    \"address1\": \"19749 Dearborn St\",\n    \"address2\": \"string\",\n    \"city\": \"Chatsworth\",\n    \"state_code\": \"CA\",\n    \"state_name\": \"California\",\n    \"country_code\": \"US\",\n    \"country_name\": \"United States\",\n    \"zip\": \"91311\",\n    \"phone\": \"2312322334\",\n    \"email\": \"firstname.secondname@domain.com\",\n    \"tax_number\": \"123.456.789-10\"\n  },\n  \"items\": [\n    {\n      \"id\": 1,\n      \"external_id\": \"item-1\",\n      \"variant_id\": 1,\n      \"sync_variant_id\": 1,\n      \"external_variant_id\": \"variant-1\",\n      \"warehouse_product_variant_id\": 1,\n      \"product_template_id\": 1,\n      \"external_product_id\": \"template-123\",\n      \"quantity\": 1,\n      \"price\": \"13.00\",\n      \"retail_price\": \"13.00\",\n      \"name\": \"Enhanced Matte Paper Poster 18×24\",\n      \"product\": {\n        \"variant_id\": 3001,\n        \"product_id\": 301,\n        \"image\": \"https://files.cdn.printful.com/products/71/5309_1581412541.jpg\",\n        \"name\": \"Bella + Canvas 3001 Unisex Short Sleeve Jersey T-Shirt with Tear Away Label (White / 4XL)\"\n      },\n      \"files\": [\n        {\n          \"type\": \"default\",\n          \"url\": \"​https://www.example.com/files/tshirts/example.png\",\n          \"options\": [\n            {\n              \"id\": \"template_type\",\n              \"value\": \"native\"\n            }\n          ],\n          \"filename\": \"shirt1.png\",\n          \"visible\": true,\n          \"position\": {\n            \"area_width\": 1800,\n            \"area_height\": 2400,\n            \"width\": 1800,\n            \"height\": 1800,\n            \"top\": 300,\n            \"left\": 0,\n            \"limit_to_print_area\": true\n          }\n        }\n      ],\n      \"options\": [\n        {\n          \"id\": \"OptionKey\",\n          \"value\": \"OptionValue\"\n        }\n      ],\n      \"sku\": null,\n      \"discontinued\": true,\n      \"out_of_stock\": true\n    }\n  ],\n  \"retail_costs\": {\n    \"currency\": \"USD\",\n    \"subtotal\": \"10.00\",\n    \"discount\": \"0.00\",\n    \"shipping\": \"5.00\",\n    \"tax\": \"0.00\"\n  },\n  \"gift\": {\n    \"subject\": \"To John\",\n    \"message\": \"Have a nice day\"\n  },\n  \"packing_slip\": {\n    \"email\": \"your-name@your-domain.com\",\n    \"phone\": \"+371 28888888\",\n    \"message\": \"Message on packing slip\",\n    \"logo_url\": \"​http://www.your-domain.com/packing-logo.png\",\n    \"store_name\": \"Your store name\",\n    \"custom_order_id\": \"kkk2344lm\"\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/orders/estimate-costs",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"orders",
+										"estimate-costs"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "File Library",
+					"item": [
+						{
+							"name": "Add a new file",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"type\": \"default\",\n  \"url\": \"​https://www.example.com/files/tshirts/example.png\",\n  \"options\": [\n    {\n      \"id\": \"template_type\",\n      \"value\": \"native\"\n    }\n  ],\n  \"filename\": \"shirt1.png\",\n  \"visible\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/files",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"files"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get file",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/files/{{file_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"files",
+										"{{file_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Return available thread colors from provided image URL",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"file_url\": \"{{file_url}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/files/thread-colors",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"files",
+										"thread-colors"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Shipping Rate",
+					"item": [
+						{
+							"name": "Calculate shipping rates",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"recipient\": {\n    \"address1\": \"19749 Dearborn St\",\n    \"city\": \"Chatsworth\",\n    \"country_code\": \"US\",\n    \"state_code\": \"CA\",\n    \"zip\": \"91311\",\n    \"phone\": \"string\"\n  },\n  \"items\": [\n    {\n      \"variant_id\": \"202\",\n      \"external_variant_id\": \"1001\",\n      \"warehouse_product_variant_id\": \"2\",\n      \"quantity\": 10,\n      \"value\": \"2.99\"\n    }\n  ],\n  \"currency\": \"USD\",\n  \"locale\": \"en_US\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/shipping/rates",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"shipping",
+										"rates"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Country/State Code",
+					"item": [
+						{
+							"name": "Retrieve country list",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/countries",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"countries"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Tax Rate",
+					"item": [
+						{
+							"name": "Get a list of countries for tax calculation",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/tax/countries",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"tax",
+										"countries"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Webhook",
+					"item": [
+						{
+							"name": "Get Webhook configuration",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/webhooks",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"webhooks"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Set up webhook configuration",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"url\": \"​https://www.example.com/printful/webhook\",\n  \"types\": [\n    \"package_shipped\",\n    \"stock_updated\"\n  ],\n  \"params\": {\n    \"stock_updated\": {\n      \"product_ids\": [\n        5,\n        12\n      ]\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/webhooks",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"webhooks"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Disable webhook support",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/webhooks",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"webhooks"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"",
+									"",
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Store Information",
+					"item": [
+						{
+							"name": "Change packing slip",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"your-name@your-domain.com\",\n  \"phone\": \"+371 28888888\",\n  \"message\": \"Message on packing slip\",\n  \"logo_url\": \"​http://www.your-domain.com/packing-logo.png\",\n  \"store_name\": \"Your store name\",\n  \"custom_order_id\": \"kkk2344lm\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/store/packing-slip",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"store",
+										"packing-slip"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get basic information about stores",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/stores",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"stores"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get basic information about a store",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/stores/{{store_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"stores",
+										"{{store_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Mockup Generator",
+					"item": [
+						{
+							"name": "Layout templates",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://https:/api.printful.com/mockup-generator/templates/{{product_id}}?orientation&technique",
+									"protocol": "https",
+									"host": [
+										"https"
+									],
+									"port": "",
+									"path": [
+										"",
+										"api.printful.com",
+										"mockup-generator",
+										"templates",
+										"{{product_id}}"
+									],
+									"query": [
+										{
+											"key": "orientation",
+											"value": null,
+											"description": " Enum: \"horizontal\" \"vertical\"\n\nOptional orientation for wall art product printfiles. Allowed values: horizontal, vertical\n"
+										},
+										{
+											"key": "technique",
+											"value": null,
+											"description": "Optional technique for product. This can be used in cases where product supports multiple techniques like DTG and embroidery\n"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Mockup generation task result",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"",
+											"pm.test(\"Response status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"",
+											"",
+											"pm.test(\"Verify the response task_key equals the POST Generate Mockups task_key value\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.result.task_key).to.eql(pm.globals.get(\"taskKey\"));",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://https:/api.printful.com/mockup-generator/task?task_key={{task_key}}",
+									"protocol": "https",
+									"host": [
+										"https"
+									],
+									"port": "",
+									"path": [
+										"",
+										"api.printful.com",
+										"mockup-generator",
+										"task"
+									],
+									"query": [
+										{
+											"key": "task_key",
+											"value": "{{task_key}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a mockup generation task",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Response status code is 200', function () {",
+											"    pm.response.to.have.status(200);",
+											"})",
+											"",
+											"pm.test(\"The response has the expected structure\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.be.an('object');",
+											"    pm.expect(jsonData).to.have.property('code').to.be.a('number');",
+											"    pm.expect(jsonData).to.have.property('result').to.be.an('object').that.has.all.keys('task_key','status');",
+											"    pm.expect(jsonData.extra).to.be.an('array');",
+											"});",
+											"",
+											"// Save the task key value from the response to an environment or global variable",
+											"var taskKey = pm.response.json().result.task_key;",
+											"pm.collectionVariables.set(\"taskKey\", taskKey);",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-Id",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"variant_ids\": [\r\n    4012,\r\n    4013,\r\n    4014,\r\n    4017,\r\n    4018,\r\n    4019\r\n  ],\r\n  \"format\": \"jpg\",\r\n  \"width\": 0,\r\n  \"product_options\": {},\r\n  \"option_groups\": [\r\n    \"string\"\r\n  ],\r\n  \"options\": [\r\n    \"string\"\r\n  ],\r\n  \"files\": [\r\n    {\r\n      \"placement\": \"front\",\r\n      \"image_url\": \"​http://your-site/path-to-front-printfile.jpg\",\r\n      \"position\": {\r\n        \"area_width\": 1800,\r\n        \"area_height\": 2400,\r\n        \"width\": 1800,\r\n        \"height\": 1800,\r\n        \"top\": 300,\r\n        \"left\": 0\r\n      },\r\n      \"options\": [\r\n        {\r\n          \"id\": \"template_type\",\r\n          \"value\": \"native\"\r\n        }\r\n      ]\r\n    }\r\n  ],\r\n  \"product_template_id\": 123\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://https://api.printful.com/mockup-generator/create-task/{{product_id}}",
+									"protocol": "https",
+									"host": [
+										"https"
+									],
+									"port": "",
+									"path": [
+										"",
+										"api.printful.com",
+										"mockup-generator",
+										"create-task",
+										"{{product_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Warehouse Products",
+					"item": [
+						{
+							"name": "Get a list of your warehouse products",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/warehouse/products",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"warehouse",
+										"products"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get warehouse product data",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/warehouse/products/{{product_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"warehouse",
+										"products",
+										"{{product_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Reports",
+					"item": [
+						{
+							"name": "Get Statistics",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/reports/statistics?date_from=2023-10-10&date_to=2023-10-11&report_types=sales_and_costs&currency=USD",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"reports",
+										"statistics"
+									],
+									"query": [
+										{
+											"key": "date_from",
+											"value": "2023-10-10"
+										},
+										{
+											"key": "date_to",
+											"value": "2023-10-11"
+										},
+										{
+											"key": "report_types",
+											"value": "sales_and_costs"
+										},
+										{
+											"key": "currency",
+											"value": "USD"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Sales and costs",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "12550781",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://api.printful.com/reports/statistics?date_from=2023-10-10&date_to=2023-10-11&report_types=sales_and_costs&currency=USD",
+											"protocol": "https",
+											"host": [
+												"api",
+												"printful",
+												"com"
+											],
+											"path": [
+												"reports",
+												"statistics"
+											],
+											"query": [
+												{
+													"key": "date_from",
+													"value": "2023-10-10"
+												},
+												{
+													"key": "date_to",
+													"value": "2023-10-11"
+												},
+												{
+													"key": "report_types",
+													"value": "sales_and_costs"
+												},
+												{
+													"key": "currency",
+													"value": "USD"
+												}
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "Sales and costs summary",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/reports/statistics?date_from=2023-10-10&date_to=2023-10-11&report_types=sales_and_costs_summary&currency=USD",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"reports",
+												"statistics"
+											],
+											"query": [
+												{
+													"key": "date_from",
+													"value": "2023-10-10"
+												},
+												{
+													"key": "date_to",
+													"value": "2023-10-11"
+												},
+												{
+													"key": "report_types",
+													"value": "sales_and_costs_summary"
+												},
+												{
+													"key": "currency",
+													"value": "USD"
+												}
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "Printful costs",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/reports/statistics?date_from=2023-10-10&date_to=2023-10-11&report_types=printful_costs&currency=USD",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"reports",
+												"statistics"
+											],
+											"query": [
+												{
+													"key": "date_from",
+													"value": "2023-10-10"
+												},
+												{
+													"key": "date_to",
+													"value": "2023-10-11"
+												},
+												{
+													"key": "report_types",
+													"value": "printful_costs"
+												},
+												{
+													"key": "currency",
+													"value": "USD"
+												}
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "Profit",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/reports/statistics?date_from=2023-10-10&date_to=2023-10-11&report_types=profit&currency=USD",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"reports",
+												"statistics"
+											],
+											"query": [
+												{
+													"key": "date_from",
+													"value": "2023-10-10"
+												},
+												{
+													"key": "date_to",
+													"value": "2023-10-11"
+												},
+												{
+													"key": "report_types",
+													"value": "profit"
+												},
+												{
+													"key": "currency",
+													"value": "USD"
+												}
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "Total paid orders",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/reports/statistics?date_from=2023-10-10&date_to=2023-10-11&report_types=total_paid_orders&currency=USD",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"reports",
+												"statistics"
+											],
+											"query": [
+												{
+													"key": "date_from",
+													"value": "2023-10-10"
+												},
+												{
+													"key": "date_to",
+													"value": "2023-10-11"
+												},
+												{
+													"key": "report_types",
+													"value": "total_paid_orders"
+												},
+												{
+													"key": "currency",
+													"value": "USD"
+												}
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "Costs by amount",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/reports/statistics?date_from=2023-10-10&date_to=2023-10-11&report_types=costs_by_amount&currency=USD",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"reports",
+												"statistics"
+											],
+											"query": [
+												{
+													"key": "date_from",
+													"value": "2023-10-10"
+												},
+												{
+													"key": "date_to",
+													"value": "2023-10-11"
+												},
+												{
+													"key": "report_types",
+													"value": "costs_by_amount"
+												},
+												{
+													"key": "currency",
+													"value": "USD"
+												}
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "Costs by product",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/reports/statistics?date_from=2023-10-10&date_to=2023-10-11&report_types=costs_by_product&currency=USD",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"reports",
+												"statistics"
+											],
+											"query": [
+												{
+													"key": "date_from",
+													"value": "2023-10-10"
+												},
+												{
+													"key": "date_to",
+													"value": "2023-10-11"
+												},
+												{
+													"key": "report_types",
+													"value": "costs_by_product"
+												},
+												{
+													"key": "currency",
+													"value": "USD"
+												}
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "Costs by variant",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/reports/statistics?date_from=2023-10-10&date_to=2023-10-11&report_types=costs_by_variant&currency=USD",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"reports",
+												"statistics"
+											],
+											"query": [
+												{
+													"key": "date_from",
+													"value": "2023-10-10"
+												},
+												{
+													"key": "date_to",
+													"value": "2023-10-11"
+												},
+												{
+													"key": "report_types",
+													"value": "costs_by_variant"
+												},
+												{
+													"key": "currency",
+													"value": "USD"
+												}
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "Average fulfillment time",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/reports/statistics?date_from=2023-10-10&date_to=2023-10-11&report_types=average_fulfillment_time&currency=USD",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"reports",
+												"statistics"
+											],
+											"query": [
+												{
+													"key": "date_from",
+													"value": "2023-10-10"
+												},
+												{
+													"key": "date_to",
+													"value": "2023-10-11"
+												},
+												{
+													"key": "report_types",
+													"value": "average_fulfillment_time"
+												},
+												{
+													"key": "currency",
+													"value": "USD"
+												}
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Approval Sheets API",
+					"item": [
+						{
+							"name": "Retrieve a list of approval sheets",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/approval-sheets",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"approval-sheets"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Approve a design",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"status\": \"approved\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/approval-sheets?confirm_hash={{confirm_hash}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"approval-sheets"
+									],
+									"query": [
+										{
+											"key": "confirm_hash",
+											"value": "{{confirm_hash}}",
+											"description": " Example: confirm_hash=a14e51714be01f98487fcf5131727d31\n\nThe confirm hash for the approval sheet you would like to approve"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Submit changes to an approval sheet",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"message\": \"The design needs to be aligned to the left\",\n    \"files\": [\n        {\n            \"url\": \"{{image_url}\"\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/approval-sheets/changes?confirm_hash={{confirm_hash}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"approval-sheets",
+										"changes"
+									],
+									"query": [
+										{
+											"key": "confirm_hash",
+											"value": "{{confirm_hash}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "V2",
+			"item": [
+				{
+					"name": "OAuth Scopes v2",
+					"item": [
+						{
+							"name": "Retrieve OAuth scopes",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-store-id",
+										"value": "{{store_id}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/oauth-scopes",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"oauth-scopes"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"The response body is not empty\", function () {",
+									"    pm.expect(pm.response.text()).to.not.be.empty;",
+									"});",
+									"",
+									"pm.test(\"Response body is JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Catalog v2",
+					"item": [
+						{
+							"name": "Retrieve a list of catalog products",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"console.clear();"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Save a random catalog product id value from the response to a collection variable",
+											"var randomCatalogProductId = pm.response.json().data[Math.floor(Math.random() * pm.response.json().data.length)].id;",
+											"pm.collectionVariables.set(\"randomCatalogProductIdV2\", randomCatalogProductId);",
+											"",
+											"const response = pm.response.json();",
+											"console.log(response.data[0]);",
+											"",
+											"// pm.test('Response techniques key equal embroidery'"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/catalog-products",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"catalog-products"
+									],
+									"query": [
+										{
+											"key": "category_ids",
+											"value": "202",
+											"disabled": true
+										},
+										{
+											"key": "colors",
+											"value": "grey",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "",
+											"description": "Default: 20",
+											"disabled": true
+										},
+										{
+											"key": "new",
+											"value": "",
+											"description": "Default: false",
+											"disabled": true
+										},
+										{
+											"key": "offset",
+											"value": "",
+											"description": "Default: 0",
+											"disabled": true
+										},
+										{
+											"key": "placements",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "selling_region_name",
+											"value": "europe",
+											"description": "Default: worldwide",
+											"disabled": true
+										},
+										{
+											"key": "sort_direction",
+											"value": "",
+											"description": "Default: descending",
+											"disabled": true
+										},
+										{
+											"key": "sort_type",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "techniques",
+											"value": "embroidery",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Sorted by rating",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/v2/catalog-products?limit=10&offset=0&sort_type=rating&sort_direction=descending",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"v2",
+												"catalog-products"
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "10"
+												},
+												{
+													"key": "offset",
+													"value": "0"
+												},
+												{
+													"key": "sort_type",
+													"value": "rating"
+												},
+												{
+													"key": "sort_direction",
+													"value": "descending"
+												}
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "Filtered by color",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/v2/catalog-products?limit=10&offset=0&colors=red",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"v2",
+												"catalog-products"
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "10"
+												},
+												{
+													"key": "offset",
+													"value": "0"
+												},
+												{
+													"key": "colors",
+													"value": "red"
+												}
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "Filtered by Europe region",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/v2/catalog-products?limit=10&offset=0&selling_region_name=europe",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"v2",
+												"catalog-products"
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "10"
+												},
+												{
+													"key": "offset",
+													"value": "0"
+												},
+												{
+													"key": "selling_region_name",
+													"value": "europe"
+												}
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "Retrieve a single catalog product",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"console.clear();"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// const response = pm.response.json();",
+											"// console.log(response.data.placements[0].placement_options[0].name);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/catalog-products/{{product_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"catalog-products",
+										"{{product_id}}"
+									],
+									"query": [
+										{
+											"key": "selling_region_name",
+											"value": "europ",
+											"description": "Default: worldwide",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Filtered by Worldwide region",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/v2/catalog-products/71?selling_region_name=worldwide",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"v2",
+												"catalog-products",
+												"71"
+											],
+											"query": [
+												{
+													"key": "selling_region_name",
+													"value": "worldwide"
+												}
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "Retrieve a single catalog product",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/v2/catalog-products/:id/wix-specifics",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"v2",
+												"catalog-products",
+												":id",
+												"wix-specifics"
+											],
+											"query": [
+												{
+													"key": "selling_region_name",
+													"value": "europ",
+													"description": "Default: worldwide",
+													"disabled": true
+												}
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{randomCatalogProductIdV2}}",
+													"description": "Product ID"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Wed, 04 Dec 2024 12:47:58 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=UTF-8"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Server",
+											"value": "nginx"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept-Encoding"
+										},
+										{
+											"key": "Expires",
+											"value": "Thu, 19 Nov 1981 08:52:00 GMT"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-store, no-cache, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "X-Ratelimit-Policy",
+											"value": "120;w=60;"
+										},
+										{
+											"key": "X-Ratelimit-Limit",
+											"value": "120"
+										},
+										{
+											"key": "X-Ratelimit-Remaining",
+											"value": "119"
+										},
+										{
+											"key": "X-Ratelimit-Reset",
+											"value": "0.5"
+										},
+										{
+											"key": "Content-Encoding",
+											"value": "gzip"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"data\": {\n        \"specifics\": [\n            {\n                \"id\": \"branding_options\",\n                \"title\": \"Customization options\",\n                \"items\": {\n                    \"dtg_print\": [\n                        \"Front print\",\n                        \"Back print\",\n                        \"Outside label\",\n                        \"Inside label\",\n                        \"Left sleeve\",\n                        \"Right sleeve\"\n                    ],\n                    \"embroidery\": [\n                        \"Left chest\",\n                        \"Center chest\",\n                        \"Large center\",\n                        \"Left sleeve top\",\n                        \"Right sleeve top\"\n                    ]\n                }\n            },\n            {\n                \"id\": \"style_and_fit\",\n                \"title\": \"Style and fit\",\n                \"items\": [\n                    {\n                        \"title\": \"Regular fit\",\n                        \"value\": \"Standard length, the fabric easily gives into movement\"\n                    },\n                    {\n                        \"title\": \"Casual wear\",\n                        \"value\": \"A classic, everyday option loved by our customers\"\n                    },\n                    {\n                        \"title\": \"Side-seamed\",\n                        \"value\": \"Constructed by sewing two parts together, creating a fitted look\"\n                    }\n                ]\n            },\n            {\n                \"id\": \"material\",\n                \"title\": \"Material\",\n                \"items\": [\n                    {\n                        \"max\": \"Heavyweight\",\n                        \"min\": \"Lightweight\",\n                        \"level\": \"5\",\n                        \"title\": \"Fabric thickness\",\n                        \"option\": \"1\"\n                    },\n                    {\n                        \"max\": \"Extra soft\",\n                        \"min\": \"Rough\",\n                        \"level\": \"6\",\n                        \"title\": \"Softness scale\",\n                        \"option\": \"1\"\n                    }\n                ]\n            },\n            {\n                \"id\": \"features\",\n                \"title\": \"Features\",\n                \"items\": [\n                    {\n                        \"title\": \"Bestseller\",\n                        \"value\": \"A top-selling item loved by our customers\"\n                    },\n                    {\n                        \"title\": \"Tear-away tag\",\n                        \"value\": \"Easily removable tear-away tag that allows you to add a custom inside label\"\n                    },\n                    {\n                        \"title\": \"Produced responsibly\",\n                        \"value\": \"The manufacturing of this item is lawful, ethical, and safe to the workers and environment\"\n                    }\n                ]\n            },\n            {\n                \"id\": \"source\",\n                \"title\": \"Source\",\n                \"items\": {\n                    \"info\": \"Read more about Bella + CanvasLearn about sustainability and Bella + CanvasWatch products in action\",\n                    \"logo\": \"https://files.cdn.printful.com/o/upload/product-specs/dd/ddf0630d8481734b5707897a0986303f_l\",\n                    \"title\": \"Blank product sourced from\",\n                    \"countries\": {\n                        \"hn\": \"Honduras\",\n                        \"mx\": \"Mexico\",\n                        \"ni\": \"Nicaragua\",\n                        \"us\": \"United States\"\n                    },\n                    \"description\": \"Bella + Canvas is a US apparel company that prioritizes sustainability by limiting and filtering its water supply, saving energy, and recycling leftover fabric.\"\n                }\n            }\n        ],\n        \"file_guidelines\": [\n            {\n                \"technique\": \"dtg\",\n                \"guidelines\": [\n                    {\n                        \"filename\": \"outside_label.zip\",\n                        \"name\": \"DTG Outside label shirts\",\n                        \"exists\": true,\n                        \"is_branding_template\": true,\n                        \"download_url\": \"https://printful.s3-accelerate.amazonaws.com/upload/guideline/outside_label.zip\",\n                        \"technique\": \"dtg\",\n                        \"disclaimers\": {\n                            \"description\": \"\",\n                            \"type\": \"\",\n                            \"print_file_size\": \"\",\n                            \"size\": \"\",\n                            \"print_area\": \"\",\n                            \"recommended_size\": \"\"\n                        },\n                        \"description\": \"Outside label\",\n                        \"size\": \"All sizes\",\n                        \"print_area\": \"\",\n                        \"recommended_size\": \"\",\n                        \"recommended_toolbar_size\": \"\",\n                        \"type\": \"\",\n                        \"print_file_size\": \"7.62 × 7.62 cm (3″ × 3″)\"\n                    },\n                    {\n                        \"filename\": \"12x16 template.zip\",\n                        \"name\": \"DTG T-shirt (unisex/men's)\",\n                        \"exists\": true,\n                        \"is_branding_template\": false,\n                        \"download_url\": \"https://printful.s3-accelerate.amazonaws.com/upload/guideline/12x16 template.zip\",\n                        \"technique\": \"dtg\",\n                        \"disclaimers\": {\n                            \"description\": \"\",\n                            \"type\": \"\",\n                            \"print_file_size\": \"This is the max print area. We scale graphics according to the product size.\",\n                            \"size\": \"\",\n                            \"print_area\": \"\",\n                            \"recommended_size\": \"\"\n                        },\n                        \"description\": \"Front & back print\",\n                        \"size\": \"All sizes\",\n                        \"print_area\": \"\",\n                        \"recommended_size\": \"\",\n                        \"recommended_toolbar_size\": \"30.48 × 40.64 cm (12″ × 16″)\",\n                        \"type\": \"\",\n                        \"print_file_size\": \"30.48 × 40.64 cm (12″ × 16″)\"\n                    },\n                    {\n                        \"filename\": \"Short sleeve template.zip\",\n                        \"name\": \"DTG Sleeve print template\",\n                        \"exists\": true,\n                        \"is_branding_template\": true,\n                        \"download_url\": \"https://printful.s3-accelerate.amazonaws.com/upload/guideline/Short sleeve template.zip\",\n                        \"technique\": \"dtg\",\n                        \"disclaimers\": {\n                            \"description\": \"\",\n                            \"type\": \"\",\n                            \"print_file_size\": \"\",\n                            \"size\": \"\",\n                            \"print_area\": \"\",\n                            \"recommended_size\": \"\"\n                        },\n                        \"description\": \"Sleeve print\",\n                        \"size\": \"All sizes\",\n                        \"print_area\": \"\",\n                        \"recommended_size\": \"\",\n                        \"recommended_toolbar_size\": \"\",\n                        \"type\": \"\",\n                        \"print_file_size\": \"10.16 × 8.89 cm (4″ × 3.5″)\"\n                    }\n                ]\n            },\n            {\n                \"technique\": \"embroidery\",\n                \"guidelines\": [\n                    {\n                        \"filename\": \"Embroidered T-shirt.zip\",\n                        \"name\": \"EMB - Shirts (with switcher enabled)\",\n                        \"exists\": true,\n                        \"is_branding_template\": false,\n                        \"download_url\": \"https://printful.s3-accelerate.amazonaws.com/upload/guideline/Embroidered T-shirt.zip\",\n                        \"technique\": \"embroidery\",\n                        \"disclaimers\": {\n                            \"description\": \"\",\n                            \"type\": \"\",\n                            \"print_file_size\": \"\",\n                            \"size\": \"\",\n                            \"print_area\": \"\",\n                            \"recommended_size\": \"\"\n                        },\n                        \"description\": \"Left chest\",\n                        \"size\": \"All sizes\",\n                        \"print_area\": \"\",\n                        \"recommended_size\": \"\",\n                        \"recommended_toolbar_size\": \"10.16 × 10.16 cm (4″ × 4″)\",\n                        \"type\": \"\",\n                        \"print_file_size\": \"10.16 × 10.16 cm (4″ × 4″)\"\n                    },\n                    {\n                        \"filename\": \"Centered Embroidered T-shirt.zip\",\n                        \"name\": \"EMB - Centered for t-shirts\",\n                        \"exists\": true,\n                        \"is_branding_template\": true,\n                        \"download_url\": \"https://printful.s3-accelerate.amazonaws.com/upload/guideline/Centered Embroidered T-shirt.zip\",\n                        \"technique\": \"embroidery\",\n                        \"disclaimers\": {\n                            \"description\": \"\",\n                            \"type\": \"\",\n                            \"print_file_size\": \"\",\n                            \"size\": \"\",\n                            \"print_area\": \"\",\n                            \"recommended_size\": \"\"\n                        },\n                        \"description\": \"Centered\",\n                        \"size\": \"All sizes\",\n                        \"print_area\": \"\",\n                        \"recommended_size\": \"\",\n                        \"recommended_toolbar_size\": \"10.16 × 10.16 cm (4″ × 4″)\",\n                        \"type\": \"\",\n                        \"print_file_size\": \"10.16 × 10.16 cm (4″ × 4″)\"\n                    },\n                    {\n                        \"filename\": \"Large Center.zip\",\n                        \"name\": \"EMB - Large Center\",\n                        \"exists\": true,\n                        \"is_branding_template\": false,\n                        \"download_url\": \"https://printful.s3-accelerate.amazonaws.com/upload/guideline/Large Center.zip\",\n                        \"technique\": \"embroidery\",\n                        \"disclaimers\": {\n                            \"description\": \"\",\n                            \"type\": \"\",\n                            \"print_file_size\": \"\",\n                            \"size\": \"\",\n                            \"print_area\": \"\",\n                            \"recommended_size\": \"\"\n                        },\n                        \"description\": \"Large Center\",\n                        \"size\": \"All sizes\",\n                        \"print_area\": \"\",\n                        \"recommended_size\": \"\",\n                        \"recommended_toolbar_size\": \"25.40 × 15.24 cm (10″ × 6″)\",\n                        \"type\": \"\",\n                        \"print_file_size\": \"25.40 × 15.24 cm (10″ × 6″)\"\n                    },\n                    {\n                        \"filename\": \"Embroidered__sleeves_templates.zip\",\n                        \"name\": \"EMB - Top Sleeve\",\n                        \"exists\": true,\n                        \"is_branding_template\": false,\n                        \"download_url\": \"https://printful.s3-accelerate.amazonaws.com/upload/guideline/Embroidered__sleeves_templates.zip\",\n                        \"technique\": \"embroidery\",\n                        \"disclaimers\": {\n                            \"description\": \"\",\n                            \"type\": \"\",\n                            \"print_file_size\": \"\",\n                            \"size\": \"\",\n                            \"print_area\": \"\",\n                            \"recommended_size\": \"\"\n                        },\n                        \"description\": \"Left Top Sleeve\\nRight Top Sleeve\",\n                        \"size\": \"All sizes\\nAll sizes\",\n                        \"print_area\": \"\",\n                        \"recommended_size\": \"\",\n                        \"recommended_toolbar_size\": \"5.08 × 7.62 cm (2″ × 3″)\\n5.08 × 7.62 cm (2″ × 3″)\",\n                        \"type\": \"\",\n                        \"print_file_size\": \"5.08 × 7.62 cm (2″ × 3″)\\n5.08 × 7.62 cm (2″ × 3″)\"\n                    }\n                ]\n            },\n            {\n                \"technique\": \"dtfilm\",\n                \"guidelines\": [\n                    {\n                        \"filename\": \"Front and back 12x16.zip\",\n                        \"name\": \"DTFilm front and back\",\n                        \"exists\": true,\n                        \"is_branding_template\": false,\n                        \"download_url\": \"https://printful.s3-accelerate.amazonaws.com/upload/guideline/Front and back 12x16.zip\",\n                        \"technique\": \"dtfilm\",\n                        \"disclaimers\": {\n                            \"description\": \"\",\n                            \"type\": \"\",\n                            \"print_file_size\": \"\",\n                            \"size\": \"\",\n                            \"print_area\": \"\",\n                            \"recommended_size\": \"\"\n                        },\n                        \"description\": \"Front & Back\",\n                        \"size\": \"All sizes\",\n                        \"print_area\": \"30.48 × 40.64 cm (12″ × 16″)\",\n                        \"recommended_size\": \"30.48 × 40.64 cm (12″ × 16″)\",\n                        \"recommended_toolbar_size\": \"30.48 × 40.64 cm (12″ × 16″)\",\n                        \"type\": \"\",\n                        \"print_file_size\": \"30.48 × 40.64 cm (12″ × 16″)\"\n                    },\n                    {\n                        \"filename\": \"Short sleeve template..zip\",\n                        \"name\": \"DTF Short sleeves\",\n                        \"exists\": true,\n                        \"is_branding_template\": true,\n                        \"download_url\": \"https://printful.s3-accelerate.amazonaws.com/upload/guideline/Short sleeve template..zip\",\n                        \"technique\": \"dtfilm\",\n                        \"disclaimers\": {\n                            \"description\": \"\",\n                            \"type\": \"\",\n                            \"print_file_size\": \"\",\n                            \"size\": \"\",\n                            \"print_area\": \"\",\n                            \"recommended_size\": \"\"\n                        },\n                        \"description\": \"Sleeve print\",\n                        \"size\": \"All sizes\",\n                        \"print_area\": \"10.16 × 8.89 cm (4″ × 3.5″)\",\n                        \"recommended_size\": \"10.16 × 8.89 cm (4″ × 3.5″)\",\n                        \"recommended_toolbar_size\": \"10.16 × 8.89 cm (4″ × 3.5″)\",\n                        \"type\": \"\",\n                        \"print_file_size\": \"10.16 × 8.89 cm (4″ × 3.5″)\"\n                    }\n                ]\n            }\n        ]\n    },\n    \"extra\": []\n}"
+								}
+							]
+						},
+						{
+							"name": "Retrieve information about specific catalog variant",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/catalog-variants/{{variant_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"catalog-variants",
+										"{{variant_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve information about catalog product variants",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Save a random catalog variant id value from the response to an environment or global variable",
+											"var randomCatalogVariantId = pm.response.json().data[Math.floor(Math.random() * pm.response.json().data.length)].id;",
+											"pm.collectionVariables.set(\"randomCatalogVariantIdV2\", randomCatalogVariantId);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/catalog-products/{{product_id}}/catalog-variants",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"catalog-products",
+										"{{product_id}}",
+										"catalog-variants"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve a list of catalog categories",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Save a random catalog category id value from the response to a collection variable",
+											"var randomCatalogCategoryId = pm.response.json().data[Math.floor(Math.random() * pm.response.json().data.length)].id;",
+											"pm.collectionVariables.set(\"randomCatalogCategoryIdV2\", randomCatalogCategoryId);",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/catalog-categories",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"catalog-categories"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve information about specific category",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/catalog-categories/{{category_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"catalog-categories",
+										"{{category_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve a list of catalog product categories",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/catalog-products/{{product_id}}/catalog-categories",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"catalog-products",
+										"{{product_id}}",
+										"catalog-categories"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve size guide for a catalog product",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/catalog-products/{{product_id}}/sizes?unit=inches,cm",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"catalog-products",
+										"{{product_id}}",
+										"sizes"
+									],
+									"query": [
+										{
+											"key": "unit",
+											"value": "inches,cm"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve catalog product prices",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"console.clear();"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const response = pm.response.json();",
+											"console.log(response.data.product.placements[0].placement_options[0].name);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/catalog-products/{{product_id}}/prices",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"catalog-products",
+										"{{product_id}}",
+										"prices"
+									],
+									"query": [
+										{
+											"key": "selling_region_name",
+											"value": "worldwide",
+											"disabled": true
+										},
+										{
+											"key": "currency",
+											"value": "USD",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve pricing information for the catalog variant",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/catalog-variants/{{variant_id}}/prices",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"catalog-variants",
+										"{{variant_id}}",
+										"prices"
+									],
+									"query": [
+										{
+											"key": "selling_region_name",
+											"value": "worldwide",
+											"disabled": true
+										},
+										{
+											"key": "currency",
+											"value": "USD",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve blank images for a catalog product",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/catalog-products/{{product_id}}/images",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"catalog-products",
+										"{{product_id}}",
+										"images"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve shipping countries for a product",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.printful.com/v2/catalog-products/{{product_id}}/shipping-countries",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"catalog-products",
+										"{{product_id}}",
+										"shipping-countries"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve blank images for a catalog variant",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/catalog-variants/{{variant_id}}/images",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"catalog-variants",
+										"{{variant_id}}",
+										"images"
+									],
+									"query": [
+										{
+											"key": "mockup_style_ids",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "placement",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve catalog product mockup styles",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-store-id",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/catalog-products/{{product_id}}/mockup-styles",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"catalog-products",
+										"{{product_id}}",
+										"mockup-styles"
+									],
+									"query": [
+										{
+											"key": "placements",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "selling_region_name",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "offset",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve catalog product mockup templates",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-store-id",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/catalog-products/{{product_id}}/mockup-templates",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"catalog-products",
+										"{{product_id}}",
+										"mockup-templates"
+									],
+									"query": [
+										{
+											"key": "placements",
+											"value": "back",
+											"disabled": true
+										},
+										{
+											"key": "selling_region_name",
+											"value": "japan",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "4",
+											"disabled": true
+										},
+										{
+											"key": "offset",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve catalog product stock availability",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response body has the expected structure\", function () {",
+											"    var jsonData = pm.response.json();",
+											"",
+											"    pm.expect(jsonData).to.have.property('data').that.is.an('array');",
+											"",
+											"    jsonData.data.forEach(function(item) {",
+											"        pm.expect(item).to.have.property('catalog_variant_id').that.is.a(\"number\");",
+											"        pm.expect(item).to.have.property('techniques').that.is.an('array');",
+											"        ",
+											"        item.techniques.forEach(function(tech) {",
+											"            pm.expect(tech).to.have.property('technique').that.is.a('string');",
+											"            pm.expect(tech).to.have.property('selling_regions').that.is.an('array');",
+											"",
+											"            tech.selling_regions.forEach(function(region) {",
+											"                pm.expect(region).to.have.property('name').that.is.a('string');",
+											"                pm.expect(region).to.have.property('availability').that.is.a('string');",
+											"                pm.expect(region).to.have.property('placement_option_availability').that.is.an('array');",
+											"            });",
+											"        });",
+											"",
+											"        pm.expect(item).to.have.property('_links').that.is.an('object');",
+											"        pm.expect(item).to.have.nested.property('_links.variant.href').that.is.a('string');",
+											"",
+											"    });",
+											"",
+											"    pm.expect(jsonData).to.have.property('_links').that.is.an('object').and.to.include.keys('self','product');",
+											"    pm.expect(jsonData).to.have.property('filter_settings').that.is.an('array');",
+											"",
+											"    jsonData.filter_settings.forEach(function(setting) {",
+											"        pm.expect(setting).to.have.property('name').that.is.a('string');",
+											"        pm.expect(setting).to.have.property('value').that.is.a('string');",
+											"    });",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/catalog-products/{{product_id}}/availability",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"catalog-products",
+										"{{product_id}}",
+										"availability"
+									],
+									"query": [
+										{
+											"key": "techniques",
+											"value": "dtg",
+											"disabled": true
+										},
+										{
+											"key": "selling_region_name",
+											"value": "europe",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "offset",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve catalog variant stock availability",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response body has the expected structure\", function () {",
+											"    var jsonData = pm.response.json();",
+											"",
+											"    pm.expect(jsonData).to.have.property('data').that.is.an('object');",
+											"",
+											"    pm.expect(jsonData.data).to.have.property('catalog_variant_id').that.is.a(\"number\");",
+											"    pm.expect(jsonData.data).to.have.property('techniques').that.is.an('array');",
+											"",
+											"    jsonData.data.techniques.forEach(function(tech) {",
+											"        pm.expect(tech).to.have.property('technique').that.is.a('string');",
+											"        pm.expect(tech).to.have.property('selling_regions').that.is.an('array');",
+											"",
+											"        tech.selling_regions.forEach(function(region) {",
+											"            pm.expect(region).to.have.property('name').that.is.a('string');",
+											"            pm.expect(region).to.have.property('availability').that.is.a('string');",
+											"            pm.expect(region).to.have.property('placement_option_availability').that.is.an('array');",
+											"        });",
+											"    });",
+											"",
+											"    pm.expect(jsonData).to.have.property('_links').that.is.an('object');",
+											"    pm.expect(jsonData).to.have.nested.property('_links.variant.href').that.is.a('string');",
+											"",
+											"    pm.expect(jsonData).to.have.property('_links').that.is.an('object').and.to.include.keys('self', 'variant');",
+											"    pm.expect(jsonData).to.have.property('filter_settings').that.is.an('array');",
+											"",
+											"    jsonData.filter_settings.forEach(function(setting) {",
+											"        pm.expect(setting).to.have.property('name').that.is.a('string');",
+											"        pm.expect(setting).to.have.property('value').that.is.a('string');",
+											"    });",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/catalog-variants/{{variant_id}}/availability",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"catalog-variants",
+										"{{variant_id}}",
+										"availability"
+									],
+									"query": [
+										{
+											"key": "techniques",
+											"value": "dtg,embroidery",
+											"disabled": true
+										},
+										{
+											"key": "selling_region_name",
+											"value": "brazil",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									"// 200 or 400 check as \"Retrieve size guide for a catalog product\" endpoint may get a random catalog product that has no size guides available (e.g. product_id=2)",
+									"pm.test(\"Status code is 200 or 400\", function () {",
+									"     pm.expect(pm.response.code).to.be.oneOf([200, 400]); ",
+									"});",
+									"",
+									"pm.test(\"The response body is not empty\", function () {",
+									"    pm.expect(pm.response.text()).to.not.be.empty;",
+									"});",
+									"",
+									"pm.test(\"Response body is JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Orders v2",
+					"item": [
+						{
+							"name": "Retrieve a list of orders",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/orders",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"orders"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "10",
+											"disabled": true
+										},
+										{
+											"key": "offset",
+											"value": "0",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a new order",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"console.clear()"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"     pm.expect(pm.response.code).to.equal(200);",
+											"});",
+											"",
+											"const response = pm.response.json();",
+											"",
+											"pm.collectionVariables.set('order_idV2', response.data.id)",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"external_id\": {{external_order_id}},\n  \"shipping\": \"STANDARD\",\n  \"recipient\": {\n    \"name\": \"John Smith\",\n    \"company\": \"John Smith Inc\",\n    \"address1\": \"19749 Dearborn St\",\n    \"address2\": \"string\",\n    \"city\": \"Chatsworth\",\n    \"state_code\": \"CA\",\n    \"state_name\": \"California\",\n    \"country_code\": \"US\",\n    \"country_name\": \"United States\",\n    \"zip\": \"91311\",\n    \"phone\": \"2312322334\",\n    \"email\": \"firstname.secondname@domain.com\",\n    \"tax_number\": \"123.456.789-10\"\n  },\n  \"order_items\": [\n    {\n      \"source\": \"catalog\",\n      \"catalog_variant_id\": 4011,\n      \"external_id\": \"123_abc\",\n      \"quantity\": 1,\n      \"retail_price\": \"10.00\",\n      \"name\": \"Custom name\",\n      \"placements\": [\n        {\n          \"placement\": \"front\",\n          \"technique\": \"dtg\",\n          \"print_area_type\": \"simple\",\n          \"layers\": [\n            {\n              \"type\": \"file\",\n              \"url\": \"​https://www.printful.com/static/images/layout/printful-logo.png\",\n              \"layer_options\": [\n                {\n                  \"name\": \"3d_puff\",\n                  \"value\": true\n                }\n              ],\n              \"position\": {\n                \"width\": 10,\n                \"height\": 10,\n                \"top\": 0,\n                \"left\": 0\n              }\n            }\n          ],\n          \"placement_options\": [\n            {\n              \"name\": \"unlimited_color\",\n              \"value\": true\n            }\n          ]\n        }\n      ],\n      \"orientation\": \"horizontal\",\n      \"product_options\": [\n        {\n          \"name\": \"inside_pocket\",\n          \"value\": true\n        }\n      ]\n    }\n  ],\n  \"customization\": {\n    \"gift\": {\n      \"subject\": \"To John\",\n      \"message\": \"Happy birthday!\"\n    },\n    \"packing_slip\": {\n      \"email\": \"test@example.com\",\n      \"phone\": \"+48000000000\",\n      \"message\": \"This is a message\",\n      \"logo_url\": \"https://example.com/image.jpg\",\n      \"store_name\": \"A store\",\n      \"custom_order_id\": \"11235813\"\n    }\n  },\n  \"retail_costs\": {\n    \"currency\": \"EUR\",\n    \"discount\": \"123.40\",\n    \"shipping\": \"123.40\",\n    \"tax\": \"123.40\"\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/v2/orders",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"orders"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "With Embroidery technique",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"recipient\": {\n        \"name\": \"John Smith\",\n        \"company\": \"John Smith Inc\",\n        \"address1\": \"19749 Dearborn St\",\n        \"address2\": \"string\",\n        \"city\": \"Chatsworth\",\n        \"state_code\": \"CA\",\n        \"state_name\": \"California\",\n        \"country_code\": \"US\",\n        \"country_name\": \"United States\",\n        \"zip\": \"91311\"\n    },\n    \"items\": [\n        {\n            \"quantity\": 1,\n            \"variant_id\": 4011,\n            \"source\": \"catalog\",\n            \"placements\": [\n                {\n                    \"placement\": \"embroidery_chest_left\",\n                    \"technique\": \"embroidery\",\n                    \"layers\": [\n                        {\n                            \"type\": \"file\",\n                            \"url\": \"{{image_url}}\",\n                            \"layer_options\": [\n                                {\n                                    \"name\": \"thread_colors\",\n                                    \"value\": [\n                                        \"#FFFFFF\"\n                                    ]\n                                }\n                            ]\n                        }\n                    ]\n                }\n            ]\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://https://api.printful.com/v2/orders",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"v2",
+												"orders"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "With cut-sew (AOP)",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"recipient\": {\n        \"name\": \"John Smith\",\n        \"company\": \"John Smith Inc\",\n        \"address1\": \"19749 Dearborn St\",\n        \"address2\": \"string\",\n        \"city\": \"Chatsworth\",\n        \"state_code\": \"CA\",\n        \"state_name\": \"California\",\n        \"country_code\": \"US\",\n        \"country_name\": \"United States\",\n        \"zip\": \"91311\"\n    },\n    \"items\": [\n        {\n            \"quantity\": 1,\n            \"variant_id\": 9954,\n            \"source\": \"catalog\",\n            \"placements\": [\n                {\n                    \"placement\": \"front\",\n                    \"technique\": \"cut-sew\",\n                    \"layers\": [\n                        {\n                            \"type\": \"file\",\n                            \"url\": \"{{image_url}}\"\n                        }\n                    ]\n                }\n            ],\n            \"product_options\": [\n                {\n                    \"name\": \"stitch_color\",\n                    \"value\": \"black\"\n                }\n            ]\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://https://api.printful.com/v2/orders",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"v2",
+												"orders"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "Create Order From Sync Variant",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"recipient\": {\n        \"name\": \"John Smith\",\n        \"company\": \"John Smith Inc\",\n        \"address1\": \"19749 Dearborn St\",\n        \"address2\": \"string\",\n        \"city\": \"Chatsworth\",\n        \"state_code\": \"CA\",\n        \"state_name\": \"California\",\n        \"country_code\": \"US\",\n        \"country_name\": \"United States\",\n        \"zip\": \"91311\"\n    },\n    \"items\": [\n        {\n            \"quantity\": 1,\n            \"variant_id\": 4011,\n            \"source\": \"sync\",\n            \"sync_variant_id\": 1234\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://https://api.printful.com/v2/orders",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"v2",
+												"orders"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "With defined customization",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"recipient\": {\n        \"name\": \"John Smith\",\n        \"company\": \"John Smith Inc\",\n        \"address1\": \"19749 Dearborn St\",\n        \"address2\": \"string\",\n        \"city\": \"Chatsworth\",\n        \"state_code\": \"CA\",\n        \"state_name\": \"California\",\n        \"country_code\": \"US\",\n        \"country_name\": \"United States\",\n        \"zip\": \"91311\"\n    },\n    \"items\": [\n        {\n            \"quantity\": 1,\n            \"variant_id\": 4011,\n            \"source\": \"catalog\",\n            \"placements\": [\n                {\n                    \"placement\": \"front\",\n                    \"technique\": \"dtg\",\n                    \"layers\": [\n                        {\n                            \"type\": \"file\",\n                            \"url\": \"{{image_url}}\"\n                        }\n                    ]\n                }\n            ]\n        }\n    ],\n    \"customization\": {\n        \"gift\": {\n            \"subject\": \"To John\",\n            \"message\": \"Happy birthday!\"\n        },\n        \"packing_slip\": {\n            \"email\": \"test@example.com\",\n            \"phone\": \"+48000000000\",\n            \"message\": \"This is a message\",\n            \"logo_url\": \"https://example.com/image.jpg\",\n            \"store_name\": \"A store\",\n            \"custom_order_id\": \"11235813\"\n        }\n    },\n    \"retail_costs\": {\n        \"currency\": \"EUR\",\n        \"discount\": \"123.40\",\n        \"shipping\": \"123.40\",\n        \"tax\": \"123.40\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://https://api.printful.com/v2/orders",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"v2",
+												"orders"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "Retrieve a single order",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"     pm.expect(pm.response.code).to.equal(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/orders/{{order_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"orders",
+										"{{order_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update an order",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"recipient\": {\n        \"name\": \"{{$randomFirstName}} {{$randomLastName}}\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/v2/orders/{{order_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"orders",
+										"{{order_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Confirm an order",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/v2/orders/{{order_id}}/confirmation",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"orders",
+										"{{order_id}}",
+										"confirmation"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete an order",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/orders/{{order_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"orders",
+										"{{order_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Order Items",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/orders/{{order_id}}/order-items",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"orders",
+										"{{order_id}}",
+										"order-items"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Filtered by type of items",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/v2/orders/94188606/order-items?type=branding_item",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"v2",
+												"orders",
+												"94188606",
+												"order-items"
+											],
+											"query": [
+												{
+													"key": "type",
+													"value": "branding_item"
+												}
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "Create Order Item",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"quantity\": 1,\n    \"variant_id\": 4011,\n    \"source\": \"catalog\",\n    \"placements\": [\n        {\n            \"placement\": \"front\",\n            \"technique\": \"dtg\",\n            \"layers\": [\n                {\n                    \"type\": \"file\",\n                    \"url\": \"{{image_url}}\"\n                }\n            ]\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/v2/orders/{{order_id}}/order-items",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"orders",
+										"{{order_id}}",
+										"order-items"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Order Item",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/orders/{{order_id}}/order-items/{{order_item_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"orders",
+										"{{order_id}}",
+										"order-items",
+										"{{order_item_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Order Item",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"external_id\": \"123_abc\",\n  \"quantity\": 5,\n  \"retail_price\": \"10.00\",\n  \"name\": \"Custom name\",\n  \"placements\": [\n    {\n      \"placement\": \"front\",\n      \"technique\": \"dtg\",\n      \"layers\": [\n        {\n          \"type\": \"file\",\n          \"url\": \"{{image_url}}\",\n          \"layer_options\": [\n            {\n              \"name\": \"3d_puff\",\n              \"value\": true\n            }\n          ],\n          \"position\": {\n            \"width\": 10,\n            \"height\": 10,\n            \"top\": 0,\n            \"left\": 0\n          }\n        }\n      ],\n      \"placement_options\": [\n        {\n          \"name\": \"unlimited_color\",\n          \"value\": true\n        }\n      ]\n    }\n  ],\n  \"product_options\": [\n     {\n      \"name\": \"stitch_color\",\n      \"value\": \"black\"\n    }\n  ],\n  \"catalog_variant_id\": 4011,\n  \"source\": \"catalog\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/v2/orders/{{order_id}}/order-items/{{order_item_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"orders",
+										"{{order_id}}",
+										"order-items",
+										"{{order_item_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Order Item",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"recipient\": {\n        \"name\": \"New recipient name\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/v2/orders/{{order_id}}/order-items/{{order_item_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"orders",
+										"{{order_id}}",
+										"order-items",
+										"{{order_item_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Shipments",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/orders/{{order_id}}/shipments",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"orders",
+										"{{order_id}}",
+										"shipments"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "10",
+											"disabled": true
+										},
+										{
+											"key": "offset",
+											"value": "0",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Invoice",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"description": "812650",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/orders/{{order_id}}/invoices",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"orders",
+										"{{order_id}}",
+										"invoices"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve an order estimation task",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/order-estimation-tasks?id={{estimation_task_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"order-estimation-tasks"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "{{estimation_task_id}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a new order estimation task",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Save the task key value from the response to an environment or global variable",
+											"var estimationTaskID = pm.response.json().data.id;",
+											"pm.collectionVariables.set(\"estimationTaskID\", estimationTaskID);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"recipient\": {\n    \"state_code\": \"CA\",\n    \"country_code\": \"US\",\n    \"zip\": \"91311\"\n  },\n  \"order_items\": [\n    {\n      \"source\": \"catalog\",\n      \"catalog_variant_id\": 4011,\n      \"external_id\": \"123_abc\",\n      \"quantity\": 1,\n      \"retail_price\": \"10.00\",\n      \"name\": \"Custom name\",\n      \"placements\": [\n        {\n          \"placement\": \"front\",\n          \"technique\": \"dtg\",\n          \"print_area_type\": \"simple\",\n          \"layers\": [\n            {\n              \"type\": \"file\",\n              \"url\": \"​https://www.printful.com/static/images/layout/printful-logo.png\",\n              \"layer_options\": [\n                {\n                  \"name\": \"3d_puff\",\n                  \"value\": true\n                }\n              ],\n              \"position\": {\n                \"width\": 10,\n                \"height\": 10,\n                \"top\": 0,\n                \"left\": 0\n              }\n            }\n          ],\n          \"placement_options\": [\n            {\n              \"name\": \"unlimited_color\",\n              \"value\": true\n            }\n          ]\n        }\n      ],\n      \"orientation\": \"horizontal\",\n      \"product_options\": [\n        {\n          \"name\": \"inside_pocket\",\n          \"value\": true\n        }\n      ]\n    }\n  ],\n  \"retail_costs\": {\n    \"currency\": \"EUR\",\n    \"discount\": \"123.40\",\n    \"shipping\": \"123.40\",\n    \"tax\": \"123.40\"\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/v2/order-estimation-tasks",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"order-estimation-tasks"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									"pm.test(\"Response body is JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"pm.test(\"The response body is not empty\", function () {",
+									"    pm.expect(pm.response.text()).to.not.be.empty;",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Files v2",
+					"item": [
+						{
+							"name": "Add a new file",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.collectionVariables.set(\"file_id_v2\", pm.response.json().data.id);",
+											"",
+											"pm.test(\"Response has the expected structure\", function () {",
+											"     pm.expect(pm.response.json()).to.be.an('object');",
+											"     pm.expect(pm.response.json()).to.have.property('data');",
+											"     pm.expect(pm.response.json().data).to.have.property('id');",
+											"     pm.expect(pm.response.json().data).to.have.property('url');",
+											"     pm.expect(pm.response.json().data).to.have.property('hash');",
+											"     pm.expect(pm.response.json().data).to.have.property('filename');",
+											"     pm.expect(pm.response.json().data).to.have.property('mime_type');",
+											"     pm.expect(pm.response.json().data).to.have.property('size');",
+											"     pm.expect(pm.response.json().data).to.have.property('width');",
+											"     pm.expect(pm.response.json().data).to.have.property('height');",
+											"     pm.expect(pm.response.json().data).to.have.property('dpi');",
+											"     pm.expect(pm.response.json().data).to.have.property('status');",
+											"     pm.expect(pm.response.json().data).to.have.property('created');",
+											"     pm.expect(pm.response.json().data).to.have.property('thumbnail_url');",
+											"     pm.expect(pm.response.json().data).to.have.property('preview_url');",
+											"     pm.expect(pm.response.json().data).to.have.property('visible');",
+											"     pm.expect(pm.response.json().data).to.have.property('is_temporary');",
+											"     pm.expect(pm.response.json().data).to.have.property('_links');",
+											"     pm.expect(pm.response.json().data._links).to.have.property('self');",
+											"     pm.expect(pm.response.json().data._links.self).to.have.property('href');",
+											"     pm.expect(pm.response.json()).to.have.property('extra');",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-Id",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"role\": \"printfile\",\n    \"url\": \"{{image_url}}\",\n    \"filename\": \"shirt1.png\",\n    \"visible\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/v2/files",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"files"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve a single file from the file library",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-Id",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/files/{{file_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"files",
+										"{{file_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Countries v2",
+					"item": [
+						{
+							"name": "Retrieve a list of countries",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-store-id",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/countries",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"countries"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Shipping Rates v2",
+					"item": [
+						{
+							"name": "Calculate Shipping Rates",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-Id",
+										"value": "{{store_id}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"recipient\": {\n    \"address1\": \"19749 Dearborn St\",\n    \"address2\": \"string\",\n    \"city\": \"Chatsworth\",\n    \"state_code\": \"CA\",\n    \"country_code\": \"US\",\n    \"zip\": \"91311\"\n  },\n  \"order_items\": [\n    {\n      \"source\": \"catalog\",\n      \"quantity\": 1,\n      \"catalog_variant_id\": 4011\n    }\n  ],\n  \"currency\": \"string\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/v2/shipping-rates",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"shipping-rates"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Calculate Shipping Rates (DTG)",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-PF-Store-Id",
+												"value": "{{store_id}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"recipient\": {\n    \"address1\": \"19749 Dearborn St\",\n    \"address2\": \"string\",\n    \"city\": \"Chatsworth\",\n    \"state_code\": \"CA\",\n    \"country_code\": \"ES\",\n    \"zip\": \"91311\"\n  },\n  \"order_items\": [\n    {\n      \"source\": \"catalog\",\n      \"quantity\": 1,\n      \"catalog_variant_id\": 4011,\n      \"placements\": [\n        {\n            \"placement\": \"front\",\n            \"technique\": \"dtg\"\n        }\n      ]\n    }\n  ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://https://api.printful.com/v2/shipping-rates",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"v2",
+												"shipping-rates"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "Calculate Shipping Rates Copy (DTG by default)",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-PF-Store-Id",
+												"value": "{{store_id}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"recipient\": {\n    \"address1\": \"19749 Dearborn St\",\n    \"address2\": \"string\",\n    \"city\": \"Chatsworth\",\n    \"state_code\": \"CA\",\n    \"country_code\": \"ES\",\n    \"zip\": \"91311\"\n  },\n  \"order_items\": [\n    {\n      \"source\": \"catalog\",\n      \"quantity\": 1,\n      \"catalog_variant_id\": 4011\n    }\n  ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://https://api.printful.com/v2/shipping-rates",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"v2",
+												"shipping-rates"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "Calculate Shipping Rates (regular embroidery)",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-PF-Store-Id",
+												"value": "{{store_id}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"recipient\": {\n    \"address1\": \"19749 Dearborn St\",\n    \"address2\": \"string\",\n    \"city\": \"Chatsworth\",\n    \"state_code\": \"CA\",\n    \"country_code\": \"ES\",\n    \"zip\": \"91311\"\n  },\n  \"order_items\": [\n    {\n      \"source\": \"catalog\",\n      \"quantity\": 1,\n      \"catalog_variant_id\": 4011,\n      \"placements\": [\n        {\n            \"placement\": \"embroidery_chest_left\",\n            \"technique\": \"embroidery\"\n        }\n      ]\n    }\n  ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://https://api.printful.com/v2/shipping-rates",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"v2",
+												"shipping-rates"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "Calculate Shipping Rates (unlimited color)",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-PF-Store-Id",
+												"value": "{{store_id}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"recipient\": {\n    \"address1\": \"19749 Dearborn St\",\n    \"address2\": \"string\",\n    \"city\": \"Chatsworth\",\n    \"state_code\": \"CA\",\n    \"country_code\": \"ES\",\n    \"zip\": \"91311\"\n  },\n  \"order_items\": [\n    {\n      \"source\": \"catalog\",\n      \"quantity\": 1,\n      \"catalog_variant_id\": 4011,\n      \"placements\": [\n        {\n            \"placement\": \"embroidery_chest_left\",\n            \"technique\": \"embroidery\",\n            \"options\": [\n                {\n                    \"name\": \"unlimited_color\",\n                    \"value\": true\n                }\n            ]\n        }\n      ]\n    }\n  ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://https://api.printful.com/v2/shipping-rates",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"v2",
+												"shipping-rates"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Warehouse Products v2",
+					"item": [
+						{
+							"name": "Retrieve a list of warehouse products",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Save a random warehouse product id value from the response to a collection variable",
+											"var randomWarehouseProductId = pm.response.json().data[Math.floor(Math.random() * pm.response.json().data.length)].id;",
+											"pm.collectionVariables.set(\"randomWarehouseProductIdV2\", randomWarehouseProductId);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/warehouse-products",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"warehouse-products"
+									],
+									"query": [
+										{
+											"key": "filter[name*]",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "offset",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve a single warehouse product",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/warehouse-products/{{product_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"warehouse-products",
+										"{{product_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body is JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Mockup Generator v2",
+					"item": [
+						{
+							"name": "Create Mockup Generator tasks",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// // const body = JSON.parse(pm.request.body.raw); // retrieve current body",
+											"// // // update the body\\object as appropriate",
+											"// // // it changes products to object instead of required array of objects",
+											"// pm.request.body.raw = {",
+											"//   \"format\": \"jpeg\",",
+											"//   \"products\": {",
+											"    ",
+											"//       \"source\": \"catalog\",",
+											"//       \"mockup_style_ids\": [",
+											"//         242",
+											"//       ],",
+											"//       \"product_options\": [",
+											"//         {",
+											"//           \"name\": \"inside_pocket\",",
+											"//           \"value\": true",
+											"//         }",
+											"//       ],",
+											"//       \"catalog_product_id\": 71,",
+											"//       \"catalog_variant_ids\": [",
+											"//         4011",
+											"//       ],",
+											"//       \"placements\": [",
+											"//         {",
+											"//           \"placement\": \"front\",",
+											"//           \"technique\": \"DTG\",",
+											"//           \"layers\": [",
+											"//             {",
+											"//               \"type\": \"file\",",
+											"//               \"url\": \"{{image_url}}\",",
+											"//               \"layer_options\": [",
+											"//                 {",
+											"//                   \"name\": \"3d_puff\",",
+											"//                   \"value\": true",
+											"//                 }",
+											"//               ],",
+											"//               \"position\": {",
+											"//                 \"width\": 10,",
+											"//                 \"height\": 10,",
+											"//                 \"top\": 0,",
+											"//                 \"left\": 0",
+											"//               }",
+											"//             }",
+											"//           ],",
+											"//           \"placement_options\": [",
+											"//             {",
+											"//               \"name\": \"unlimited_color\",",
+											"//               \"value\": true",
+											"//             }",
+											"//           ]",
+											"//         }",
+											"//       ]",
+											"    ",
+											"// }",
+											"// }"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"format\": \"jpg\",\n    \"products\": [\n        {\n            \"source\": \"catalog\",\n            \"mockup_style_ids\": [\n                742\n            ],\n            \"product_options\": [\n                {\n                    \"name\": \"lifelike\",\n                    \"value\": true\n                }\n            ],\n            \"catalog_product_id\": 71,\n            \"catalog_variant_ids\": [\n                4011,\n                4012\n            ],\n            \"placements\": [\n                {\n                    \"placement\": \"front\",\n                    \"technique\": \"dtg\",\n                    \"layers\": [\n                        {\n                            \"type\": \"file\",\n                            \"url\": \"{{image_url}}\",\n                            \"layer_options\": [],\n                            \"position\": {\n                                \"width\": 10,\n                                \"height\": 10,\n                                \"top\": 0,\n                                \"left\": 0\n                            }\n                        }\n                    ],\n                    \"placement_options\": []\n                },\n                {\n                    \"placement\": \"back\",\n                    \"technique\": \"dtg\",\n                    \"layers\": [\n                        {\n                            \"type\": \"file\",\n                            \"url\": \"{{image_url}}\",\n                            \"layer_options\": [],\n                            \"position\": {\n                                \"width\": 10,\n                                \"height\": 10,\n                                \"top\": 0,\n                                \"left\": 0\n                            }\n                        }\n                    ],\n                    \"placement_options\": []\n                }\n            ]\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/v2/mockup-tasks",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"mockup-tasks"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve Mockup Generator tasks",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200 or 400\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test(\"Verify the response body structure\", function () {",
+											"        var jsonData = pm.response.json();",
+											"        ",
+											"",
+											"        pm.expect(jsonData.data).to.be.an('array').and.to.not.be.empty;",
+											"        jsonData.data.forEach(function(item) {",
+											"            pm.expect(item).to.be.an('object').that.has.all.keys('id', 'status', 'catalog_variant_mockups', 'failure_reasons', '_links');",
+											"            pm.expect(item.id).to.be.a('number');",
+											"            pm.expect(item.status).to.be.a('string');",
+											"            pm.expect(item.catalog_variant_mockups).to.be.an('array');",
+											"            item.catalog_variant_mockups.forEach(function(catalog) {",
+											"                pm.expect(catalog).to.be.an('object').that.has.all.keys('catalog_variant_id', 'mockups');",
+											"                pm.expect(catalog.catalog_variant_id).to.be.a('number');",
+											"                pm.expect(catalog.mockups).to.be.an('array');",
+											"                if (item.status === 'completed') {",
+											"                    catalog.mockups.forEach(function(mockup) {",
+											"                        pm.expect(mockup).to.be.an('object').that.has.all.keys('placement', 'display_name', 'technique', 'style_id', 'mockup_url');",
+											"                        pm.expect(mockup.placement).to.be.a('string');",
+											"                        pm.expect(mockup.technique).to.be.a('string');",
+											"                        pm.expect(mockup.style_id).to.be.a('number');",
+											"                        pm.expect(mockup.mockup_url).to.be.a('string');",
+											"                    });",
+											"                }",
+											"            });",
+											"            pm.expect(item.failure_reasons).to.be.an('array');",
+											"            if (item.status === 'failed') {",
+											"                item.failure_reasons.forEach(function(reason) {",
+											"                    pm.expect(reason).to.be.an('object').that.has.all.keys('type', 'detail', 'source', 'valid_values');",
+											"                    pm.expect(reason.type).to.be.a('string');",
+											"                    pm.expect(reason.detail).to.be.a('string');",
+											"                    pm.expect(reason.source).to.be.a('string');",
+											"                    pm.expect(reason.valid_values).to.be.an('array');",
+											"                });",
+											"            }",
+											"            pm.expect(item._links).to.be.an('object').that.has.all.keys('self');",
+											"            pm.expect(item._links.self).to.be.an('object').that.has.all.keys('href');",
+											"            pm.expect(item._links.self.href).to.be.a('string');",
+											"        });",
+											"        pm.expect(jsonData.paging).to.be.an('object').that.has.all.keys('total', 'offset', 'limit');",
+											"        pm.expect(jsonData.paging.total).to.be.a('number');",
+											"        pm.expect(jsonData.paging.offset).to.be.a('number');",
+											"        pm.expect(jsonData.paging.limit).to.be.a('number');",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/mockup-tasks/?id={{task_key}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"mockup-tasks",
+										""
+									],
+									"query": [
+										{
+											"key": "offset",
+											"value": "100",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "5",
+											"disabled": true
+										},
+										{
+											"key": "id",
+											"value": "{{task_key}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Webhooks v2",
+					"item": [
+						{
+							"name": "POST Setup webhook configuration",
+							"item": [
+								{
+									"name": "Setup webhook configuration (ISO 8601 format)",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"default_url\": \"https://www.printful.com/webhook\",\n    \"expires_at\": 2000000000,\n    \"events\": [\n        {\n            \"type\": \"shipment_sent\",\n            \"url\": \"https://www.printful.com/webhook\"\n        },\n        {\n            \"type\": \"catalog_stock_updated\",\n            \"params\": [\n                {\n                    \"name\": \"products\",\n                    \"value\": [\n                        {\n                            \"id\": 1\n                        },\n                        {\n                            \"id\": 71\n                        }\n                    ]\n                }\n            ]\n        }\n    ],\n    \"public_key\": \"SbF/9d/uWguI\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://https://api.printful.com/v2/webhooks",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"v2",
+												"webhooks"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Set up event configuration",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"default_url\": \"https://webhook.site/a42c2ac9-6f52-44c9-ae5b-6464acfdcf7a\",\n    \"expires_at\": 20000000,\n    \"events\": [\n        {\n\"type\": \"mockup_task_finished\",\n    \"url\": \"https://webhook.site/a42c2ac9-6f52-44c9-ae5b-6464acfdcf7a\"\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.printful.com/v2/webhooks",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"webhooks"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get webhook configuration",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/webhooks",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"webhooks"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get webhook event configuration",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/webhooks/{{event_type}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"webhooks",
+										"{{event_type}}"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Catalog price changed event type",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-PF-Store-ID",
+												"value": "{{store_id}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://https://api.printful.com/v2/webhooks/catalog_price_changed",
+											"protocol": "https",
+											"host": [
+												"https"
+											],
+											"port": "",
+											"path": [
+												"",
+												"api.printful.com",
+												"v2",
+												"webhooks",
+												"catalog_price_changed"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "Disable webhook support",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/webhooks",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"webhooks"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Disable support for event",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "X-PF-Store-ID",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/webhooks/{{event_type}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"webhooks",
+										"{{event_type}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Stores v2",
+					"item": [
+						{
+							"name": "Retrieve a single store",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.printful.com/v2/stores/{{store_id}}",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"stores",
+										"{{store_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve a list of stores",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-PF-Store-Id",
+										"value": "{{store_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.printful.com/v2/stores",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"stores"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve reports for a single store",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.printful.com/v2/stores/{{store_id}}/statistics?date_from=2023-04-01&date_to=2023-04-02&report_types=sales_and_costs,sales_and_costs_summary,printful_costs,profit,total_paid_orders,costs_by_amount,costs_by_product,costs_by_variant,average_fulfillment_time",
+									"protocol": "https",
+									"host": [
+										"api",
+										"printful",
+										"com"
+									],
+									"path": [
+										"v2",
+										"stores",
+										"{{store_id}}",
+										"statistics"
+									],
+									"query": [
+										{
+											"key": "date_from",
+											"value": "2023-04-01"
+										},
+										{
+											"key": "date_to",
+											"value": "2023-04-02"
+										},
+										{
+											"key": "currency",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "report_types",
+											"value": "sales_and_costs,sales_and_costs_summary,printful_costs,profit,total_paid_orders,costs_by_amount,costs_by_product,costs_by_variant,average_fulfillment_time"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "The collection consists of endpoints that are described in the documentation [https://developers.printful.com/docs/v2-beta/](https://developers.printful.com/docs/v2-beta/)"
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "tokenType",
+				"value": "",
+				"type": "string"
+			},
+			{
+				"key": "accessToken",
+				"value": "{{oauth}}",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "oauth",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "store_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "variant_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "sync_variant_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "product_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "sync_product_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "sync_variant_image_url",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "product_template_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "order_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "external_order_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "file_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "file_url",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "task_key",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "confirm_hash",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "category_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
