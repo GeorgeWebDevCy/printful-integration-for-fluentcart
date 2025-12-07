@@ -13,11 +13,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Printful_Integration_For_Fluentcart_Product_Mapping {
 
 	const META_KEY_VARIATION = '_printful_variant_id';
-	const META_KEY_PRODUCT   = '_printful_product_id';
-	const META_KEY_DISABLE   = '_printful_fulfilment_mode';
-	const META_KEY_SERVICE   = '_printful_service_code';
-	const META_KEY_ORIGIN    = '_printful_origin_index';
-	const META_KEY_MOCKUP    = '_printful_mockup_url';
+        const META_KEY_PRODUCT   = '_printful_product_id';
+        const META_KEY_DISABLE   = '_printful_fulfilment_mode';
+        const META_KEY_SERVICE   = '_printful_service_code';
+        const META_KEY_ORIGIN    = '_printful_origin_index';
+        const META_KEY_MOCKUP    = '_printful_mockup_url';
+        const META_KEY_DESIGNER  = '_printful_designer_url';
 
 	/**
 	 * Persist a Printful product ID against a FluentCart product (post).
@@ -27,13 +28,28 @@ class Printful_Integration_For_Fluentcart_Product_Mapping {
 	 *
 	 * @return bool
 	 */
-	public static function set_product_mapping( $product_id, $printful_product_id ) {
-		if ( ! $product_id ) {
-			return false;
-		}
+        public static function set_product_mapping( $product_id, $printful_product_id ) {
+                if ( ! $product_id ) {
+                        return false;
+                }
 
-		return update_post_meta( $product_id, self::META_KEY_PRODUCT, sanitize_text_field( $printful_product_id ) );
-	}
+                return update_post_meta( $product_id, self::META_KEY_PRODUCT, sanitize_text_field( $printful_product_id ) );
+        }
+
+        /**
+         * Remove stored mapping for a product.
+         *
+         * @param int $product_id WordPress post ID.
+         *
+         * @return bool
+         */
+        public static function delete_product_mapping( $product_id ) {
+                if ( ! $product_id ) {
+                        return false;
+                }
+
+                return (bool) delete_post_meta( $product_id, self::META_KEY_PRODUCT );
+        }
 
 	/**
 	 * Fetch mapped Printful product ID for a FluentCart product.
@@ -55,11 +71,31 @@ class Printful_Integration_For_Fluentcart_Product_Mapping {
 	 *
 	 * @return int|null
 	 */
-	public static function get_product_origin( $product_id ) {
-		$value = get_post_meta( $product_id, self::META_KEY_ORIGIN, true );
+        public static function get_product_origin( $product_id ) {
+                $value = get_post_meta( $product_id, self::META_KEY_ORIGIN, true );
 
-		return ( '' !== $value && null !== $value ) ? (int) $value : null;
-	}
+                return ( '' !== $value && null !== $value ) ? (int) $value : null;
+        }
+
+        /**
+         * Persist product-specific origin profile index.
+         *
+         * @param int         $product_id Product ID.
+         * @param int|string  $origin_index Origin index or empty string to clear.
+         *
+         * @return bool
+         */
+        public static function set_product_origin( $product_id, $origin_index ) {
+                if ( ! $product_id ) {
+                        return false;
+                }
+
+                if ( '' === $origin_index || null === $origin_index ) {
+                        return (bool) delete_post_meta( $product_id, self::META_KEY_ORIGIN );
+                }
+
+                return update_post_meta( $product_id, self::META_KEY_ORIGIN, (int) $origin_index );
+        }
 
 	/**
 	 * Check if a product is disabled for Printful fulfilment.
@@ -81,11 +117,33 @@ class Printful_Integration_For_Fluentcart_Product_Mapping {
 	 *
 	 * @return string|null
 	 */
-	public static function get_product_service( $product_id ) {
-		$value = get_post_meta( $product_id, self::META_KEY_SERVICE, true );
+        public static function get_product_service( $product_id ) {
+                $value = get_post_meta( $product_id, self::META_KEY_SERVICE, true );
 
-		return $value ? sanitize_text_field( $value ) : null;
-	}
+                return $value ? sanitize_text_field( $value ) : null;
+        }
+
+        /**
+         * Persist preferred service code for a product.
+         *
+         * @param int    $product_id Product ID.
+         * @param string $service Service code.
+         *
+         * @return bool
+         */
+        public static function set_product_service( $product_id, $service ) {
+                if ( ! $product_id ) {
+                        return false;
+                }
+
+                $service = sanitize_text_field( $service );
+
+                if ( $service ) {
+                        return update_post_meta( $product_id, self::META_KEY_SERVICE, $service );
+                }
+
+                return (bool) delete_post_meta( $product_id, self::META_KEY_SERVICE );
+        }
 
 	/**
 	 * Get mockup preview URL for product.
@@ -94,10 +152,32 @@ class Printful_Integration_For_Fluentcart_Product_Mapping {
 	 *
 	 * @return string
 	 */
-	public static function get_product_mockup( $product_id ) {
-		$value = get_post_meta( $product_id, self::META_KEY_MOCKUP, true );
-		return $value ? esc_url( $value ) : '';
-	}
+        public static function get_product_mockup( $product_id ) {
+                $value = get_post_meta( $product_id, self::META_KEY_MOCKUP, true );
+                return $value ? esc_url( $value ) : '';
+        }
+
+        /**
+         * Persist mockup preview URL.
+         *
+         * @param int    $product_id Product ID.
+         * @param string $url Mockup URL.
+         *
+         * @return bool
+         */
+        public static function set_product_mockup( $product_id, $url ) {
+                if ( ! $product_id ) {
+                        return false;
+                }
+
+                $url = esc_url_raw( $url );
+
+                if ( $url ) {
+                        return update_post_meta( $product_id, self::META_KEY_MOCKUP, $url );
+                }
+
+                return (bool) delete_post_meta( $product_id, self::META_KEY_MOCKUP );
+        }
 
 	/**
 	 * Persist a Printful variant ID for a FluentCart variation.
@@ -228,12 +308,75 @@ class Printful_Integration_For_Fluentcart_Product_Mapping {
 	 *
 	 * @return string
 	 */
-	public static function get_designer_link( $product_id, $printful_id = null ) {
-		$pid = $printful_id ? $printful_id : self::get_product_mapping( $product_id );
-		if ( ! $pid ) {
-			return '';
-		}
+        public static function get_designer_link( $product_id, $printful_id = null ) {
+                $override = self::get_designer_link_override( $product_id );
 
-		return 'https://www.printful.com/dashboard/designer?product=' . rawurlencode( $pid );
-	}
+                if ( $override ) {
+                        return $override;
+                }
+
+                $pid = $printful_id ? $printful_id : self::get_product_mapping( $product_id );
+                if ( ! $pid ) {
+                        return '';
+                }
+
+                return 'https://www.printful.com/dashboard/designer?product=' . rawurlencode( $pid );
+        }
+
+        /**
+         * Persist a custom designer link override.
+         *
+         * @param int    $product_id Product ID.
+         * @param string $url URL to store.
+         *
+         * @return bool
+         */
+        public static function set_designer_link( $product_id, $url ) {
+                if ( ! $product_id ) {
+                        return false;
+                }
+
+                $url = esc_url_raw( $url );
+
+                if ( $url ) {
+                        return update_post_meta( $product_id, self::META_KEY_DESIGNER, $url );
+                }
+
+                return (bool) delete_post_meta( $product_id, self::META_KEY_DESIGNER );
+        }
+
+        /**
+         * Get designer link override if set.
+         *
+         * @param int $product_id Product ID.
+         *
+         * @return string
+         */
+        public static function get_designer_link_override( $product_id ) {
+                $stored = get_post_meta( $product_id, self::META_KEY_DESIGNER, true );
+
+                return $stored ? esc_url( $stored ) : '';
+        }
+
+        /**
+         * Persist fulfilment mode toggle for a product.
+         *
+         * @param int    $product_id Product ID.
+         * @param string $mode Fulfilment mode.
+         *
+         * @return bool
+         */
+        public static function set_fulfilment_mode( $product_id, $mode ) {
+                if ( ! $product_id ) {
+                        return false;
+                }
+
+                $mode = sanitize_text_field( $mode );
+
+                if ( $mode ) {
+                        return update_post_meta( $product_id, self::META_KEY_DISABLE, $mode );
+                }
+
+                return (bool) delete_post_meta( $product_id, self::META_KEY_DISABLE );
+        }
 }

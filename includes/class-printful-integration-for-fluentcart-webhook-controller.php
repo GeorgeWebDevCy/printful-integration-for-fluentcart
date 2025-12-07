@@ -106,22 +106,25 @@ class Printful_Integration_For_Fluentcart_Webhook_Controller {
 			$signature = $request->get_header( 'X-PF-Signature' );
 		}
 
-		if ( ! $this->validate_signature( $body, $secret, $signature ) ) {
-			if ( class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ) {
-				Printful_Integration_For_Fluentcart_Logger::increment_signature_failure();
-			}
-			if ( function_exists( 'fluent_cart_error_log' ) ) {
+                if ( ! $this->validate_signature( $body, $secret, $signature ) ) {
+                        if ( class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ) {
+                                Printful_Integration_For_Fluentcart_Logger::increment_signature_failure();
+                        }
+                        if ( function_exists( 'fluent_cart_error_log' ) ) {
 				fluent_cart_error_log(
-					'Printful webhook signature failed',
-					'Invalid signature received for Printful webhook.',
-					array( 'module_type' => __CLASS__ )
-				);
-			}
-			return new \WP_Error(
-				'printful_invalid_signature',
-				__( 'Invalid Printful webhook signature.', 'printful-integration-for-fluentcart' ),
-				array( 'status' => 403 )
-			);
+                                        'Printful webhook signature failed',
+                                        'Invalid signature received for Printful webhook.',
+                                        array( 'module_type' => __CLASS__ )
+                                );
+                        }
+                        if ( class_exists( 'Printful_Integration_For_Fluentcart_Webhook_Alerts' ) ) {
+                                Printful_Integration_For_Fluentcart_Webhook_Alerts::record_failure( $request );
+                        }
+                        return new \WP_Error(
+                                'printful_invalid_signature',
+                                __( 'Invalid Printful webhook signature.', 'printful-integration-for-fluentcart' ),
+                                array( 'status' => 403 )
+                        );
 		}
 
 		$payload = json_decode( $body, true );
