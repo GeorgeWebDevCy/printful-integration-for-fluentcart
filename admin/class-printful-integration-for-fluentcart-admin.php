@@ -13,6 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use FluentCart\Framework\Support\Arr;
+
 class Printful_Integration_For_Fluentcart_Admin {
 
 	/**
@@ -1157,27 +1159,6 @@ class Printful_Integration_For_Fluentcart_Admin {
 				'printful_fluentcart_saved',
 				esc_html__( 'Settings saved.', 'printful-integration-for-fluentcart' ),
 				'updated'
-			);
-		}
-
-		$redirect_page = class_exists( '\FluentCart\App\App' ) ? 'admin.php' : 'options-general.php';
-
-		wp_safe_redirect(
-			add_query_arg(
-				array(
-					'page'             => 'printful-fluentcart',
-					'settings-updated' => 'true',
-				),
-				admin_url( $redirect_page )
-			)
-		);
-		exit;
-	}
-
-	/**
-	 * AJAX: Test connectivity to Printful using saved API key.
-	 *
-	 * @return void
 	 */
 	public function handle_test_connection() {
 		if ( ! current_user_can( 'manage_options' ) ) {
