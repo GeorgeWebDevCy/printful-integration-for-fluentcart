@@ -66,6 +66,9 @@ class Printful_Integration_For_Fluentcart_Settings {
                                 'enable_designer_embed'   => false,
                                 'last_migration'          => array(),
                                 'enable_request_logging'  => false,
+                                'enable_size_guides'      => true,
+                                'enable_size_tab'         => true,
+                                'size_template_map'       => array(),
                         )
                 );
 
