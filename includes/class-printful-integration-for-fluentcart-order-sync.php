@@ -129,14 +129,14 @@ class Printful_Integration_For_Fluentcart_Order_Sync {
 	 * @return array|\WP_Error
 	 */
 	public function build_order_payload( $order ) {
-		$relations = array( 'order_items', 'order_items.product', 'order_items.variants', 'shipping_address', 'customer' );
-		if ( method_exists( $order, 'loadMissing' ) ) {
-			$order->loadMissing( $relations );
-		} elseif ( method_exists( $order, 'load' ) ) {
-			$order->load( $relations );
-		}
+                $relations = array( 'order_items', 'order_items.product', 'order_items.variants', 'shipping_address', 'customer' );
+                if ( method_exists( $order, 'loadMissing' ) ) {
+                        $order->loadMissing( $relations );
+                } elseif ( method_exists( $order, 'load' ) ) {
+                        $order->load( $relations );
+                }
 
-		$recipient = $this->format_recipient( $order );
+                $recipient = $this->format_recipient( $order );
 
 		if ( empty( $recipient ) ) {
 			return new WP_Error(
@@ -167,22 +167,19 @@ class Printful_Integration_For_Fluentcart_Order_Sync {
 				'tax'      => $this->to_money( $order->tax_total ),
 				'total'    => $this->to_money( $order->total_amount ),
 			),
-			'packing_slip' => array(
-				'email' => get_option( 'admin_email' ),
-				'phone' => get_option( 'printful_fluentcart_packingslip_phone', '' ),
-				'message' => apply_filters( 'printful_fluentcart/packing_slip_message', '', $order ),
-			),
-		);
+                        'packing_slip' => array(
+                                'email' => get_option( 'admin_email' ),
+                                'phone' => get_option( 'printful_fluentcart_packingslip_phone', '' ),
+                                'message' => apply_filters( 'printful_fluentcart/packing_slip_message', '', $order ),
+                        ),
+                );
 
-		if ( ! empty( $this->settings['enable_printful_tax'] ) ) {
-			$payload['external_taxes'] = true;
-			$payload['retail_costs']['taxes_included'] = ! empty( $this->settings['tax_inclusive_prices'] );
-		}
+                $payload = PIFC_Order_Tax_Helper::apply_tax_flags( $payload, $order, $this->settings, array( $this, 'to_money' ) );
 
-		$shipping_method = $this->settings['default_shipping_method'];
-		if ( $shipping_method ) {
-			$payload['shipping'] = $shipping_method;
-		}
+                $shipping_method = $this->settings['default_shipping_method'];
+                if ( $shipping_method ) {
+                        $payload['shipping'] = $shipping_method;
+                }
 
 		return $payload;
 	}
@@ -256,14 +253,14 @@ class Printful_Integration_For_Fluentcart_Order_Sync {
 	 *
 	 * @param \FluentCart\App\Models\Order $order Order model.
 	 *
-	 * @return array
-	 */
-	protected function format_recipient( $order ) {
-		$address = $order->shipping_address;
+        * @return array
+         */
+        protected function format_recipient( $order ) {
+                $address = class_exists( 'PIFC_Order_Tax_Helper' ) ? PIFC_Order_Tax_Helper::resolve_address( $order, $this->settings ) : $order->shipping_address;
 
-		if ( ! $address ) {
-			return array();
-		}
+                if ( ! $address ) {
+                        return array();
+                }
 
 		$email = $order->customer ? $order->customer->email : '';
 
