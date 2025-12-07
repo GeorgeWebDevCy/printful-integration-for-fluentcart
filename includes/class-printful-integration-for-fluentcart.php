@@ -154,6 +154,7 @@ class Printful_Integration_For_Fluentcart {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-rest.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-size-guide.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-product-importer.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/settings/class-pifc-shipping-settings.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-product-meta.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-token-migration.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-order-actions.php';
