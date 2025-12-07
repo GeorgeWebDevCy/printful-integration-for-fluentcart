@@ -71,12 +71,19 @@ class Printful_Integration_For_Fluentcart {
 	 */
 	protected $sync_manager = null;
 
-	/**
-	 * Webhook controller instance.
-	 *
-	 * @var Printful_Integration_For_Fluentcart_Webhook_Controller|null
-	 */
-	protected $webhook_controller = null;
+        /**
+         * Webhook controller instance.
+         *
+         * @var Printful_Integration_For_Fluentcart_Webhook_Controller|null
+         */
+        protected $webhook_controller = null;
+
+        /**
+         * Shipping integration handler.
+         *
+         * @var Printful_Integration_For_Fluentcart_Shipping|null
+         */
+        protected $shipping = null;
 
 	/**
 	 * Define the core functionality of the plugin.
@@ -131,8 +138,9 @@ class Printful_Integration_For_Fluentcart {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-product-mapping.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-sync-queue.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-sync-manager.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-webhook-controller.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-order-sync.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-webhook-controller.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-order-sync.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-shipping.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
@@ -243,15 +251,18 @@ class Printful_Integration_For_Fluentcart {
 			! empty( $settings['log_api_calls'] )
 		);
 
-		$this->order_sync = new Printful_Integration_For_Fluentcart_Order_Sync( $api, $settings );
-		$this->order_sync->register();
+                $this->order_sync = new Printful_Integration_For_Fluentcart_Order_Sync( $api, $settings );
+                $this->order_sync->register();
 
-		$this->sync_manager = new Printful_Integration_For_Fluentcart_Sync_Manager( $api, $settings );
-		$this->sync_manager->register();
+                $this->sync_manager = new Printful_Integration_For_Fluentcart_Sync_Manager( $api, $settings );
+                $this->sync_manager->register();
 
-		$this->webhook_controller = new Printful_Integration_For_Fluentcart_Webhook_Controller( $this->sync_manager, $settings );
-		$this->webhook_controller->register();
-	}
+                $this->webhook_controller = new Printful_Integration_For_Fluentcart_Webhook_Controller( $this->sync_manager, $settings );
+                $this->webhook_controller->register();
+
+                $this->shipping = new Printful_Integration_For_Fluentcart_Shipping( $api, $settings );
+                $this->shipping->register();
+        }
 
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.

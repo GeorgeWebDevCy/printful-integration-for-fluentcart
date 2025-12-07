@@ -39,9 +39,10 @@ class Printful_Integration_For_Fluentcart_Admin {
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
 
-		add_action( 'admin_menu', array( $this, 'register_settings_page' ) );
-		add_action( 'admin_post_printful_fluentcart_save_settings', array( $this, 'handle_save_settings' ) );
-	}
+               add_action( 'admin_menu', array( $this, 'register_settings_page' ) );
+               add_action( 'admin_post_printful_fluentcart_save_settings', array( $this, 'handle_save_settings' ) );
+               add_action( 'admin_init', array( $this, 'maybe_redirect_broken_slug' ) );
+       }
 
 	/**
 	 * Register stylesheet in admin when needed.
@@ -95,17 +96,66 @@ class Printful_Integration_For_Fluentcart_Admin {
 			return;
 		}
 
-		$parent_slug = class_exists( '\FluentCart\App\App' ) ? 'fluent-cart' : 'options-general.php';
+               $parent_slug = class_exists( '\FluentCart\App\App' ) ? 'fluent-cart' : 'options-general.php';
 
-		add_submenu_page(
-			$parent_slug,
-			__( 'Printful Integration', 'printful-integration-for-fluentcart' ),
-			__( 'Printful Integration', 'printful-integration-for-fluentcart' ),
-			'manage_options',
-			'printful-fluentcart',
-			array( $this, 'render_settings_page' )
-		);
-	}
+               add_submenu_page(
+                       $parent_slug,
+                       __( 'Printful Integration', 'printful-integration-for-fluentcart' ),
+                       __( 'Printful Integration', 'printful-integration-for-fluentcart' ),
+                       'manage_options',
+                       'printful-fluentcart',
+                       array( $this, 'render_settings_page' )
+               );
+       }
+
+       /**
+        * Ensure broken FluentCart submenu links redirect to the correct URL.
+        *
+        * Some FluentCart builds mutate submenu links which can drop the
+        * `admin.php?page=` portion of the URL. When that happens WordPress ends
+        * up handling the request as `/wp-admin/printful-fluentcart` which
+        * produces a 404. Detect that request and redirect to the canonical
+        * settings URL so the screen loads normally.
+        *
+        * @return void
+        */
+       public function maybe_redirect_broken_slug() {
+               if ( ! is_admin() ) {
+                       return;
+               }
+
+               if ( headers_sent() ) {
+                       return;
+               }
+
+               $request_uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+
+               if ( '' === $request_uri ) {
+                       return;
+               }
+
+               $request_path = strtok( $request_uri, '?' );
+               $admin_path   = wp_parse_url( admin_url(), PHP_URL_PATH );
+
+               if ( false === $admin_path ) {
+                       $admin_path = '/wp-admin/';
+               }
+
+               $admin_path = trailingslashit( $admin_path );
+
+               if ( $request_path !== $admin_path . 'printful-fluentcart' && $request_path !== $admin_path . 'printful-fluentcart/' ) {
+                       return;
+               }
+
+               $target_url = admin_url( 'admin.php?page=printful-fluentcart' );
+
+               if ( $target_url === home_url( $request_uri ) ) {
+                       return;
+               }
+
+               wp_safe_redirect( $target_url, 301 );
+               exit;
+       }
 
 	/**
 	 * Render settings form.
@@ -195,9 +245,9 @@ class Printful_Integration_For_Fluentcart_Admin {
 					</tbody>
 				</table>
 
-				<h2><?php esc_html_e( 'Automation', 'printful-integration-for-fluentcart' ); ?></h2>
-				<table class="form-table" role="presentation">
-					<tbody>
+                                <h2><?php esc_html_e( 'Automation', 'printful-integration-for-fluentcart' ); ?></h2>
+                                <table class="form-table" role="presentation">
+                                        <tbody>
 						<tr>
 							<th scope="row"><?php esc_html_e( 'Auto-fulfil paid orders', 'printful-integration-for-fluentcart' ); ?></th>
 							<td>
@@ -234,12 +284,36 @@ class Printful_Integration_For_Fluentcart_Admin {
 								<p class="description"><?php esc_html_e( 'Defines how frequently pending orders are refreshed when background polling is enabled.', 'printful-integration-for-fluentcart' ); ?></p>
 							</td>
 						</tr>
-					</tbody>
-				</table>
+                                        </tbody>
+                                </table>
 
-				<h2><?php esc_html_e( 'Variant Mapping', 'printful-integration-for-fluentcart' ); ?></h2>
-				<p><?php esc_html_e( 'Map each FluentCart variation ID to a Printful variant ID. Use one mapping per line: variation_id:printful_variant_id', 'printful-integration-for-fluentcart' ); ?></p>
-				<textarea class="large-text code" rows="8" name="printful_fluentcart_variant_mapping"><?php echo esc_textarea( $mapping_text ); ?></textarea>
+                                <h2><?php esc_html_e( 'Live Shipping Rates', 'printful-integration-for-fluentcart' ); ?></h2>
+                                <table class="form-table" role="presentation">
+                                        <tbody>
+                                                <tr>
+                                                        <th scope="row"><?php esc_html_e( 'Enable live rates', 'printful-integration-for-fluentcart' ); ?></th>
+                                                        <td>
+                                                                <label for="printful_fluentcart_enable_live_rates">
+                                                                        <input type="checkbox" id="printful_fluentcart_enable_live_rates" name="printful_fluentcart_settings[enable_live_rates]" value="1" <?php checked( ! empty( $settings['enable_live_rates'] ) ); ?> />
+                                                                        <?php esc_html_e( 'Fetch Printful shipping rates during checkout.', 'printful-integration-for-fluentcart' ); ?>
+                                                                </label>
+                                                        </td>
+                                                </tr>
+                                                <tr>
+                                                        <th scope="row">
+                                                                <label for="printful_fluentcart_shipping_markup"><?php esc_html_e( 'Rate markup (%)', 'printful-integration-for-fluentcart' ); ?></label>
+                                                        </th>
+                                                        <td>
+                                                                <input type="number" step="0.1" id="printful_fluentcart_shipping_markup" name="printful_fluentcart_settings[shipping_markup_percent]" value="<?php echo esc_attr( isset( $settings['shipping_markup_percent'] ) ? $settings['shipping_markup_percent'] : 0 ); ?>" />
+                                                                <p class="description"><?php esc_html_e( 'Optional percentage added on top of Printful rates.', 'printful-integration-for-fluentcart' ); ?></p>
+                                                        </td>
+                                                </tr>
+                                        </tbody>
+                                </table>
+
+                                <h2><?php esc_html_e( 'Variant Mapping', 'printful-integration-for-fluentcart' ); ?></h2>
+                                <p><?php esc_html_e( 'Map each FluentCart variation ID to a Printful variant ID. Use one mapping per line: variation_id:printful_variant_id', 'printful-integration-for-fluentcart' ); ?></p>
+                                <textarea class="large-text code" rows="8" name="printful_fluentcart_variant_mapping"><?php echo esc_textarea( $mapping_text ); ?></textarea>
 
 				<?php submit_button( __( 'Save Settings', 'printful-integration-for-fluentcart' ) ); ?>
 			</form>
@@ -269,9 +343,11 @@ class Printful_Integration_For_Fluentcart_Admin {
 			'log_api_calls'           => ! empty( $input['log_api_calls'] ),
 			'enable_webhooks'         => ! empty( $input['enable_webhooks'] ),
 			'webhook_secret'          => isset( $input['webhook_secret'] ) ? sanitize_text_field( $input['webhook_secret'] ) : '',
-			'enable_polling'          => ! empty( $input['enable_polling'] ),
-			'poll_interval_minutes'   => isset( $input['poll_interval_minutes'] ) ? max( 5, (int) $input['poll_interval_minutes'] ) : 10,
-		);
+                        'enable_polling'          => ! empty( $input['enable_polling'] ),
+                        'poll_interval_minutes'   => isset( $input['poll_interval_minutes'] ) ? max( 5, (int) $input['poll_interval_minutes'] ) : 10,
+                        'enable_live_rates'       => ! empty( $input['enable_live_rates'] ),
+                        'shipping_markup_percent' => isset( $input['shipping_markup_percent'] ) ? floatval( $input['shipping_markup_percent'] ) : 0,
+                );
 
 		$general_errors = array();
 
