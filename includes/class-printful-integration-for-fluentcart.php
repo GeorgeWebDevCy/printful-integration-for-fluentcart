@@ -108,10 +108,13 @@ class Printful_Integration_For_Fluentcart {
 		$this->define_public_hooks();
 		$this->define_integration_bootstrap();
 
-		Printful_Integration_For_Fluentcart_Rest::register();
-		Printful_Integration_For_Fluentcart_Size_Guide::register();
-		Printful_Integration_For_Fluentcart_Product_Meta::register();
-		Printful_Integration_For_Fluentcart_Token_Migration::register();
+                Printful_Integration_For_Fluentcart_Rest::register();
+                Printful_Integration_For_Fluentcart_Size_Guide::register();
+                Printful_Integration_For_Fluentcart_Product_Meta::register();
+                Printful_Integration_For_Fluentcart_Token_Migration::register();
+                PIFC_Variant_Meta::register();
+                PIFC_Delta_Sync::register();
+                PIFC_Product_Import_Screen::register();
 
 	}
 
@@ -149,11 +152,16 @@ class Printful_Integration_For_Fluentcart {
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-shipping.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-logger.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-rest.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-size-guide.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-product-importer.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-product-meta.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-token-migration.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-order-actions.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-size-guide.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-product-importer.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-product-meta.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-token-migration.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-order-actions.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/printful/class-pifc-printful-catalog.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/printful/class-pifc-product-creator.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/cron/class-pifc-delta-sync.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/admin/meta/class-pifc-variant-meta.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-pifc-product-import.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality

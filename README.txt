@@ -33,7 +33,7 @@ Yes. Only mapped variants are sent to Printful. Live rates require all physical 
 
 See `docs/woocommerce-parity.md` for a detailed comparison against the official Printful WooCommerce integration. Highlights:
 - Implemented: order push, webhook/polling sync, live rates, catalog cache + mapping helper, admin diagnostics, order actions (send/refresh/cancel).
-- Missing: product import/creation, carrier/service UI, tax helpers, dashboard/status widgets, request log viewer, size guides/customizer, REST endpoints. These remain to be built.
+- Missing: richer product import/creation flows, carrier/service UI, tax helpers, dashboard/status widgets, request log viewer, size guides/customizer, and deeper REST endpoints. Catalog browsing, variant map storage, and a delta sync helper are now present.
 
 == Changelog ==
 

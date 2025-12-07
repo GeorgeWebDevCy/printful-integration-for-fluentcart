@@ -12,7 +12,7 @@ Reference plugin: `jimmy-printful/printful-shipping-for-woocommerce` (v2.2.11).
 - **Order actions**: Admin widget to Send/Refresh/Cancel and display Printful ID/status/tracking inside order view.
 
 ## Missing vs WooCommerce integration
-- **Product/catalog sync & creation**: No bulk import UI, option-level mapping, or delta sync; current import creates products/variations with media but needs richer mapping.
+- **Product/catalog sync & creation**: Basic cached catalog browser + REST-exposed variant maps exist, with hourly delta refresh and a helper that proxies Printful variants into the importer; still lacks full bulk import UI and advanced mapping automation.
 - **Shipping UI parity**: Multi-warehouse/origin handling still missing beyond a single override slot.
 - **Tax helpers**: No automatic tax toggles or Printful tax address sync.
 - **Admin dashboards**: Missing deep stats checklist/status report screens; basic diagnostics and dashboard widget exist.

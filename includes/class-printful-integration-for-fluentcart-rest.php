@@ -99,16 +99,26 @@ class Printful_Integration_For_Fluentcart_Rest {
 			)
 		);
 
-		register_rest_route(
-			self::NAMESPACE,
-			'/products',
-			array(
-				'methods'             => \WP_REST_Server::READABLE,
-				'callback'            => array( __CLASS__, 'products' ),
-				'permission_callback' => array( __CLASS__, 'permission' ),
-			)
-		);
-	}
+                register_rest_route(
+                        self::NAMESPACE,
+                        '/products',
+                        array(
+                                'methods'             => \WP_REST_Server::READABLE,
+                                'callback'            => array( __CLASS__, 'products' ),
+                                'permission_callback' => array( __CLASS__, 'permission' ),
+                        )
+                );
+
+                register_rest_route(
+                        self::NAMESPACE,
+                        '/products/(?P<id>\\d+)/variant-map',
+                        array(
+                                'methods'             => \WP_REST_Server::READABLE,
+                                'callback'            => array( __CLASS__, 'variant_map' ),
+                                'permission_callback' => array( __CLASS__, 'permission' ),
+                        )
+                );
+        }
 
 	/**
 	 * Permission check.
@@ -287,7 +297,7 @@ class Printful_Integration_For_Fluentcart_Rest {
 	public static function products( $request ) {
 		$products = array();
 
-		if ( class_exists( '\FluentCart\App\Models\Product' ) ) {
+		if ( class_exists( '\\FluentCart\\App\\Models\\Product' ) ) {
 			$list = \FluentCart\App\Models\Product::query()
 				->select( array( 'ID', 'post_title', 'post_status' ) )
 				->limit( 100 )
@@ -309,5 +319,30 @@ class Printful_Integration_For_Fluentcart_Rest {
 		}
 
 		return new \WP_REST_Response( array( 'products' => $products ), 200 );
+	}
+
+	/**
+	 * Return the variant mapping stored alongside a FluentCart product.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public static function variant_map( $request ) {
+		$product_id = isset( $request['id'] ) ? absint( $request['id'] ) : 0;
+
+		if ( ! $product_id ) {
+			return new \WP_REST_Response( array( 'map' => array() ), 200 );
+		}
+
+		$map = get_post_meta( $product_id, PIFC_Variant_Meta::META_KEY, true );
+
+		return new \WP_REST_Response(
+			array(
+				'product_id' => $product_id,
+				'map'        => $map ? $map : array(),
+			),
+			200
+		);
 	}
 }
