@@ -1,5 +1,10 @@
 {
     "require": {
         "yahnis-elsts/plugin-update-checker": "^5.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "PrintfulIntegration\\": "includes/"
+        }
     }
 }
