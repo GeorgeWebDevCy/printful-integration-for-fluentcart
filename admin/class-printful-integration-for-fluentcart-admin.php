@@ -409,7 +409,7 @@ class Printful_Integration_For_Fluentcart_Admin {
 	}
 
 	/**
-	 * Attach submenu under FluentCart (or Settings if FluentCart is missing).
+	 * Register standalone top-level admin menu for Printful Integration.
 	 *
 	 * @return void
 	 */
@@ -418,34 +418,46 @@ class Printful_Integration_For_Fluentcart_Admin {
             return;
         }
 
-               $parent_slug = class_exists( '\FluentCart\App\App' ) ? 'fluent-cart' : 'options-general.php';
+		// Add top-level menu
+		add_menu_page(
+			__( 'Printful Integration', 'printful-integration-for-fluentcart' ),
+			__( 'Printful', 'printful-integration-for-fluentcart' ),
+			'manage_options',
+			'printful-fluentcart',
+			array( $this, 'render_settings_page' ),
+			'dashicons-products',
+			56
+		);
 
-               add_submenu_page(
-                       $parent_slug,
-                       __( 'Printful Integration', 'printful-integration-for-fluentcart' ),
-                       __( 'Printful Integration', 'printful-integration-for-fluentcart' ),
-                       'manage_options',
-                       'printful-fluentcart',
-                       array( $this, 'render_settings_page' )
-               );
+		// Add Settings submenu (same slug as parent to avoid duplicate)
+		add_submenu_page(
+			'printful-fluentcart',
+			__( 'Printful Settings', 'printful-integration-for-fluentcart' ),
+			__( 'Settings', 'printful-integration-for-fluentcart' ),
+			'manage_options',
+			'printful-fluentcart',
+			array( $this, 'render_settings_page' )
+		);
 
-               add_submenu_page(
-                       $parent_slug,
-                       __( 'Printful Diagnostics', 'printful-integration-for-fluentcart' ),
-                       __( 'Printful Diagnostics', 'printful-integration-for-fluentcart' ),
-                       'manage_options',
-                       'printful-fluentcart-diagnostics',
-                       array( $this, 'render_diagnostics_page' )
-               );
+		// Add Diagnostics submenu
+		add_submenu_page(
+			'printful-fluentcart',
+			__( 'Printful Diagnostics', 'printful-integration-for-fluentcart' ),
+			__( 'Diagnostics', 'printful-integration-for-fluentcart' ),
+			'manage_options',
+			'printful-fluentcart-diagnostics',
+			array( $this, 'render_diagnostics_page' )
+		);
 
-               add_submenu_page(
-                       $parent_slug,
-                       __( 'Printful Tools', 'printful-integration-for-fluentcart' ),
-                       __( 'Printful Tools', 'printful-integration-for-fluentcart' ),
-                       'manage_options',
-                       'printful-fluentcart-tools',
-                       array( $this, 'render_tools_page' )
-               );
+		// Add Tools submenu
+		add_submenu_page(
+			'printful-fluentcart',
+			__( 'Printful Tools', 'printful-integration-for-fluentcart' ),
+			__( 'Tools', 'printful-integration-for-fluentcart' ),
+			'manage_options',
+			'printful-fluentcart-tools',
+			array( $this, 'render_tools_page' )
+		);
        }
 
 	/**
