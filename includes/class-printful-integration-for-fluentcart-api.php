@@ -120,23 +120,47 @@ class Printful_Integration_For_Fluentcart_Api {
 			'timeout' => 20,
 		);
 
-		if ( ! empty( $body ) ) {
-			$args['body'] = wp_json_encode( $body );
-		}
+                if ( ! empty( $body ) ) {
+                        $args['body'] = wp_json_encode( $body );
+                }
 
-		$response = wp_remote_request( $url, $args );
+                if ( class_exists( 'Printful_Integration_For_Fluentcart_Request_Log' ) ) {
+                        Printful_Integration_For_Fluentcart_Request_Log::store(
+                                array(
+                                        'direction' => 'request',
+                                        'method'    => strtoupper( $method ),
+                                        'url'       => $url,
+                                        'body'      => $body,
+                                        'headers'   => array_keys( isset( $args['headers'] ) ? $args['headers'] : array() ),
+                                )
+                        );
+                }
 
-		if ( is_wp_error( $response ) ) {
-			$this->log( 'API request error', array(
-				'method' => $method,
+                $response = wp_remote_request( $url, $args );
+
+                if ( is_wp_error( $response ) ) {
+                        $this->log( 'API request error', array(
+                                'method' => $method,
 				'url'    => $url,
 				'error'  => $response->get_error_message(),
 			), 'error' );
 			return $response;
 		}
 
-		$code = wp_remote_retrieve_response_code( $response );
-		$data = json_decode( wp_remote_retrieve_body( $response ), true );
+                $code = wp_remote_retrieve_response_code( $response );
+                $data = json_decode( wp_remote_retrieve_body( $response ), true );
+
+                if ( class_exists( 'Printful_Integration_For_Fluentcart_Request_Log' ) ) {
+                        Printful_Integration_For_Fluentcart_Request_Log::store(
+                                array(
+                                        'direction' => 'response',
+                                        'method'    => strtoupper( $method ),
+                                        'url'       => $url,
+                                        'status'    => $code,
+                                        'body'      => $data,
+                                )
+                        );
+                }
 
 		$this->log( 'API response', array(
 			'method'   => $method,

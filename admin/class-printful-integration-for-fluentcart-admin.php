@@ -35,11 +35,11 @@ class Printful_Integration_For_Fluentcart_Admin {
 	 * @param string $plugin_name Plugin slug.
 	 * @param string $version     Plugin version.
 	 */
-	public function __construct( $plugin_name, $version ) {
-		$this->plugin_name = $plugin_name;
-        $this->version     = $version;
+       public function __construct( $plugin_name, $version ) {
+               $this->plugin_name = $plugin_name;
+       $this->version     = $version;
 
-               add_action( 'admin_menu', array( $this, 'register_settings_page' ) );
+       add_action( 'admin_menu', array( $this, 'register_settings_page' ) );
                add_action( 'admin_post_printful_fluentcart_save_settings', array( $this, 'handle_save_settings' ) );
                add_action( 'admin_init', array( $this, 'maybe_redirect_broken_slug' ) );
                add_action( 'wp_ajax_printful_fluentcart_test_connection', array( $this, 'handle_test_connection' ) );
@@ -50,6 +50,7 @@ class Printful_Integration_For_Fluentcart_Admin {
        add_action( 'wp_ajax_printful_fluentcart_fetch_carriers', array( $this, 'handle_fetch_carriers' ) );
        add_action( 'wp_dashboard_setup', array( $this, 'register_dashboard_widget' ) );
        add_action( 'admin_notices', array( $this, 'maybe_show_notices' ) );
+       Printful_Integration_For_Fluentcart_Status_Checklist::register();
        }
 
 	/**
@@ -122,69 +123,110 @@ class Printful_Integration_For_Fluentcart_Admin {
 			wp_die( esc_html__( 'Sorry, you are not allowed to access this page.', 'printful-integration-for-fluentcart' ) );
 		}
 
-		$settings  = Printful_Integration_For_Fluentcart_Settings::all();
-		$level     = isset( $_GET['printful_log_level'] ) ? sanitize_text_field( wp_unslash( $_GET['printful_log_level'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$search    = isset( $_GET['printful_log_search'] ) ? sanitize_text_field( wp_unslash( $_GET['printful_log_search'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$logs      = array();
-		if ( class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ) {
-			if ( $search ) {
-				$logs = Printful_Integration_For_Fluentcart_Logger::limit( Printful_Integration_For_Fluentcart_Logger::search( $search ), 100 );
-			} else {
-				$logs = Printful_Integration_For_Fluentcart_Logger::limit( Printful_Integration_For_Fluentcart_Logger::filter( $level ), 100 );
-			}
-		}
-		$signature = class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? Printful_Integration_For_Fluentcart_Logger::signature_failures() : 0;
-		$queue_len = class_exists( 'Printful_Integration_For_Fluentcart_Sync_Queue' ) ? count( Printful_Integration_For_Fluentcart_Sync_Queue::all() ) : 0;
-		$stats     = class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? Printful_Integration_For_Fluentcart_Logger::stats() : array();
-		$last_error = class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? Printful_Integration_For_Fluentcart_Logger::last_error() : null;
-		$error_logs = class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? array_slice( Printful_Integration_For_Fluentcart_Logger::filter( 'error' ), 0, 5 ) : array();
-		$last_migration = isset( $settings['last_migration'] ) ? $settings['last_migration'] : array();
+                $settings        = Printful_Integration_For_Fluentcart_Settings::all();
+                $level           = isset( $_GET['printful_log_level'] ) ? sanitize_text_field( wp_unslash( $_GET['printful_log_level'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+                $search          = isset( $_GET['printful_log_search'] ) ? sanitize_text_field( wp_unslash( $_GET['printful_log_search'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+                $logs            = array();
+                if ( class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ) {
+                        if ( $search ) {
+                                $logs = Printful_Integration_For_Fluentcart_Logger::limit( Printful_Integration_For_Fluentcart_Logger::search( $search ), 100 );
+                        } else {
+                                $logs = Printful_Integration_For_Fluentcart_Logger::limit( Printful_Integration_For_Fluentcart_Logger::filter( $level ), 100 );
+                        }
+                }
+                $stats           = class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? Printful_Integration_For_Fluentcart_Logger::stats() : array();
+                $snapshot        = Printful_Integration_For_Fluentcart_Diagnostics::snapshot();
+                $last_migration  = isset( $settings['last_migration'] ) ? $settings['last_migration'] : array();
+                $checklist_items = Printful_Integration_For_Fluentcart_Status_Checklist::items();
+                $request_logs    = class_exists( 'Printful_Integration_For_Fluentcart_Request_Log' ) ? Printful_Integration_For_Fluentcart_Request_Log::recent( 5 ) : array();
+                $error_logs      = isset( $snapshot['recent_errors'] ) ? $snapshot['recent_errors'] : array();
 
-		?>
-		<div class="wrap">
-			<h1><?php esc_html_e( 'Printful Diagnostics', 'printful-integration-for-fluentcart' ); ?></h1>
-			<p><?php esc_html_e( 'Quick health overview and recent API/webhook activity.', 'printful-integration-for-fluentcart' ); ?></p>
+                ?>
+                <div class="wrap">
+                        <h1><?php esc_html_e( 'Printful Diagnostics', 'printful-integration-for-fluentcart' ); ?></h1>
+                        <p><?php esc_html_e( 'Quick health overview and recent API/webhook activity.', 'printful-integration-for-fluentcart' ); ?></p>
+                        <style>
+                        .printful-diagnostics-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));grid-gap:12px;margin:16px 0;}
+                        .printful-diagnostics-card {border:1px solid #ddd;border-radius:4px;padding:12px;background:#fff;}
+                        .printful-diagnostics-card h3 {margin:0 0 6px;font-size:15px;}
+                        .printful-diagnostics-card .status-ok {color:#2e8b57;font-weight:600;}
+                        .printful-diagnostics-card .status-warn {color:#cc0000;font-weight:600;}
+                        </style>
 
-			<table class="widefat striped" style="max-width:600px;margin-top:12px;">
-				<tbody>
-					<tr><th><?php esc_html_e( 'API key present', 'printful-integration-for-fluentcart' ); ?></th><td><?php echo ! empty( $settings['api_key'] ) ? esc_html__( 'Yes', 'printful-integration-for-fluentcart' ) : esc_html__( 'No', 'printful-integration-for-fluentcart' ); ?></td></tr>
-					<tr><th><?php esc_html_e( 'Webhooks enabled', 'printful-integration-for-fluentcart' ); ?></th><td><?php echo ! empty( $settings['enable_webhooks'] ) && ! empty( $settings['webhook_secret'] ) ? esc_html__( 'Yes', 'printful-integration-for-fluentcart' ) : esc_html__( 'No', 'printful-integration-for-fluentcart' ); ?></td></tr>
-					<tr><th><?php esc_html_e( 'Polling enabled', 'printful-integration-for-fluentcart' ); ?></th><td><?php echo ! empty( $settings['enable_polling'] ) ? esc_html__( 'Yes', 'printful-integration-for-fluentcart' ) : esc_html__( 'No', 'printful-integration-for-fluentcart' ); ?></td></tr>
-					<tr><th><?php esc_html_e( 'Queue length', 'printful-integration-for-fluentcart' ); ?></th><td><?php echo esc_html( $queue_len ); ?></td></tr>
-					<tr><th><?php esc_html_e( 'Signature failures', 'printful-integration-for-fluentcart' ); ?></th><td><?php echo esc_html( $signature ); ?></td></tr>
-					<tr><th><?php esc_html_e( 'API error count', 'printful-integration-for-fluentcart' ); ?></th><td><?php echo isset( $stats['errors'] ) ? esc_html( (int) $stats['errors'] ) : 0; ?></td></tr>
-					<?php if ( $last_error ) : ?>
-						<tr><th><?php esc_html_e( 'Last error', 'printful-integration-for-fluentcart' ); ?></th><td><code><?php echo esc_html( isset( $last_error['title'] ) ? $last_error['title'] : '' ); ?></code></td></tr>
-					<?php endif; ?>
-				</tbody>
-			</table>
+                        <div class="printful-diagnostics-grid">
+                                <div class="printful-diagnostics-card">
+                                        <h3><?php esc_html_e( 'Connectivity', 'printful-integration-for-fluentcart' ); ?></h3>
+                                        <p class="<?php echo $snapshot['api_key_present'] ? 'status-ok' : 'status-warn'; ?>"><?php echo $snapshot['api_key_present'] ? esc_html__( 'API key configured', 'printful-integration-for-fluentcart' ) : esc_html__( 'API key missing', 'printful-integration-for-fluentcart' ); ?></p>
+                                        <p><?php esc_html_e( 'API error count', 'printful-integration-for-fluentcart' ); ?>: <?php echo isset( $stats['errors'] ) ? esc_html( (int) $stats['errors'] ) : 0; ?></p>
+                                </div>
+                                <div class="printful-diagnostics-card">
+                                        <h3><?php esc_html_e( 'Webhooks', 'printful-integration-for-fluentcart' ); ?></h3>
+                                        <p class="<?php echo $snapshot['webhooks_enabled'] ? 'status-ok' : 'status-warn'; ?>"><?php echo $snapshot['webhooks_enabled'] ? esc_html__( 'Enabled with secret', 'printful-integration-for-fluentcart' ) : esc_html__( 'Disabled or missing secret', 'printful-integration-for-fluentcart' ); ?></p>
+                                        <p><?php esc_html_e( 'Signature failures', 'printful-integration-for-fluentcart' ); ?>: <?php echo esc_html( $snapshot['signature_failures'] ); ?></p>
+                                </div>
+                                <div class="printful-diagnostics-card">
+                                        <h3><?php esc_html_e( 'Queue', 'printful-integration-for-fluentcart' ); ?></h3>
+                                        <p><?php esc_html_e( 'Queued orders waiting for sync', 'printful-integration-for-fluentcart' ); ?>: <strong><?php echo esc_html( $snapshot['queue_length'] ); ?></strong></p>
+                                        <p><?php esc_html_e( 'Polling enabled', 'printful-integration-for-fluentcart' ); ?>: <?php echo $snapshot['polling_enabled'] ? esc_html__( 'Yes', 'printful-integration-for-fluentcart' ) : esc_html__( 'No', 'printful-integration-for-fluentcart' ); ?></p>
+                                </div>
+                                <div class="printful-diagnostics-card">
+                                        <h3><?php esc_html_e( 'Errors', 'printful-integration-for-fluentcart' ); ?></h3>
+                                        <?php if ( $snapshot['last_error'] ) : ?>
+                                                <p class="status-warn"><?php esc_html_e( 'Last error', 'printful-integration-for-fluentcart' ); ?>: <?php echo esc_html( isset( $snapshot['last_error']['title'] ) ? $snapshot['last_error']['title'] : '' ); ?></p>
+                                        <?php else : ?>
+                                                <p class="status-ok"><?php esc_html_e( 'No recent errors recorded', 'printful-integration-for-fluentcart' ); ?></p>
+                                        <?php endif; ?>
+                                        <p><?php esc_html_e( 'Request body logging', 'printful-integration-for-fluentcart' ); ?>: <?php echo $snapshot['request_logging'] ? esc_html__( 'Enabled', 'printful-integration-for-fluentcart' ) : esc_html__( 'Disabled', 'printful-integration-for-fluentcart' ); ?></p>
+                                </div>
+                        </div>
 
-			<h2 style="margin-top:20px;"><?php esc_html_e( 'Status Checklist', 'printful-integration-for-fluentcart' ); ?></h2>
-			<ul class="printful-checklist">
-				<li><?php echo ! empty( $settings['api_key'] ) ? '✅ ' : '⚠️ '; ?><?php esc_html_e( 'API key configured', 'printful-integration-for-fluentcart' ); ?></li>
-				<li><?php echo ( ! empty( $settings['enable_webhooks'] ) && ! empty( $settings['webhook_secret'] ) ) ? '✅ ' : '⚠️ '; ?><?php esc_html_e( 'Webhooks enabled with secret', 'printful-integration-for-fluentcart' ); ?></li>
-				<li><?php echo ! empty( $settings['enable_polling'] ) ? '✅ ' : 'ℹ️ '; ?><?php esc_html_e( 'Polling enabled (optional fallback)', 'printful-integration-for-fluentcart' ); ?></li>
-				<li><?php echo ! empty( $settings['enable_live_rates'] ) ? '✅ ' : 'ℹ️ '; ?><?php esc_html_e( 'Live rates enabled', 'printful-integration-for-fluentcart' ); ?></li>
-				<li><?php echo ! empty( Arr::get( $settings, 'origin_address.country' ) ) ? '✅ ' : 'ℹ️ '; ?><?php esc_html_e( 'Origin address set', 'printful-integration-for-fluentcart' ); ?></li>
-				<li><?php echo ! empty( $settings['enable_printful_tax'] ) ? '✅ ' : 'ℹ️ '; ?><?php esc_html_e( 'Tax helper enabled', 'printful-integration-for-fluentcart' ); ?></li>
-				<li><?php echo ! empty( $last_migration ) ? '✅ ' : 'ℹ️ '; ?><?php esc_html_e( 'Token migration checked', 'printful-integration-for-fluentcart' ); ?><?php if ( ! empty( $last_migration['source'] ) ) : ?> (<?php echo esc_html( $last_migration['source'] ); ?> @ <?php echo esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), Arr::get( $last_migration, 'time', time() ) ) ); ?>)<?php endif; ?></li>
-			</ul>
+                        <h2 style="margin-top:20px;"><?php esc_html_e( 'Status Checklist', 'printful-integration-for-fluentcart' ); ?></h2>
+                        <ul class="printful-checklist">
+                                <?php foreach ( $checklist_items as $item ) : ?>
+                                        <li><?php echo $item['ok'] ? '✅ ' : '⚠️ '; ?><?php echo esc_html( $item['label'] ); ?></li>
+                                <?php endforeach; ?>
+                                <li><?php echo ! empty( $settings['enable_live_rates'] ) ? '✅ ' : 'ℹ️ '; ?><?php esc_html_e( 'Live rates enabled', 'printful-integration-for-fluentcart' ); ?></li>
+                                <li><?php echo ! empty( Arr::get( $settings, 'origin_address.country' ) ) ? '✅ ' : 'ℹ️ '; ?><?php esc_html_e( 'Origin address set', 'printful-integration-for-fluentcart' ); ?></li>
+                                <li><?php echo ! empty( $settings['enable_printful_tax'] ) ? '✅ ' : 'ℹ️ '; ?><?php esc_html_e( 'Tax helper enabled', 'printful-integration-for-fluentcart' ); ?></li>
+                                <li><?php echo ! empty( $last_migration ) ? '✅ ' : 'ℹ️ '; ?><?php esc_html_e( 'Token migration checked', 'printful-integration-for-fluentcart' ); ?><?php if ( ! empty( $last_migration['source'] ) ) : ?> (<?php echo esc_html( $last_migration['source'] ); ?> @ <?php echo esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), Arr::get( $last_migration, 'time', time() ) ) ); ?>)<?php endif; ?></li>
+                        </ul>
 
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-top:12px;">
-				<?php wp_nonce_field( 'printful_fluentcart_clear_logs' ); ?>
-				<input type="hidden" name="action" value="printful_fluentcart_clear_logs" />
-				<?php submit_button( __( 'Clear Logs', 'printful-integration-for-fluentcart' ), 'secondary', 'submit', false ); ?>
-				<a class="button" href="<?php echo esc_url( rest_url( 'printful-fluentcart/v1/logs' ) ); ?>" target="_blank" rel="noreferrer"><?php esc_html_e( 'View via REST', 'printful-integration-for-fluentcart' ); ?></a>
-				<button type="submit" formaction="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" formmethod="post" name="action" value="printful_fluentcart_migrate_tokens" class="button"><?php esc_html_e( 'Run token migration', 'printful-integration-for-fluentcart' ); ?></button>
-				<label style="margin-left:8px;"><input type="checkbox" name="printful_migrate_dry_run" value="1" /> <?php esc_html_e( 'Dry run (do not save)', 'printful-integration-for-fluentcart' ); ?></label>
-				<?php wp_nonce_field( 'printful_fluentcart_migrate_tokens' ); ?>
-				<button type="submit" formaction="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" formmethod="post" name="action" value="printful_fluentcart_clear_queue" class="button button-secondary" style="margin-left:8px;"><?php esc_html_e( 'Clear queue', 'printful-integration-for-fluentcart' ); ?></button>
-			</form>
+                        <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-top:12px;">
+                                <?php wp_nonce_field( 'printful_fluentcart_clear_logs' ); ?>
+                                <input type="hidden" name="action" value="printful_fluentcart_clear_logs" />
+                                <?php submit_button( __( 'Clear Logs', 'printful-integration-for-fluentcart' ), 'secondary', 'submit', false ); ?>
+                                <a class="button" href="<?php echo esc_url( rest_url( 'printful-fluentcart/v1/logs' ) ); ?>" target="_blank" rel="noreferrer"><?php esc_html_e( 'View via REST', 'printful-integration-for-fluentcart' ); ?></a>
+                                <button type="submit" formaction="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" formmethod="post" name="action" value="printful_fluentcart_migrate_tokens" class="button"><?php esc_html_e( 'Run token migration', 'printful-integration-for-fluentcart' ); ?></button>
+                                <label style="margin-left:8px;"><input type="checkbox" name="printful_migrate_dry_run" value="1" /> <?php esc_html_e( 'Dry run (do not save)', 'printful-integration-for-fluentcart' ); ?></label>
+                                <?php wp_nonce_field( 'printful_fluentcart_migrate_tokens' ); ?>
+                                <button type="submit" formaction="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" formmethod="post" name="action" value="printful_fluentcart_clear_queue" class="button button-secondary" style="margin-left:8px;"><?php esc_html_e( 'Clear queue', 'printful-integration-for-fluentcart' ); ?></button>
+                        </form>
 
-			<h2 style="margin-top:20px;"><?php esc_html_e( 'Recent API / Webhook Logs', 'printful-integration-for-fluentcart' ); ?></h2>
-			<form method="get" style="margin-bottom:10px;">
-				<input type="hidden" name="page" value="printful-fluentcart-diagnostics" />
-				<label for="printful_log_level"><?php esc_html_e( 'Filter by level:', 'printful-integration-for-fluentcart' ); ?></label>
+                        <h2 style="margin-top:20px;"><?php esc_html_e( 'Recent HTTP Interactions', 'printful-integration-for-fluentcart' ); ?></h2>
+                        <p class="description"><?php esc_html_e( 'Request and response bodies are only captured when payload logging is enabled.', 'printful-integration-for-fluentcart' ); ?></p>
+                        <table class="widefat striped">
+                                <thead><tr><th><?php esc_html_e( 'Time', 'printful-integration-for-fluentcart' ); ?></th><th><?php esc_html_e( 'Direction', 'printful-integration-for-fluentcart' ); ?></th><th><?php esc_html_e( 'Method', 'printful-integration-for-fluentcart' ); ?></th><th><?php esc_html_e( 'URL', 'printful-integration-for-fluentcart' ); ?></th><th><?php esc_html_e( 'Status', 'printful-integration-for-fluentcart' ); ?></th></tr></thead>
+                                <tbody>
+                                        <?php if ( empty( $request_logs ) ) : ?>
+                                                <tr><td colspan="5"><?php esc_html_e( 'No request log entries captured.', 'printful-integration-for-fluentcart' ); ?></td></tr>
+                                        <?php else : ?>
+                                                <?php foreach ( $request_logs as $entry ) : ?>
+                                                        <tr>
+                                                                <td><?php echo esc_html( isset( $entry['time'] ) ? date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $entry['time'] ) : '' ); ?></td>
+                                                                <td><?php echo esc_html( isset( $entry['direction'] ) ? $entry['direction'] : '' ); ?></td>
+                                                                <td><?php echo esc_html( isset( $entry['method'] ) ? $entry['method'] : '' ); ?></td>
+                                                                <td><code><?php echo esc_html( isset( $entry['url'] ) ? $entry['url'] : '' ); ?></code></td>
+                                                                <td><?php echo esc_html( isset( $entry['status'] ) ? $entry['status'] : '' ); ?></td>
+                                                        </tr>
+                                                <?php endforeach; ?>
+                                        <?php endif; ?>
+                                </tbody>
+                        </table>
+
+                        <h2 style="margin-top:20px;"><?php esc_html_e( 'Recent API / Webhook Logs', 'printful-integration-for-fluentcart' ); ?></h2>
+                        <form method="get" style="margin-bottom:10px;">
+                                <input type="hidden" name="page" value="printful-fluentcart-diagnostics" />
+                                <label for="printful_log_level"><?php esc_html_e( 'Filter by level:', 'printful-integration-for-fluentcart' ); ?></label>
 				<select id="printful_log_level" name="printful_log_level">
 					<option value=""><?php esc_html_e( 'All', 'printful-integration-for-fluentcart' ); ?></option>
 					<option value="info" <?php selected( $level, 'info' ); ?>>info</option>
@@ -564,15 +606,25 @@ class Printful_Integration_For_Fluentcart_Admin {
 								</label>
 							</td>
 						</tr>
-						<tr>
-							<th scope="row"><?php esc_html_e( 'API call logging', 'printful-integration-for-fluentcart' ); ?></th>
-							<td>
-								<label for="printful_fluentcart_log_api">
-									<input type="checkbox" id="printful_fluentcart_log_api" name="printful_fluentcart_settings[log_api_calls]" value="1" <?php checked( ! empty( $settings['log_api_calls'] ) ); ?> />
-									<?php esc_html_e( 'Record Printful API calls in FluentCart logs.', 'printful-integration-for-fluentcart' ); ?>
-								</label>
-							</td>
-						</tr>
+                                                <tr>
+                                                        <th scope="row"><?php esc_html_e( 'API call logging', 'printful-integration-for-fluentcart' ); ?></th>
+                                                        <td>
+                                                                <label for="printful_fluentcart_log_api">
+                                                                        <input type="checkbox" id="printful_fluentcart_log_api" name="printful_fluentcart_settings[log_api_calls]" value="1" <?php checked( ! empty( $settings['log_api_calls'] ) ); ?> />
+                                                                        <?php esc_html_e( 'Record Printful API calls in FluentCart logs.', 'printful-integration-for-fluentcart' ); ?>
+                                                                </label>
+                                                        </td>
+                                                </tr>
+                                                <tr>
+                                                        <th scope="row"><?php esc_html_e( 'Store HTTP payloads', 'printful-integration-for-fluentcart' ); ?></th>
+                                                        <td>
+                                                                <label for="printful_fluentcart_request_logging">
+                                                                        <input type="checkbox" id="printful_fluentcart_request_logging" name="printful_fluentcart_settings[enable_request_logging]" value="1" <?php checked( ! empty( $settings['enable_request_logging'] ) ); ?> />
+                                                                        <?php esc_html_e( 'Persist recent Printful request/response bodies to disk for debugging.', 'printful-integration-for-fluentcart' ); ?>
+                                                                </label>
+                                                                <p class="description"><?php esc_html_e( 'Disable after debugging to avoid storing sensitive payloads.', 'printful-integration-for-fluentcart' ); ?></p>
+                                                        </td>
+                                                </tr>
 						<tr>
 							<th scope="row"><?php esc_html_e( 'Background polling', 'printful-integration-for-fluentcart' ); ?></th>
 							<td>
@@ -884,9 +936,10 @@ class Printful_Integration_For_Fluentcart_Admin {
 					);
 				}, isset( $input['origin_overrides'] ) ? (array) $input['origin_overrides'] : array() ) ) ),
 			),
-			'enable_printful_tax'     => ! empty( $input['enable_printful_tax'] ),
-			'tax_inclusive_prices'    => ! empty( $input['tax_inclusive_prices'] ),
-			'enable_designer_embed'   => ! empty( $input['enable_designer_embed'] ),
+                        'enable_printful_tax'     => ! empty( $input['enable_printful_tax'] ),
+                        'tax_inclusive_prices'    => ! empty( $input['tax_inclusive_prices'] ),
+                        'enable_designer_embed'   => ! empty( $input['enable_designer_embed'] ),
+                        'enable_request_logging'  => ! empty( $input['enable_request_logging'] ),
                 );
 
 		$general_errors = array();
