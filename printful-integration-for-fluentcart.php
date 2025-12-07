@@ -30,6 +30,20 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+if ( file_exists( plugin_dir_path( __FILE__ ) . 'vendor/autoload.php' ) ) {
+	require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
+}
+
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
+if ( class_exists( PucFactory::class ) ) {
+	$myUpdateChecker = PucFactory::buildUpdateChecker(
+		'https://github.com/GeorgeWebDevCy/printful-integration-for-fluentcart',
+		__FILE__,
+		'printful-integration-for-fluentcart'
+	);
+}
+
 /**
  * Currently plugin version.
  * Start at version 1.0.0 and use SemVer - https://semver.org
