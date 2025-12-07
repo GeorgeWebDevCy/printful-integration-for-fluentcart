@@ -1,4 +1,31 @@
-/**
- * All of the CSS for your public-facing functionality should be
- * included in this file.
- */
+.pifc-size-chart {
+        margin: 16px 0;
+}
+
+.pifc-size-chart table {
+        width: 100%;
+        border-collapse: collapse;
+}
+
+.pifc-size-chart th,
+.pifc-size-chart td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+}
+
+.pifc-size-chart th {
+        background: #f6f7f7;
+        font-weight: 600;
+}
+
+.pifc-size-chart-download {
+        margin-top: 8px;
+}
+
+.pifc-size-chart-tab {
+        margin-top: 24px;
+        padding: 12px;
+        border: 1px solid #e2e4e7;
+        background: #fff;
+}

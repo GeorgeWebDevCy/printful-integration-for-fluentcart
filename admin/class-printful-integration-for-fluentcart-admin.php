@@ -221,7 +221,92 @@ class Printful_Integration_For_Fluentcart_Admin {
                                                 <?php endforeach; ?>
                                         <?php endif; ?>
                                 </tbody>
-                        </table>
+                                </table>
+
+                                <h2><?php esc_html_e( 'Size Guides & Templates', 'printful-integration-for-fluentcart' ); ?></h2>
+                                <table class="form-table" role="presentation">
+                                        <tbody>
+                                                <tr>
+                                                        <th scope="row"><?php esc_html_e( 'Enable size guides', 'printful-integration-for-fluentcart' ); ?></th>
+                                                        <td>
+                                                                <label for="printful_fluentcart_enable_size_guides">
+                                                                        <input type="checkbox" id="printful_fluentcart_enable_size_guides" name="printful_fluentcart_settings[enable_size_guides]" value="1" <?php checked( ! empty( $settings['enable_size_guides'] ) ); ?> />
+                                                                        <?php esc_html_e( 'Expose shortcode/block for Printful size data.', 'printful-integration-for-fluentcart' ); ?>
+                                                                </label>
+                                                        </td>
+                                                </tr>
+                                                <tr>
+                                                        <th scope="row"><?php esc_html_e( 'Product tab placement', 'printful-integration-for-fluentcart' ); ?></th>
+                                                        <td>
+                                                                <label for="printful_fluentcart_enable_size_tab">
+                                                                        <input type="checkbox" id="printful_fluentcart_enable_size_tab" name="printful_fluentcart_settings[enable_size_tab]" value="1" <?php checked( ! empty( $settings['enable_size_tab'] ) ); ?> />
+                                                                        <?php esc_html_e( 'Append size guide tab/section on FluentCart product pages.', 'printful-integration-for-fluentcart' ); ?>
+                                                                </label>
+                                                                <p class="description"><?php esc_html_e( 'Uses cached Printful catalog data to build a simple table and optional template download.', 'printful-integration-for-fluentcart' ); ?></p>
+                                                        </td>
+                                                </tr>
+                                                <tr>
+                                                        <th scope="row"><?php esc_html_e( 'Default templates', 'printful-integration-for-fluentcart' ); ?></th>
+                                                        <td>
+                                                                <p class="description"><?php esc_html_e( 'Map Printful product types to template products to reuse their size charts.', 'printful-integration-for-fluentcart' ); ?></p>
+                                                                <table class="widefat">
+                                                                        <thead>
+                                                                                <tr>
+                                                                                        <th><?php esc_html_e( 'Product type/label', 'printful-integration-for-fluentcart' ); ?></th>
+                                                                                        <th><?php esc_html_e( 'Template product', 'printful-integration-for-fluentcart' ); ?></th>
+                                                                                </tr>
+                                                                        </thead>
+                                                                        <tbody id="printful-size-template-rows">
+                                                                                <?php
+                                                                                $template_rows = isset( $settings['size_template_map'] ) && is_array( $settings['size_template_map'] ) ? $settings['size_template_map'] : array();
+                                                                                if ( empty( $template_rows ) ) {
+                                                                                        $template_rows[] = array( 'type' => '', 'template' => '' );
+                                                                                }
+
+                                                                                foreach ( $template_rows as $index => $row ) :
+                                                                                        $type     = isset( $row['type'] ) ? $row['type'] : '';
+                                                                                        $template = isset( $row['template'] ) ? $row['template'] : '';
+                                                                                        ?>
+                                                                                        <tr>
+                                                                                                <td><input type="text" name="printful_fluentcart_settings[size_template_map][<?php echo esc_attr( $index ); ?>][type]" value="<?php echo esc_attr( $type ); ?>" class="regular-text" /></td>
+                                                                                                <td>
+                                                                                                        <select name="printful_fluentcart_settings[size_template_map][<?php echo esc_attr( $index ); ?>][template]">
+                                                                                                                <option value=""><?php esc_html_e( 'Use matching product', 'printful-integration-for-fluentcart' ); ?></option>
+                                                                                                                <?php if ( ! empty( $catalog_cache['products'] ) ) : ?>
+                                                                                                                        <?php foreach ( $catalog_cache['products'] as $product ) : ?>
+                                                                                                                                <?php $product_id = isset( $product['id'] ) ? $product['id'] : ''; ?>
+                                                                                                                                <option value="<?php echo esc_attr( $product_id ); ?>" <?php selected( (string) $template, (string) $product_id ); ?>><?php echo esc_html( isset( $product['name'] ) ? $product['name'] : $product_id ); ?></option>
+                                                                                                                        <?php endforeach; ?>
+                                                                                                                <?php endif; ?>
+                                                                                                        </select>
+                                                                                                </td>
+                                                                                        </tr>
+                                                                                <?php endforeach; ?>
+                                                                        </tbody>
+                                                                </table>
+                                                                <p><button type="button" class="button" id="printful-size-template-add"><?php esc_html_e( 'Add mapping', 'printful-integration-for-fluentcart' ); ?></button></p>
+                                                                <script>
+                                                                (function($){
+                                                                        var $rows = $('#printful-size-template-rows');
+                                                                        $('#printful-size-template-add').on('click', function(e){
+                                                                                e.preventDefault();
+                                                                                var index = $rows.find('tr').length;
+                                                                                var $firstSelect = $rows.find('select').first().clone();
+                                                                                $firstSelect.val('');
+                                                                                $firstSelect.attr('name','printful_fluentcart_settings[size_template_map]['+index+'][template]');
+                                                                                var $row = $('<tr>');
+                                                                                $row.append('<td><input type="text" name="printful_fluentcart_settings[size_template_map]['+index+'][type]" class="regular-text" /></td>');
+                                                                                var $td = $('<td>');
+                                                                                $firstSelect.appendTo($td);
+                                                                                $row.append($td);
+                                                                                $rows.append($row);
+                                                                        });
+                                                                })(jQuery);
+                                                                </script>
+                                                        </td>
+                                                </tr>
+                                        </tbody>
+                                </table>
 
                         <h2 style="margin-top:20px;"><?php esc_html_e( 'Recent API / Webhook Logs', 'printful-integration-for-fluentcart' ); ?></h2>
                         <form method="get" style="margin-bottom:10px;">
@@ -913,10 +998,10 @@ class Printful_Integration_For_Fluentcart_Admin {
 				'country'   => sanitize_text_field( Arr::get( $input, 'origin_address.country', '' ) ),
 				'phone'     => sanitize_text_field( Arr::get( $input, 'origin_address.phone', '' ) ),
 			),
-			'origin_overrides'        => array(
-				array_values( array_filter( array_map( function( $entry ) {
-					$countries_raw = isset( $entry['countries'] ) ? $entry['countries'] : '';
-					$countries     = array_filter( array_map( 'trim', explode( ',', $countries_raw ) ) );
+                        'origin_overrides'        => array(
+                                array_values( array_filter( array_map( function( $entry ) {
+                                        $countries_raw = isset( $entry['countries'] ) ? $entry['countries'] : '';
+                                        $countries     = array_filter( array_map( 'trim', explode( ',', $countries_raw ) ) );
 
 					if ( empty( $countries ) && empty( array_filter( $entry ) ) ) {
 						return null;
@@ -935,11 +1020,26 @@ class Printful_Integration_For_Fluentcart_Admin {
 						'phone'     => sanitize_text_field( Arr::get( $entry, 'phone', '' ) ),
 					);
 				}, isset( $input['origin_overrides'] ) ? (array) $input['origin_overrides'] : array() ) ) ),
-			),
+                        ),
                         'enable_printful_tax'     => ! empty( $input['enable_printful_tax'] ),
                         'tax_inclusive_prices'    => ! empty( $input['tax_inclusive_prices'] ),
                         'enable_designer_embed'   => ! empty( $input['enable_designer_embed'] ),
                         'enable_request_logging'  => ! empty( $input['enable_request_logging'] ),
+                        'enable_size_guides'      => ! empty( $input['enable_size_guides'] ),
+                        'enable_size_tab'         => ! empty( $input['enable_size_tab'] ),
+                        'size_template_map'       => array_values( array_filter( array_map( function( $entry ) {
+                                $type     = isset( $entry['type'] ) ? sanitize_text_field( $entry['type'] ) : '';
+                                $template = isset( $entry['template'] ) ? sanitize_text_field( $entry['template'] ) : '';
+
+                                if ( '' === $type && '' === $template ) {
+                                        return null;
+                                }
+
+                                return array(
+                                        'type'     => $type,
+                                        'template' => $template,
+                                );
+                        }, isset( $input['size_template_map'] ) ? (array) $input['size_template_map'] : array() ) ) ),
                 );
 
 		$general_errors = array();

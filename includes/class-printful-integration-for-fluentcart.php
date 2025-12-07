@@ -106,10 +106,11 @@ class Printful_Integration_For_Fluentcart {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
-		$this->define_integration_bootstrap();
+                $this->define_integration_bootstrap();
 
                 Printful_Integration_For_Fluentcart_Rest::register();
                 Printful_Integration_For_Fluentcart_Size_Guide::register();
+                Printful_Integration_For_Fluentcart_Size_Charts::register();
                 Printful_Integration_For_Fluentcart_Product_Meta::register();
                 Printful_Integration_For_Fluentcart_Token_Migration::register();
                 PIFC_Variant_Meta::register();
@@ -153,7 +154,9 @@ class Printful_Integration_For_Fluentcart {
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-logger.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-request-log.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-rest.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-asset-cache.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-size-guide.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-size-charts.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-product-importer.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/settings/class-pifc-shipping-settings.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-product-meta.php';
