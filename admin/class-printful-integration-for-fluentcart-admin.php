@@ -1153,19 +1153,6 @@ class Printful_Integration_For_Fluentcart_Admin {
 			foreach ( $mapping_errors as $error ) {
 				add_settings_error( 'printful_fluentcart', 'printful_fluentcart_mapping_error_' . md5( $error ), $error, 'error' );
 			}
-		} elseif ( empty( $general_errors ) ) {
-			add_settings_error(
-				'printful_fluentcart',
-				'printful_fluentcart_saved',
-				esc_html__( 'Settings saved.', 'printful-integration-for-fluentcart' ),
-				'updated'
-	 */
-	public function handle_test_connection() {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'printful-integration-for-fluentcart' ) ), 403 );
-		}
-
-		check_ajax_referer( 'printful_fluentcart_admin', 'nonce' );
 
 		$settings = Printful_Integration_For_Fluentcart_Settings::all();
 		$api_key  = isset( $settings['api_key'] ) ? trim( $settings['api_key'] ) : '';
