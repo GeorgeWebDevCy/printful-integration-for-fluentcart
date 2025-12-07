@@ -46,6 +46,23 @@ class Printful_Integration_For_Fluentcart_Settings {
 				'auto_sync_catalog'       => false,
 				'default_shipping_method' => '',
 				'mapped_products'         => array(),
+				'allowed_carriers'        => array(),
+				'fallback_rate'           => array(),
+				'allowed_services'        => array(),
+				'origin_address'          => array(
+					'name'      => '',
+					'company'   => '',
+					'address_1' => '',
+					'address_2' => '',
+					'city'      => '',
+					'state'     => '',
+					'postcode'  => '',
+					'country'   => '',
+					'phone'     => '',
+				),
+				'origin_overrides'        => array(),
+				'enable_printful_tax'     => false,
+				'tax_inclusive_prices'    => false,
 			)
 		);
 

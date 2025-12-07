@@ -108,6 +108,11 @@ class Printful_Integration_For_Fluentcart {
 		$this->define_public_hooks();
 		$this->define_integration_bootstrap();
 
+		Printful_Integration_For_Fluentcart_Rest::register();
+		Printful_Integration_For_Fluentcart_Size_Guide::register();
+		Printful_Integration_For_Fluentcart_Product_Meta::register();
+		Printful_Integration_For_Fluentcart_Token_Migration::register();
+
 	}
 
 	/**
@@ -142,6 +147,12 @@ class Printful_Integration_For_Fluentcart {
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-webhook-controller.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-order-sync.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-shipping.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-logger.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-rest.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-size-guide.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-product-importer.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-product-meta.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-token-migration.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-order-actions.php';
 
 		/**

@@ -205,10 +205,30 @@ class Printful_Integration_For_Fluentcart_Api {
 	 */
 	protected function log( $title, $context = array(), $level = 'info' ) {
 		if ( ! $this->log_api_calls || ! function_exists( 'fluent_cart_add_log' ) ) {
+			// Still store a lightweight rolling log.
+			if ( class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ) {
+				Printful_Integration_For_Fluentcart_Logger::add(
+					array(
+						'title'   => $title,
+						'level'   => $level,
+						'context' => $context,
+					)
+				);
+			}
 			return;
 		}
 
 		$context = is_array( $context ) ? $context : array( 'context' => $context );
+
+		if ( class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ) {
+			Printful_Integration_For_Fluentcart_Logger::add(
+				array(
+					'title'   => $title,
+					'level'   => $level,
+					'context' => $context,
+				)
+			);
+		}
 
 		fluent_cart_add_log(
 			$title,
@@ -221,4 +241,3 @@ class Printful_Integration_For_Fluentcart_Api {
 		);
 	}
 }
-

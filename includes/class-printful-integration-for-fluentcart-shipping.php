@@ -216,10 +216,16 @@ class Printful_Integration_For_Fluentcart_Shipping {
 			'locale'    => get_locale(),
 		);
 
+
+		$origin = $this->get_origin_for_cart( $cart, $address['country'] );
+		if ( $origin ) {
+			$request['sender'] = $origin;
+		}
+
 		$response = $this->api->post( 'shipping/rates', $request );
 
 		if ( is_wp_error( $response ) ) {
-			return $response;
+			return $this->maybe_fallback_rate( $response, $cart );
 		}
 
 		$result = isset( $response['result'] ) ? $response['result'] : $response;
@@ -230,13 +236,56 @@ class Printful_Integration_For_Fluentcart_Shipping {
 		$methods = $this->transform_rates_to_methods( $result, $cart );
 
 		if ( empty( $methods ) ) {
-			return new WP_Error( 'printful_no_rates', __( 'Printful did not provide any shipping rates for this address.', 'printful-integration-for-fluentcart' ) );
+			return $this->maybe_fallback_rate( new WP_Error( 'printful_no_rates', __( 'Printful did not provide any shipping rates for this address.', 'printful-integration-for-fluentcart' ) ), $cart );
 		}
 
 		set_transient( $transient_key, $methods, MINUTE_IN_SECONDS * 10 );
 		$this->runtime_cache[ $transient_key ] = $methods;
 
 		return $methods;
+	}
+
+	/**
+	 * Return fallback rate if configured.
+	 *
+	 * @param WP_Error $error Error from API/rates.
+	 * @param Cart     $cart  Cart.
+	 *
+	 * @return array|WP_Error
+	 */
+	protected function maybe_fallback_rate( $error, Cart $cart ) {
+		$fallback = isset( $this->settings['fallback_rate'] ) && is_array( $this->settings['fallback_rate'] ) ? $this->settings['fallback_rate'] : array();
+		$amount   = isset( $fallback['amount'] ) ? floatval( $fallback['amount'] ) : 0;
+		$label    = isset( $fallback['label'] ) ? $fallback['label'] : __( 'Standard shipping', 'printful-integration-for-fluentcart' );
+
+		if ( $amount <= 0 ) {
+			return $error;
+		}
+
+		$currency = $cart->currency ? $cart->currency : $this->get_store_currency();
+
+		$method                = (object) array();
+		$method->id            = 'printful:fallback';
+		$method->title         = sprintf( '%s (%s)', $label, $currency );
+		$method->amount        = round( $amount, 2 );
+		$method->charge_amount = intval( round( $amount * 100 ) );
+		$method->settings      = array(
+			'configure_rate'    => 'per_order',
+			'class_aggregation' => 'sum_all',
+		);
+		$method->states     = array();
+		$method->is_enabled = true;
+		$method->meta       = array(
+			'description'   => __( 'Fallback rate (Printful unavailable).', 'printful-integration-for-fluentcart' ),
+			'printful_rate' => array(
+				'id'       => 'fallback',
+				'name'     => $label,
+				'amount'   => round( $amount, 2 ),
+				'currency' => $currency,
+			),
+		);
+
+		return array( $method );
 	}
 
 	/**
@@ -270,11 +319,23 @@ class Printful_Integration_For_Fluentcart_Shipping {
                 $methods        = array();
                 $currency       = $cart->currency ? $cart->currency : $this->get_store_currency();
 		$markup_percent = isset( $this->settings['shipping_markup_percent'] ) ? floatval( $this->settings['shipping_markup_percent'] ) : 0;
+		$allowed        = isset( $this->settings['allowed_carriers'] ) && is_array( $this->settings['allowed_carriers'] ) ? array_filter( array_map( 'strtolower', $this->settings['allowed_carriers'] ) ) : array();
+		$allowed_services = isset( $this->settings['allowed_services'] ) && is_array( $this->settings['allowed_services'] ) ? array_filter( array_map( 'strtolower', $this->settings['allowed_services'] ) ) : array();
 
 		foreach ( $rates as $rate ) {
 			$rate_id = Arr::get( $rate, 'id' );
 			$name    = Arr::get( $rate, 'name', $rate_id );
 			$amount  = floatval( Arr::get( $rate, 'rate', 0 ) );
+			$carrier = strtolower( Arr::get( $rate, 'carrier', '' ) );
+			$service = strtolower( $rate_id );
+
+			if ( $allowed && $carrier && ! in_array( $carrier, $allowed, true ) ) {
+				continue;
+			}
+
+			if ( $allowed_services && $service && ! in_array( $service, $allowed_services, true ) ) {
+				continue;
+			}
 
 			if ( $amount < 0 ) {
 				$amount = 0;
@@ -371,6 +432,15 @@ class Printful_Integration_For_Fluentcart_Shipping {
 				continue;
 			}
 
+			$product_id = Arr::get( $item, 'post_id' );
+			if ( ! $product_id && class_exists( '\FluentCart\App\Models\ProductVariation' ) ) {
+				$variation_model = \FluentCart\App\Models\ProductVariation::find( $variation_id );
+				$product_id      = $variation_model ? $variation_model->post_id : 0;
+			}
+			if ( $product_id && Printful_Integration_For_Fluentcart_Product_Mapping::is_product_disabled( $product_id ) ) {
+				continue;
+			}
+
 			$printful_variant = Printful_Integration_For_Fluentcart_Product_Mapping::get_variation_mapping( $variation_id );
 			if ( ! $printful_variant ) {
 				$has_unmapped = true;
@@ -459,7 +529,7 @@ class Printful_Integration_For_Fluentcart_Shipping {
          *
          * @return string
          */
-        protected function get_store_currency() {
+	protected function get_store_currency() {
                 if ( class_exists( '\\FluentCart\\App\\Services\\Helper' ) && method_exists( '\\FluentCart\\App\\Services\\Helper', 'shopConfig' ) ) {
                         $currency = \FluentCart\App\Services\Helper::shopConfig( 'currency' );
                         if ( $currency ) {
@@ -474,5 +544,100 @@ class Printful_Integration_For_Fluentcart_Shipping {
 
                 return 'USD';
         }
+
+	/**
+	 * Choose origin/sender address based on recipient country.
+	 *
+	 * @param string $country Country code.
+	 *
+	 * @return array|null
+	 */
+	protected function get_origin_for_country( $country ) {
+		$country = strtoupper( (string) $country );
+
+		$overrides = isset( $this->settings['origin_overrides'] ) && is_array( $this->settings['origin_overrides'] ) ? $this->settings['origin_overrides'] : array();
+
+		foreach ( $overrides as $entry ) {
+			$countries = isset( $entry['countries'] ) ? array_filter( array_map( 'strtoupper', (array) $entry['countries'] ) ) : array();
+			if ( $countries && in_array( $country, $countries, true ) ) {
+				$origin = $this->format_origin( $entry );
+				if ( $origin ) {
+					return $origin;
+				}
+			}
+		}
+
+		if ( ! empty( $this->settings['origin_address'] ) ) {
+			return $this->format_origin( $this->settings['origin_address'] );
+		}
+
+		return null;
+	}
+
+	/**
+	 * Format origin block.
+	 *
+	 * @param array $origin Raw origin.
+	 *
+	 * @return array|null
+	 */
+	protected function format_origin( array $origin ) {
+		if ( empty( $origin['country'] ) ) {
+			return null;
+		}
+
+		return array(
+			'name'         => Arr::get( $origin, 'name', get_bloginfo( 'name' ) ),
+			'company'      => Arr::get( $origin, 'company', '' ),
+			'address1'     => Arr::get( $origin, 'address_1', '' ),
+			'address2'     => Arr::get( $origin, 'address_2', '' ),
+			'city'         => Arr::get( $origin, 'city', '' ),
+			'state_code'   => Arr::get( $origin, 'state', '' ),
+			'country_code' => Arr::get( $origin, 'country', '' ),
+			'zip'          => Arr::get( $origin, 'postcode', '' ),
+			'phone'        => Arr::get( $origin, 'phone', '' ),
+		);
+	}
+
+	/**
+	 * Determine origin for cart, considering per-product override.
+	 *
+	 * @param Cart   $cart    Cart.
+	 * @param string $country Destination country.
+	 *
+	 * @return array|null
+	 */
+	protected function get_origin_for_cart( Cart $cart, $country ) {
+		$cart_items = $cart->cart_data ?? array();
+		$origin_index = null;
+
+		foreach ( $cart_items as $item ) {
+			$product_id = Arr::get( $item, 'post_id' );
+			if ( ! $product_id && class_exists( '\FluentCart\App\Models\ProductVariation' ) ) {
+				$variation = \FluentCart\App\Models\ProductVariation::find( Arr::get( $item, 'object_id' ) );
+				$product_id = $variation ? $variation->post_id : 0;
+			}
+
+			if ( $product_id ) {
+				$origin_index = Printful_Integration_For_Fluentcart_Product_Mapping::get_product_origin( $product_id );
+				if ( null !== $origin_index ) {
+					break;
+				}
+			}
+		}
+
+		// If per-product override is set, use that profile directly if available.
+		if ( null !== $origin_index ) {
+			$overrides = isset( $this->settings['origin_overrides'] ) ? $this->settings['origin_overrides'] : array();
+			if ( isset( $overrides[ $origin_index ] ) ) {
+				$origin = $this->format_origin( $overrides[ $origin_index ] );
+				if ( $origin ) {
+					return $origin;
+				}
+			}
+		}
+
+		return $this->get_origin_for_country( $country );
+	}
 }
 

@@ -3,7 +3,7 @@ Contributors: georgenicolaou
 Tags: ecommerce, fluentcart, printful, dropshipping
 Requires at least: 5.8
 Tested up to: 6.7
-Stable tag: 1.1.0
+Stable tag: 2.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,7 +29,60 @@ Webhooks are preferred for immediate updates. Enable polling as a fallback or wh
 
 Yes. Only mapped variants are sent to Printful. Live rates require all physical items in the cart to be mapped.
 
+== WooCommerce parity status ==
+
+See `docs/woocommerce-parity.md` for a detailed comparison against the official Printful WooCommerce integration. Highlights:
+- Implemented: order push, webhook/polling sync, live rates, catalog cache + mapping helper, admin diagnostics, order actions (send/refresh/cancel).
+- Missing: product import/creation, carrier/service UI, tax helpers, dashboard/status widgets, request log viewer, size guides/customizer, REST endpoints. These remain to be built.
+
 == Changelog ==
+
+= 1.2.0 =
+* Added WooCommerce parity report and documented remaining gaps.
+* Minor styling polish for order widget and activity logging on admin actions.
+* Bumped version to 1.2.0.
+
+= 1.3.0 =
+* Added diagnostics dashboard (health summary + request logs) and REST health/config/log endpoints.
+* Added carrier allowlist + fallback shipping option.
+* Added basic product import shell, size guide shortcode, and request log capture.
+
+= 1.3.1 =
+* Added full product import to create FluentCart products/variations with media, pricing (with markup), and mapping.
+* Added carrier service allowlist option and refined import UI messaging.
+
+= 1.3.2 =
+* Added carrier/service fetcher with checkbox UI, dashboard health widget, log clearing, and enriched diagnostics stats.
+
+= 1.4.0 =
+* Added size guide editor metabox for Fluent products and shortcode rendering.
+* Parity doc updated for remaining gaps.
+
+= 1.5.0 =
+* Added REST endpoints for settings/mappings, per-request sender (origin) address, and richer settings fields.
+* Added size guide UI, carrier/service fetch UI, diagnostics improvements, and REST log access.
+
+= 1.6.0 =
+* Added product-level fulfilment overrides and preferred service meta box.
+* Added origin sender address for rate requests.
+* Added REST endpoints for products and settings updates, plus token migration stub.
+
+= 1.7.0 =
+* Added regional origin override (alternate sender for specified countries).
+* Added per-product fulfilment/service overrides respected in orders and rates.
+* Expanded REST/config fields accordingly.
+
+= 1.8.0 =
+* Added tax helper toggles, diagnostics checklist, and REST/settings coverage for new fields.
+* Added per-region origin selection for rates and deeper fulfilment overrides.
+
+= 1.8.1 =
+* Added quick “Open in Printful” link in the product metabox.
+* Updated parity notes to reflect current coverage.
+
+= 1.9.0 =
+* Added multi-slot regional origin overrides UI (up to 3) and passing sender by destination country.
+* Added tax helper flags, diagnostics checklist, and REST/settings coverage for new fields.
 
 = 1.1.0 =
 * Added admin diagnostics (API connection test and queue depth).
@@ -87,3 +140,18 @@ Markdown uses email style notation for blockquotes and I've been told:
 > Asterisks for *emphasis*. Double it up  for **strong**.
 
 `<?php code(); // goes in backticks ?>`
+= 1.9.1 =
+* Minor parity doc touch-up and metabox convenience link.
+
+= 2.0.0 =
+* Added admin token migration runner (legacy option sweep) surfaced in diagnostics.
+
+= 2.1.0 =
+* Added direct links to Printful product and designer/mockup from the product metabox.
+
+= 2.2.0 =
+* Added per-product origin profile selection and extended multi-origin handling for shipping.
+* REST products payload now includes origin index and designer URL.
+
+= 2.3.0 =
+* Added log-level filtering in diagnostics and REST logs endpoint.

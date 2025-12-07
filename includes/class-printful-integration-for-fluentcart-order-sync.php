@@ -222,11 +222,24 @@ class Printful_Integration_For_Fluentcart_Order_Sync {
 				continue;
 			}
 
+			// Skip if product-level fulfilment is disabled.
+			$product_id = isset( $item->post_id ) ? (int) $item->post_id : 0;
+			if ( ! $product_id && class_exists( '\FluentCart\App\Models\ProductVariation' ) ) {
+				$variation = \FluentCart\App\Models\ProductVariation::find( $item->object_id );
+				$product_id = $variation ? (int) $variation->post_id : 0;
+			}
+			if ( $product_id && Printful_Integration_For_Fluentcart_Product_Mapping::is_product_disabled( $product_id ) ) {
+				continue;
+			}
+
+			$service = $product_id ? Printful_Integration_For_Fluentcart_Product_Mapping::get_product_service( $product_id ) : null;
+
 			$items[] = array(
 				'external_variant_id' => $variant_id,
 				'quantity'            => (int) $item->quantity,
 				'price'               => $this->to_money( $item->unit_price ),
 				'name'                => $item->post_title ? $item->post_title . ' - ' . $item->title : $item->title,
+				'shipping'            => $service ? $service : null,
 			);
 		}
 

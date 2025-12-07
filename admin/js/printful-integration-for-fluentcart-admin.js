@@ -48,6 +48,7 @@
 		var $mappingTable = $( '#printful_fluentcart_variant_table' );
 		var $mappingSearch = $( '#printful_fluentcart_mapping_search' );
 		var $mappingTextarea = $( '#printful_fluentcart_variant_mapping' );
+		var $fetchCarriersBtn = $( '#printful_fluentcart_fetch_carriers' );
 
 		if ( $testBtn.length ) {
 			$testBtn.on( 'click', function( e ) {
@@ -95,6 +96,27 @@
 						( $row.data( 'product' ) || '' )
 					).toLowerCase();
 					$row.toggle( hay.indexOf( term ) !== -1 );
+				} );
+			} );
+		}
+
+		if ( $fetchCarriersBtn.length ) {
+			$fetchCarriersBtn.on( 'click', function( e ) {
+				e.preventDefault();
+				$fetchCarriersBtn.prop( 'disabled', true ).text( PrintfulFluentcart.messages.testing );
+				$.post(
+					PrintfulFluentcart.ajaxUrl,
+					{
+						action: 'printful_fluentcart_fetch_carriers',
+						nonce: PrintfulFluentcart.nonce
+					}
+				).always( function( response ) {
+					$fetchCarriersBtn.prop( 'disabled', false ).text( 'Fetch carriers/services from Printful' );
+					if ( response && response.success ) {
+						window.location.reload();
+					} else {
+						alert( ( response && response.data && response.data.message ) ? response.data.message : PrintfulFluentcart.messages.error );
+					}
 				} );
 			} );
 		}

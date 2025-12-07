@@ -107,6 +107,9 @@ class Printful_Integration_For_Fluentcart_Webhook_Controller {
 		}
 
 		if ( ! $this->validate_signature( $body, $secret, $signature ) ) {
+			if ( class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ) {
+				Printful_Integration_For_Fluentcart_Logger::increment_signature_failure();
+			}
 			if ( function_exists( 'fluent_cart_error_log' ) ) {
 				fluent_cart_error_log(
 					'Printful webhook signature failed',

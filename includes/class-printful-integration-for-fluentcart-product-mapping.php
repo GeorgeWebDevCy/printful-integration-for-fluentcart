@@ -14,6 +14,9 @@ class Printful_Integration_For_Fluentcart_Product_Mapping {
 
 	const META_KEY_VARIATION = '_printful_variant_id';
 	const META_KEY_PRODUCT   = '_printful_product_id';
+	const META_KEY_DISABLE   = '_printful_fulfilment_mode';
+	const META_KEY_SERVICE   = '_printful_service_code';
+	const META_KEY_ORIGIN    = '_printful_origin_index';
 
 	/**
 	 * Persist a Printful product ID against a FluentCart product (post).
@@ -40,6 +43,45 @@ class Printful_Integration_For_Fluentcart_Product_Mapping {
 	 */
 	public static function get_product_mapping( $product_id ) {
 		$value = get_post_meta( $product_id, self::META_KEY_PRODUCT, true );
+
+		return $value ? sanitize_text_field( $value ) : null;
+	}
+
+	/**
+	 * Get product-specific origin profile index.
+	 *
+	 * @param int $product_id Product ID.
+	 *
+	 * @return int|null
+	 */
+	public static function get_product_origin( $product_id ) {
+		$value = get_post_meta( $product_id, self::META_KEY_ORIGIN, true );
+
+		return ( '' !== $value && null !== $value ) ? (int) $value : null;
+	}
+
+	/**
+	 * Check if a product is disabled for Printful fulfilment.
+	 *
+	 * @param int $product_id Product ID.
+	 *
+	 * @return bool
+	 */
+	public static function is_product_disabled( $product_id ) {
+		$mode = get_post_meta( $product_id, self::META_KEY_DISABLE, true );
+
+		return 'disabled' === $mode;
+	}
+
+	/**
+	 * Get preferred service code for a product.
+	 *
+	 * @param int $product_id Product ID.
+	 *
+	 * @return string|null
+	 */
+	public static function get_product_service( $product_id ) {
+		$value = get_post_meta( $product_id, self::META_KEY_SERVICE, true );
 
 		return $value ? sanitize_text_field( $value ) : null;
 	}
@@ -163,5 +205,22 @@ class Printful_Integration_For_Fluentcart_Product_Mapping {
 		}
 
 		return $mappings;
+	}
+
+	/**
+	 * Helper to get designer link for a mapped product.
+	 *
+	 * @param int         $product_id  Product ID.
+	 * @param string|null $printful_id Optional mapped ID.
+	 *
+	 * @return string
+	 */
+	public static function get_designer_link( $product_id, $printful_id = null ) {
+		$pid = $printful_id ? $printful_id : self::get_product_mapping( $product_id );
+		if ( ! $pid ) {
+			return '';
+		}
+
+		return 'https://www.printful.com/dashboard/designer?product=' . rawurlencode( $pid );
 	}
 }
