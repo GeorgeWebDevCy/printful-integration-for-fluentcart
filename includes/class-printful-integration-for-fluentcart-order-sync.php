@@ -174,6 +174,11 @@ class Printful_Integration_For_Fluentcart_Order_Sync {
 			),
 		);
 
+		if ( ! empty( $this->settings['enable_printful_tax'] ) ) {
+			$payload['external_taxes'] = true;
+			$payload['retail_costs']['taxes_included'] = ! empty( $this->settings['tax_inclusive_prices'] );
+		}
+
 		$shipping_method = $this->settings['default_shipping_method'];
 		if ( $shipping_method ) {
 			$payload['shipping'] = $shipping_method;

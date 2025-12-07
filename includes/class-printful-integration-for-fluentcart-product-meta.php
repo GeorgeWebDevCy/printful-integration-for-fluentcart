@@ -82,8 +82,18 @@ class Printful_Integration_For_Fluentcart_Product_Meta {
 			</select>
 		</p>
 		<?php if ( $printful_id ) : ?>
-			<p><a class="button" href="<?php echo esc_url( 'https://www.printful.com/dashboard/store/products/' . rawurlencode( $printful_id ) ); ?>" target="_blank" rel="noreferrer"><?php esc_html_e( 'Open in Printful', 'printful-integration-for-fluentcart' ); ?></a></p>
-			<p><a class="button button-secondary" href="<?php echo esc_url( 'https://www.printful.com/dashboard/designer?product=' . rawurlencode( $printful_id ) ); ?>" target="_blank" rel="noreferrer"><?php esc_html_e( 'Design / Mockup', 'printful-integration-for-fluentcart' ); ?></a></p>
+			<p>
+				<a class="button" href="<?php echo esc_url( 'https://www.printful.com/dashboard/store/products/' . rawurlencode( $printful_id ) ); ?>" target="_blank" rel="noreferrer"><?php esc_html_e( 'Open in Printful', 'printful-integration-for-fluentcart' ); ?></a>
+				<?php
+				$designer_url = 'https://www.printful.com/dashboard/designer?product=' . rawurlencode( $printful_id );
+				$embed        = ! empty( $origins['enable_designer_embed'] );
+				?>
+				<?php if ( $embed ) : ?>
+					<button type="button" class="button button-secondary printful-open-designer" data-designer-url="<?php echo esc_attr( $designer_url ); ?>"><?php esc_html_e( 'Design / Mockup', 'printful-integration-for-fluentcart' ); ?></button>
+				<?php else : ?>
+					<a class="button button-secondary" href="<?php echo esc_url( $designer_url ); ?>" target="_blank" rel="noreferrer"><?php esc_html_e( 'Design / Mockup', 'printful-integration-for-fluentcart' ); ?></a>
+				<?php endif; ?>
+			</p>
 		<?php endif; ?>
 		<p><label for="printful_mockup_url"><strong><?php esc_html_e( 'Mockup preview URL', 'printful-integration-for-fluentcart' ); ?></strong></label><br/>
 			<input type="url" id="printful_mockup_url" name="printful_mockup_url" class="widefat" value="<?php echo esc_attr( $mockup_url ); ?>" placeholder="https://..." />

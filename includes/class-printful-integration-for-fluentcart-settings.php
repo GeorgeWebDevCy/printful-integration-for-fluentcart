@@ -63,6 +63,8 @@ class Printful_Integration_For_Fluentcart_Settings {
 				'origin_overrides'        => array(),
 				'enable_printful_tax'     => false,
 				'tax_inclusive_prices'    => false,
+				'enable_designer_embed'   => false,
+				'last_migration'          => array(),
 			)
 		);
 

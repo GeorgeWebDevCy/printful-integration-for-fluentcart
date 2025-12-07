@@ -51,6 +51,16 @@ class Printful_Integration_For_Fluentcart_Rest {
 
 		register_rest_route(
 			self::NAMESPACE,
+			'/tax-status',
+			array(
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => array( __CLASS__, 'tax_status' ),
+				'permission_callback' => array( __CLASS__, 'permission' ),
+			)
+		);
+
+		register_rest_route(
+			self::NAMESPACE,
 			'/logs',
 			array(
 				'methods'             => \WP_REST_Server::READABLE,
@@ -154,6 +164,25 @@ class Printful_Integration_For_Fluentcart_Rest {
 	}
 
 	/**
+	 * Tax status payload (helpers/toggle states).
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public static function tax_status( $request ) {
+		$settings = Printful_Integration_For_Fluentcart_Settings::all();
+
+		return new \WP_REST_Response(
+			array(
+				'enable_printful_tax'   => ! empty( $settings['enable_printful_tax'] ),
+				'tax_inclusive_prices'  => ! empty( $settings['tax_inclusive_prices'] ),
+			),
+			200
+		);
+	}
+
+	/**
 	 * Logs payload.
 	 *
 	 * @param \WP_REST_Request $request Request.
@@ -161,12 +190,15 @@ class Printful_Integration_For_Fluentcart_Rest {
 	 * @return \WP_REST_Response
 	 */
 	public static function logs( $request ) {
-		$level = $request->get_param( 'level' );
-		$logs  = class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? Printful_Integration_For_Fluentcart_Logger::filter( $level ) : array();
+		$level  = $request->get_param( 'level' );
+		$search = $request->get_param( 'search' );
+		$limit  = $request->get_param( 'limit' );
+		$limit  = $limit ? max( 1, (int) $limit ) : 100;
+		$logs   = class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? ( $search ? Printful_Integration_For_Fluentcart_Logger::search( $search ) : Printful_Integration_For_Fluentcart_Logger::filter( $level ) ) : array();
 
 		return new \WP_REST_Response(
 			array(
-				'logs' => $logs,
+				'logs' => class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? Printful_Integration_For_Fluentcart_Logger::limit( $logs, $limit ) : $logs,
 			),
 			200
 		);
@@ -214,6 +246,8 @@ class Printful_Integration_For_Fluentcart_Rest {
 			'enable_printful_tax',
 			'tax_inclusive_prices',
 			'designer_links',
+			'enable_designer_embed',
+			'last_migration',
 		);
 
 		$updates = array();

@@ -3,7 +3,7 @@ Contributors: georgenicolaou
 Tags: ecommerce, fluentcart, printful, dropshipping
 Requires at least: 5.8
 Tested up to: 6.7
-Stable tag: 2.4.0
+Stable tag: 3.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -158,3 +158,36 @@ Markdown uses email style notation for blockquotes and I've been told:
 
 = 2.4.0 =
 * Added mockup preview URL storage and REST exposure; per-product origin selection retained.
+
+= 2.5.0 =
+* Added dynamic multi-origin profile UI; shipping honors per-product origin profile first, then destination-based profiles.
+* REST products now include mockup URL; admin mockup preview field added.
+
+= 2.6.0 =
+* Added optional embedded Printful designer modal and mockup preview field; designer URLs exposed via REST.
+
+= 2.7.0 =
+* Added log search/filtering in diagnostics and REST logs.
+
+= 2.8.0 =
+* Added admin notices for missing API key and webhook signature failures.
+* Added dry-run token migration and broader legacy key search.
+* Designer embed toggle; dynamic origin profile UI kept; mockup field retained.
+
+= 2.9.0 =
+* Added order payload `external_taxes` flag when tax helper is enabled.
+* Added recent error panel and search in diagnostics; REST logs accept search param.
+* Added dry-run toggle to migration action.
+
+= 3.0.0 =
+* Added queue reset action, error highlights in diagnostics, and broadened tax helper in order payloads.
+* Expanded migration options (env/legacy) with dry-run.
+
+= 3.1.0 =
+* Added log search/limit in diagnostics and REST; recent errors panel.
+* Added taxes_included flag when tax helper enabled; dry-run queue clear.
+
+= 3.2.0 =
+* Added tax-status REST endpoint exposing Printful tax helper flags.
+* Surfaced last migration metadata in diagnostics and settings; extended migration storage.
+* Added queue clear action, log limit parameter, and broader diagnostics status coverage.

@@ -75,6 +75,39 @@ class Printful_Integration_For_Fluentcart_Logger {
 	}
 
 	/**
+	 * Search logs by term.
+	 *
+	 * @param string $term Search term.
+	 *
+	 * @return array
+	 */
+	public static function search( $term ) {
+		$term = strtolower( $term );
+		return array_values(
+			array_filter(
+				self::all(),
+				function( $entry ) use ( $term ) {
+					$hay = strtolower( wp_json_encode( $entry ) );
+					return strpos( $hay, $term ) !== false;
+				}
+			)
+		);
+	}
+
+	/**
+	 * Limit slice of logs.
+	 *
+	 * @param array $logs Logs array.
+	 * @param int   $limit Max entries.
+	 *
+	 * @return array
+	 */
+	public static function limit( array $logs, $limit = 50 ) {
+		$limit = max( 1, (int) $limit );
+		return array_slice( $logs, 0, $limit );
+	}
+
+	/**
 	 * Increment signature failure count.
 	 *
 	 * @return void

@@ -33,25 +33,49 @@ class Printful_Integration_For_Fluentcart_Token_Migration {
 
 		check_admin_referer( 'printful_fluentcart_migrate_tokens' );
 
-		// Example legacy option keys.
+		$dry_run = ! empty( $_POST['printful_migrate_dry_run'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+
+		// Example legacy option keys / env hints.
 		$legacy_keys = array(
 			'printful_api_key',
 			'printful_shipping_api_key',
+			'woocommerce_printful_settings_api_key',
 		);
+
+		if ( getenv( 'PRINTFUL_API_KEY' ) ) {
+			$legacy_keys[] = 'env:PRINTFUL_API_KEY';
+		}
 
 		$migrated = false;
 		$message  = '';
 
 		foreach ( $legacy_keys as $key ) {
-			$legacy = get_option( $key );
+			$legacy = null;
+			if ( strpos( $key, 'env:' ) === 0 ) {
+				$env    = substr( $key, 4 );
+				$legacy = getenv( $env );
+			} else {
+				$legacy = get_option( $key );
+			}
+
 			if ( $legacy ) {
-				$settings          = Printful_Integration_For_Fluentcart_Settings::all();
-				$settings['api_key'] = $legacy;
-				Printful_Integration_For_Fluentcart_Settings::update( $settings );
-				$migrated = true;
-				$message  = sprintf( /* translators: %s legacy key */ esc_html__( 'Migrated legacy token from %s.', 'printful-integration-for-fluentcart' ), $key );
+				if ( $dry_run ) {
+					$migrated = true;
+					$message  = sprintf( /* translators: %s legacy key */ esc_html__( 'Dry run: found legacy token at %s.', 'printful-integration-for-fluentcart' ), $key );
+				} else {
+					$settings            = Printful_Integration_For_Fluentcart_Settings::all();
+					$settings['api_key'] = $legacy;
+					$settings['last_migration'] = array(
+						'source' => $key,
+						'time'   => time(),
+					);
+					Printful_Integration_For_Fluentcart_Settings::update( $settings );
+					$migrated = true;
+					$message  = sprintf( /* translators: %s legacy key */ esc_html__( 'Migrated legacy token from %s.', 'printful-integration-for-fluentcart' ), $key );
+				}
 				break;
 			}
+		}
 		}
 
 		if ( ! $migrated ) {

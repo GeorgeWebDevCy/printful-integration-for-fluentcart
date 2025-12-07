@@ -44,10 +44,12 @@ class Printful_Integration_For_Fluentcart_Admin {
                add_action( 'admin_init', array( $this, 'maybe_redirect_broken_slug' ) );
                add_action( 'wp_ajax_printful_fluentcart_test_connection', array( $this, 'handle_test_connection' ) );
                add_action( 'wp_ajax_printful_fluentcart_sync_catalog', array( $this, 'handle_sync_catalog' ) );
-	       add_action( 'admin_post_printful_fluentcart_import_product', array( $this, 'handle_import_product' ) );
-	       add_action( 'admin_post_printful_fluentcart_clear_logs', array( $this, 'handle_clear_logs' ) );
-	       add_action( 'wp_ajax_printful_fluentcart_fetch_carriers', array( $this, 'handle_fetch_carriers' ) );
-	       add_action( 'wp_dashboard_setup', array( $this, 'register_dashboard_widget' ) );
+       add_action( 'admin_post_printful_fluentcart_import_product', array( $this, 'handle_import_product' ) );
+       add_action( 'admin_post_printful_fluentcart_clear_logs', array( $this, 'handle_clear_logs' ) );
+       add_action( 'admin_post_printful_fluentcart_clear_queue', array( $this, 'handle_clear_queue' ) );
+       add_action( 'wp_ajax_printful_fluentcart_fetch_carriers', array( $this, 'handle_fetch_carriers' ) );
+       add_action( 'wp_dashboard_setup', array( $this, 'register_dashboard_widget' ) );
+       add_action( 'admin_notices', array( $this, 'maybe_show_notices' ) );
        }
 
 	/**
@@ -89,6 +91,28 @@ class Printful_Integration_For_Fluentcart_Admin {
 	}
 
 	/**
+	 * Show admin notices for critical integration states.
+	 *
+	 * @return void
+	 */
+	public function maybe_show_notices() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$signature = class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? Printful_Integration_For_Fluentcart_Logger::signature_failures() : 0;
+		$settings  = Printful_Integration_For_Fluentcart_Settings::all();
+
+		if ( $signature > 0 ) {
+			echo '<div class="notice notice-error"><p>' . esc_html__( 'Printful: Webhook signature failures detected. Verify your webhook secret.', 'printful-integration-for-fluentcart' ) . '</p></div>';
+		}
+
+		if ( empty( $settings['api_key'] ) ) {
+			echo '<div class="notice notice-warning"><p>' . esc_html__( 'Printful: API key is not configured. Orders will not sync.', 'printful-integration-for-fluentcart' ) . '</p></div>';
+		}
+	}
+
+	/**
 	 * Diagnostics screen.
 	 *
 	 * @return void
@@ -100,11 +124,21 @@ class Printful_Integration_For_Fluentcart_Admin {
 
 		$settings  = Printful_Integration_For_Fluentcart_Settings::all();
 		$level     = isset( $_GET['printful_log_level'] ) ? sanitize_text_field( wp_unslash( $_GET['printful_log_level'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$logs      = class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? Printful_Integration_For_Fluentcart_Logger::filter( $level ) : array();
+		$search    = isset( $_GET['printful_log_search'] ) ? sanitize_text_field( wp_unslash( $_GET['printful_log_search'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$logs      = array();
+		if ( class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ) {
+			if ( $search ) {
+				$logs = Printful_Integration_For_Fluentcart_Logger::limit( Printful_Integration_For_Fluentcart_Logger::search( $search ), 100 );
+			} else {
+				$logs = Printful_Integration_For_Fluentcart_Logger::limit( Printful_Integration_For_Fluentcart_Logger::filter( $level ), 100 );
+			}
+		}
 		$signature = class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? Printful_Integration_For_Fluentcart_Logger::signature_failures() : 0;
 		$queue_len = class_exists( 'Printful_Integration_For_Fluentcart_Sync_Queue' ) ? count( Printful_Integration_For_Fluentcart_Sync_Queue::all() ) : 0;
 		$stats     = class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? Printful_Integration_For_Fluentcart_Logger::stats() : array();
 		$last_error = class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? Printful_Integration_For_Fluentcart_Logger::last_error() : null;
+		$error_logs = class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? array_slice( Printful_Integration_For_Fluentcart_Logger::filter( 'error' ), 0, 5 ) : array();
+		$last_migration = isset( $settings['last_migration'] ) ? $settings['last_migration'] : array();
 
 		?>
 		<div class="wrap">
@@ -132,6 +166,8 @@ class Printful_Integration_For_Fluentcart_Admin {
 				<li><?php echo ! empty( $settings['enable_polling'] ) ? '✅ ' : 'ℹ️ '; ?><?php esc_html_e( 'Polling enabled (optional fallback)', 'printful-integration-for-fluentcart' ); ?></li>
 				<li><?php echo ! empty( $settings['enable_live_rates'] ) ? '✅ ' : 'ℹ️ '; ?><?php esc_html_e( 'Live rates enabled', 'printful-integration-for-fluentcart' ); ?></li>
 				<li><?php echo ! empty( Arr::get( $settings, 'origin_address.country' ) ) ? '✅ ' : 'ℹ️ '; ?><?php esc_html_e( 'Origin address set', 'printful-integration-for-fluentcart' ); ?></li>
+				<li><?php echo ! empty( $settings['enable_printful_tax'] ) ? '✅ ' : 'ℹ️ '; ?><?php esc_html_e( 'Tax helper enabled', 'printful-integration-for-fluentcart' ); ?></li>
+				<li><?php echo ! empty( $last_migration ) ? '✅ ' : 'ℹ️ '; ?><?php esc_html_e( 'Token migration checked', 'printful-integration-for-fluentcart' ); ?><?php if ( ! empty( $last_migration['source'] ) ) : ?> (<?php echo esc_html( $last_migration['source'] ); ?> @ <?php echo esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), Arr::get( $last_migration, 'time', time() ) ) ); ?>)<?php endif; ?></li>
 			</ul>
 
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-top:12px;">
@@ -140,7 +176,9 @@ class Printful_Integration_For_Fluentcart_Admin {
 				<?php submit_button( __( 'Clear Logs', 'printful-integration-for-fluentcart' ), 'secondary', 'submit', false ); ?>
 				<a class="button" href="<?php echo esc_url( rest_url( 'printful-fluentcart/v1/logs' ) ); ?>" target="_blank" rel="noreferrer"><?php esc_html_e( 'View via REST', 'printful-integration-for-fluentcart' ); ?></a>
 				<button type="submit" formaction="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" formmethod="post" name="action" value="printful_fluentcart_migrate_tokens" class="button"><?php esc_html_e( 'Run token migration', 'printful-integration-for-fluentcart' ); ?></button>
+				<label style="margin-left:8px;"><input type="checkbox" name="printful_migrate_dry_run" value="1" /> <?php esc_html_e( 'Dry run (do not save)', 'printful-integration-for-fluentcart' ); ?></label>
 				<?php wp_nonce_field( 'printful_fluentcart_migrate_tokens' ); ?>
+				<button type="submit" formaction="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" formmethod="post" name="action" value="printful_fluentcart_clear_queue" class="button button-secondary" style="margin-left:8px;"><?php esc_html_e( 'Clear queue', 'printful-integration-for-fluentcart' ); ?></button>
 			</form>
 
 			<h2 style="margin-top:20px;"><?php esc_html_e( 'Recent API / Webhook Logs', 'printful-integration-for-fluentcart' ); ?></h2>
@@ -152,6 +190,8 @@ class Printful_Integration_For_Fluentcart_Admin {
 					<option value="info" <?php selected( $level, 'info' ); ?>>info</option>
 					<option value="error" <?php selected( $level, 'error' ); ?>>error</option>
 				</select>
+				<label for="printful_log_search"><?php esc_html_e( 'Search:', 'printful-integration-for-fluentcart' ); ?></label>
+				<input type="search" id="printful_log_search" name="printful_log_search" value="<?php echo esc_attr( $search ); ?>" />
 				<?php submit_button( __( 'Filter', 'printful-integration-for-fluentcart' ), 'secondary', 'submit', false ); ?>
 			</form>
 			<table class="widefat striped">
@@ -165,6 +205,24 @@ class Printful_Integration_For_Fluentcart_Admin {
 							<td><?php echo esc_html( isset( $entry['time'] ) ? date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $entry['time'] ) : '' ); ?></td>
 							<td><?php echo esc_html( isset( $entry['title'] ) ? $entry['title'] : '' ); ?></td>
 							<td><?php echo esc_html( isset( $entry['level'] ) ? $entry['level'] : 'info' ); ?></td>
+							<td><code style="white-space:pre-wrap;display:block;"><?php echo esc_html( wp_json_encode( isset( $entry['context'] ) ? $entry['context'] : array() ) ); ?></code></td>
+						</tr>
+					<?php endforeach; ?>
+				<?php endif; ?>
+				</tbody>
+			</table>
+
+			<h2 style="margin-top:20px;"><?php esc_html_e( 'Recent Errors', 'printful-integration-for-fluentcart' ); ?></h2>
+			<table class="widefat striped">
+				<thead><tr><th><?php esc_html_e( 'Time', 'printful-integration-for-fluentcart' ); ?></th><th><?php esc_html_e( 'Title', 'printful-integration-for-fluentcart' ); ?></th><th><?php esc_html_e( 'Context', 'printful-integration-for-fluentcart' ); ?></th></tr></thead>
+				<tbody>
+				<?php if ( empty( $error_logs ) ) : ?>
+					<tr><td colspan="3"><?php esc_html_e( 'No error entries.', 'printful-integration-for-fluentcart' ); ?></td></tr>
+				<?php else : ?>
+					<?php foreach ( $error_logs as $entry ) : ?>
+						<tr>
+							<td><?php echo esc_html( isset( $entry['time'] ) ? date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $entry['time'] ) : '' ); ?></td>
+							<td><?php echo esc_html( isset( $entry['title'] ) ? $entry['title'] : '' ); ?></td>
 							<td><code style="white-space:pre-wrap;display:block;"><?php echo esc_html( wp_json_encode( isset( $entry['context'] ) ? $entry['context'] : array() ) ); ?></code></td>
 						</tr>
 					<?php endforeach; ?>
@@ -566,6 +624,15 @@ class Printful_Integration_For_Fluentcart_Admin {
 								</label>
 							</td>
 						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Embed Printful designer', 'printful-integration-for-fluentcart' ); ?></th>
+							<td>
+								<label for="printful_fluentcart_designer_embed">
+									<input type="checkbox" id="printful_fluentcart_designer_embed" name="printful_fluentcart_settings[enable_designer_embed]" value="1" <?php checked( ! empty( $settings['enable_designer_embed'] ) ); ?> />
+									<?php esc_html_e( 'Open Printful designer in an embedded modal (falls back to link).', 'printful-integration-for-fluentcart' ); ?>
+								</label>
+							</td>
+						</tr>
 					</tbody>
 				</table>
 
@@ -659,23 +726,32 @@ class Printful_Integration_For_Fluentcart_Admin {
 				</table>
 
 				<h2><?php esc_html_e( 'Regional Origins', 'printful-integration-for-fluentcart' ); ?></h2>
-				<p class="description"><?php esc_html_e( 'Optional: provide alternate origins for specific destination countries (comma-separated ISO codes).', 'printful-integration-for-fluentcart' ); ?></p>
-				<?php for ( $i = 0; $i < 3; $i++ ) : ?>
-				<table class="form-table" role="presentation" style="border:1px solid #e2e8f0;margin-bottom:10px;">
-					<tbody>
-						<tr><th scope="row"><label><?php esc_html_e( 'Destination countries', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $i; ?>][countries]" value="<?php echo esc_attr( isset( $settings['origin_overrides'][ $i ]['countries'] ) ? implode( ',', (array) $settings['origin_overrides'][ $i ]['countries'] ) : '' ); ?>" placeholder="US,CA,GB" /></td></tr>
-						<tr><th scope="row"><label><?php esc_html_e( 'Contact name', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $i; ?>][name]" value="<?php echo esc_attr( Arr::get( $settings, 'origin_overrides.' . $i . '.name', '' ) ); ?>" /></td></tr>
-						<tr><th scope="row"><label><?php esc_html_e( 'Company', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $i; ?>][company]" value="<?php echo esc_attr( Arr::get( $settings, 'origin_overrides.' . $i . '.company', '' ) ); ?>" /></td></tr>
-						<tr><th scope="row"><label><?php esc_html_e( 'Address line 1', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $i; ?>][address_1]" value="<?php echo esc_attr( Arr::get( $settings, 'origin_overrides.' . $i . '.address_1', '' ) ); ?>" /></td></tr>
-						<tr><th scope="row"><label><?php esc_html_e( 'Address line 2', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $i; ?>][address_2]" value="<?php echo esc_attr( Arr::get( $settings, 'origin_overrides.' . $i . '.address_2', '' ) ); ?>" /></td></tr>
-						<tr><th scope="row"><label><?php esc_html_e( 'City', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $i; ?>][city]" value="<?php echo esc_attr( Arr::get( $settings, 'origin_overrides.' . $i . '.city', '' ) ); ?>" /></td></tr>
-						<tr><th scope="row"><label><?php esc_html_e( 'State/Region', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $i; ?>][state]" value="<?php echo esc_attr( Arr::get( $settings, 'origin_overrides.' . $i . '.state', '' ) ); ?>" /></td></tr>
-						<tr><th scope="row"><label><?php esc_html_e( 'Postcode', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $i; ?>][postcode]" value="<?php echo esc_attr( Arr::get( $settings, 'origin_overrides.' . $i . '.postcode', '' ) ); ?>" /></td></tr>
-						<tr><th scope="row"><label><?php esc_html_e( 'Country code', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $i; ?>][country]" value="<?php echo esc_attr( Arr::get( $settings, 'origin_overrides.' . $i . '.country', '' ) ); ?>" /></td></tr>
-						<tr><th scope="row"><label><?php esc_html_e( 'Phone', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $i; ?>][phone]" value="<?php echo esc_attr( Arr::get( $settings, 'origin_overrides.' . $i . '.phone', '' ) ); ?>" /></td></tr>
-					</tbody>
-				</table>
-				<?php endfor; ?>
+				<p class="description"><?php esc_html_e( 'Optional: provide alternate origins for specific destination countries (comma-separated ISO codes). Add as many profiles as needed.', 'printful-integration-for-fluentcart' ); ?></p>
+				<div id="printful_origin_profiles">
+					<?php
+					$overrides = isset( $settings['origin_overrides'] ) && is_array( $settings['origin_overrides'] ) ? $settings['origin_overrides'] : array();
+					if ( empty( $overrides ) ) {
+						$overrides[] = array();
+					}
+					foreach ( $overrides as $idx => $entry ) :
+					?>
+					<table class="form-table printful-origin-block" role="presentation" style="border:1px solid #e2e8f0;margin-bottom:10px;">
+						<tbody>
+							<tr><th scope="row"><label><?php esc_html_e( 'Destination countries', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $idx; ?>][countries]" value="<?php echo esc_attr( isset( $entry['countries'] ) ? implode( ',', (array) $entry['countries'] ) : '' ); ?>" placeholder="US,CA,GB" /></td></tr>
+							<tr><th scope="row"><label><?php esc_html_e( 'Contact name', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $idx; ?>][name]" value="<?php echo esc_attr( Arr::get( $entry, 'name', '' ) ); ?>" /></td></tr>
+							<tr><th scope="row"><label><?php esc_html_e( 'Company', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $idx; ?>][company]" value="<?php echo esc_attr( Arr::get( $entry, 'company', '' ) ); ?>" /></td></tr>
+							<tr><th scope="row"><label><?php esc_html_e( 'Address line 1', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $idx; ?>][address_1]" value="<?php echo esc_attr( Arr::get( $entry, 'address_1', '' ) ); ?>" /></td></tr>
+							<tr><th scope="row"><label><?php esc_html_e( 'Address line 2', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $idx; ?>][address_2]" value="<?php echo esc_attr( Arr::get( $entry, 'address_2', '' ) ); ?>" /></td></tr>
+							<tr><th scope="row"><label><?php esc_html_e( 'City', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $idx; ?>][city]" value="<?php echo esc_attr( Arr::get( $entry, 'city', '' ) ); ?>" /></td></tr>
+							<tr><th scope="row"><label><?php esc_html_e( 'State/Region', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $idx; ?>][state]" value="<?php echo esc_attr( Arr::get( $entry, 'state', '' ) ); ?>" /></td></tr>
+							<tr><th scope="row"><label><?php esc_html_e( 'Postcode', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $idx; ?>][postcode]" value="<?php echo esc_attr( Arr::get( $entry, 'postcode', '' ) ); ?>" /></td></tr>
+							<tr><th scope="row"><label><?php esc_html_e( 'Country code', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $idx; ?>][country]" value="<?php echo esc_attr( Arr::get( $entry, 'country', '' ) ); ?>" /></td></tr>
+							<tr><th scope="row"><label><?php esc_html_e( 'Phone', 'printful-integration-for-fluentcart' ); ?></label></th><td><input type="text" class="regular-text" name="printful_fluentcart_settings[origin_overrides][<?php echo (int) $idx; ?>][phone]" value="<?php echo esc_attr( Arr::get( $entry, 'phone', '' ) ); ?>" /></td></tr>
+						</tbody>
+					</table>
+					<?php endforeach; ?>
+				</div>
+				<p><button type="button" class="button" id="printful_add_origin_profile"><?php esc_html_e( 'Add origin profile', 'printful-integration-for-fluentcart' ); ?></button></p>
 
 				<p>
 					<button type="button" class="button" id="printful_fluentcart_fetch_carriers"><?php esc_html_e( 'Fetch carriers/services from Printful', 'printful-integration-for-fluentcart' ); ?></button>
@@ -810,6 +886,7 @@ class Printful_Integration_For_Fluentcart_Admin {
 			),
 			'enable_printful_tax'     => ! empty( $input['enable_printful_tax'] ),
 			'tax_inclusive_prices'    => ! empty( $input['tax_inclusive_prices'] ),
+			'enable_designer_embed'   => ! empty( $input['enable_designer_embed'] ),
                 );
 
 		$general_errors = array();
@@ -1116,6 +1193,24 @@ class Printful_Integration_For_Fluentcart_Admin {
 
 		if ( class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ) {
 			Printful_Integration_For_Fluentcart_Logger::clear();
+		}
+
+		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=printful-fluentcart-diagnostics' ) );
+		exit;
+	}
+
+	/**
+	 * Clear sync queue.
+	 *
+	 * @return void
+	 */
+	public function handle_clear_queue() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Permission denied.', 'printful-integration-for-fluentcart' ) );
+		}
+
+		if ( class_exists( 'Printful_Integration_For_Fluentcart_Sync_Queue' ) ) {
+			Printful_Integration_For_Fluentcart_Sync_Queue::reset();
 		}
 
 		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=printful-fluentcart-diagnostics' ) );
