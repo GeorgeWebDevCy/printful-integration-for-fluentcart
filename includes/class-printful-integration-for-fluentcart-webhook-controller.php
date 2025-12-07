@@ -107,6 +107,13 @@ class Printful_Integration_For_Fluentcart_Webhook_Controller {
 		}
 
 		if ( ! $this->validate_signature( $body, $secret, $signature ) ) {
+			if ( function_exists( 'fluent_cart_error_log' ) ) {
+				fluent_cart_error_log(
+					'Printful webhook signature failed',
+					'Invalid signature received for Printful webhook.',
+					array( 'module_type' => __CLASS__ )
+				);
+			}
 			return new \WP_Error(
 				'printful_invalid_signature',
 				__( 'Invalid Printful webhook signature.', 'printful-integration-for-fluentcart' ),

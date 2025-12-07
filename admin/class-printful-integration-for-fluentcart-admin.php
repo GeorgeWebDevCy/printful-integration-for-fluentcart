@@ -42,6 +42,8 @@ class Printful_Integration_For_Fluentcart_Admin {
                add_action( 'admin_menu', array( $this, 'register_settings_page' ) );
                add_action( 'admin_post_printful_fluentcart_save_settings', array( $this, 'handle_save_settings' ) );
                add_action( 'admin_init', array( $this, 'maybe_redirect_broken_slug' ) );
+               add_action( 'wp_ajax_printful_fluentcart_test_connection', array( $this, 'handle_test_connection' ) );
+               add_action( 'wp_ajax_printful_fluentcart_sync_catalog', array( $this, 'handle_sync_catalog' ) );
        }
 
 	/**
@@ -59,6 +61,13 @@ class Printful_Integration_For_Fluentcart_Admin {
 		wp_enqueue_style(
 			$this->plugin_name,
 			plugin_dir_url( __FILE__ ) . 'css/printful-integration-for-fluentcart-admin.css',
+			array(),
+			$this->version,
+			'all'
+		);
+		wp_enqueue_style(
+			$this->plugin_name . '-order-widget',
+			plugin_dir_url( __FILE__ ) . 'css/printful-integration-for-fluentcart-order-widget.css',
 			array(),
 			$this->version,
 			'all'
@@ -83,6 +92,20 @@ class Printful_Integration_For_Fluentcart_Admin {
 			array( 'jquery' ),
 			$this->version,
 			false
+		);
+
+		wp_localize_script(
+			$this->plugin_name,
+			'PrintfulFluentcart',
+			array(
+				'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
+				'nonce'    => wp_create_nonce( 'printful_fluentcart_admin' ),
+				'messages' => array(
+					'testing' => __( 'Testing connection...', 'printful-integration-for-fluentcart' ),
+					'syncing' => __( 'Syncing catalog...', 'printful-integration-for-fluentcart' ),
+					'error'   => __( 'Something went wrong. Please try again.', 'printful-integration-for-fluentcart' ),
+				),
+			)
 		);
 	}
 
@@ -169,7 +192,9 @@ class Printful_Integration_For_Fluentcart_Admin {
 
 		$settings      = Printful_Integration_For_Fluentcart_Settings::all();
 		$variant_map   = Printful_Integration_For_Fluentcart_Product_Mapping::get_all_variation_mappings();
+		$catalog_cache = class_exists( 'Printful_Integration_For_Fluentcart_Catalog' ) ? Printful_Integration_For_Fluentcart_Catalog::cached() : array();
 		$mapping_lines = array();
+		$catalog_variants = array();
 
 		foreach ( $variant_map as $variation_id => $printful_id ) {
 			$mapping_lines[] = $variation_id . ':' . $printful_id;
@@ -180,6 +205,35 @@ class Printful_Integration_For_Fluentcart_Admin {
 		$poll_interval  = isset( $settings['poll_interval_minutes'] ) ? (int) $settings['poll_interval_minutes'] : 10;
 		$poll_interval  = max( 5, $poll_interval );
 		$webhook_secret = isset( $settings['webhook_secret'] ) ? $settings['webhook_secret'] : '';
+		$queue_length   = class_exists( 'Printful_Integration_For_Fluentcart_Sync_Queue' ) ? count( Printful_Integration_For_Fluentcart_Sync_Queue::all() ) : 0;
+		$catalog_synced = isset( $catalog_cache['synced_at'] ) ? (int) $catalog_cache['synced_at'] : 0;
+		$catalog_products = isset( $catalog_cache['products'] ) && is_array( $catalog_cache['products'] ) ? count( $catalog_cache['products'] ) : 0;
+		$catalog_variants = isset( $catalog_cache['variants'] ) ? (int) $catalog_cache['variants'] : 0;
+
+		// Flatten a small sample of variants for quick mapping assistance.
+		if ( ! empty( $catalog_cache['products'] ) && is_array( $catalog_cache['products'] ) ) {
+			$count = 0;
+			foreach ( $catalog_cache['products'] as $product ) {
+				$product_name = isset( $product['name'] ) ? $product['name'] : '';
+				if ( empty( $product['variants'] ) || ! is_array( $product['variants'] ) ) {
+					continue;
+				}
+
+				foreach ( $product['variants'] as $variant ) {
+					$catalog_variants[] = array(
+						'id'       => isset( $variant['id'] ) ? $variant['id'] : '',
+						'name'     => isset( $variant['name'] ) ? $variant['name'] : '',
+						'sku'      => isset( $variant['sku'] ) ? $variant['sku'] : '',
+						'product'  => $product_name,
+						'price'    => isset( $variant['retail_price'] ) ? $variant['retail_price'] : '',
+					);
+					$count++;
+					if ( $count >= 200 ) {
+						break 2;
+					}
+				}
+			}
+		}
 
 		settings_errors( 'printful_fluentcart' );
 
@@ -209,6 +263,51 @@ class Printful_Integration_For_Fluentcart_Admin {
 							<td>
 								<input type="text" class="regular-text" id="printful_fluentcart_default_shipping" name="printful_fluentcart_settings[default_shipping_method]" value="<?php echo esc_attr( $settings['default_shipping_method'] ); ?>" />
 								<p class="description"><?php esc_html_e( 'Optional Printful shipping service code (e.g. STANDARD). Leave blank to let Printful choose automatically.', 'printful-integration-for-fluentcart' ); ?></p>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<h2><?php esc_html_e( 'Connection & Diagnostics', 'printful-integration-for-fluentcart' ); ?></h2>
+				<table class="form-table" role="presentation">
+					<tbody>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'API connection', 'printful-integration-for-fluentcart' ); ?></th>
+							<td>
+								<button type="button" class="button" id="printful_fluentcart_test_connection">
+									<?php esc_html_e( 'Test connection', 'printful-integration-for-fluentcart' ); ?>
+								</button>
+								<span class="printful-fluentcart-status" id="printful_fluentcart_test_status"></span>
+								<p class="description"><?php esc_html_e( 'Verifies the API key and basic connectivity to Printful.', 'printful-integration-for-fluentcart' ); ?></p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Catalog cache', 'printful-integration-for-fluentcart' ); ?></th>
+							<td>
+								<button type="button" class="button button-secondary" id="printful_fluentcart_sync_catalog">
+									<?php esc_html_e( 'Sync catalog', 'printful-integration-for-fluentcart' ); ?>
+								</button>
+								<span class="printful-fluentcart-status" id="printful_fluentcart_catalog_status">
+									<?php
+									if ( $catalog_synced ) {
+										printf(
+											/* translators: 1: number of products, 2: number of variants */
+											esc_html__( '%1$s products / %2$s variants cached. Last sync: %3$s', 'printful-integration-for-fluentcart' ),
+											(int) $catalog_products,
+											(int) $catalog_variants,
+											esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $catalog_synced ) )
+										);
+									}
+									?>
+								</span>
+								<p class="description"><?php esc_html_e( 'Pull latest Printful products to help with variant mapping.', 'printful-integration-for-fluentcart' ); ?></p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Queue depth', 'printful-integration-for-fluentcart' ); ?></th>
+							<td>
+								<strong><?php echo esc_html( $queue_length ); ?></strong>
+								<p class="description"><?php esc_html_e( 'Orders currently waiting for Printful status refresh.', 'printful-integration-for-fluentcart' ); ?></p>
 							</td>
 						</tr>
 					</tbody>
@@ -284,6 +383,15 @@ class Printful_Integration_For_Fluentcart_Admin {
 								<p class="description"><?php esc_html_e( 'Defines how frequently pending orders are refreshed when background polling is enabled.', 'printful-integration-for-fluentcart' ); ?></p>
 							</td>
 						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Auto-refresh catalog daily', 'printful-integration-for-fluentcart' ); ?></th>
+							<td>
+								<label for="printful_fluentcart_auto_catalog">
+									<input type="checkbox" id="printful_fluentcart_auto_catalog" name="printful_fluentcart_settings[auto_sync_catalog]" value="1" <?php checked( ! empty( $settings['auto_sync_catalog'] ) ); ?> />
+									<?php esc_html_e( 'Fetch Printful products once per day to keep the catalog helper fresh.', 'printful-integration-for-fluentcart' ); ?>
+								</label>
+							</td>
+						</tr>
                                         </tbody>
                                 </table>
 
@@ -313,7 +421,35 @@ class Printful_Integration_For_Fluentcart_Admin {
 
                                 <h2><?php esc_html_e( 'Variant Mapping', 'printful-integration-for-fluentcart' ); ?></h2>
                                 <p><?php esc_html_e( 'Map each FluentCart variation ID to a Printful variant ID. Use one mapping per line: variation_id:printful_variant_id', 'printful-integration-for-fluentcart' ); ?></p>
-                                <textarea class="large-text code" rows="8" name="printful_fluentcart_variant_mapping"><?php echo esc_textarea( $mapping_text ); ?></textarea>
+                                <textarea class="large-text code" rows="8" name="printful_fluentcart_variant_mapping" id="printful_fluentcart_variant_mapping"><?php echo esc_textarea( $mapping_text ); ?></textarea>
+
+				<?php if ( ! empty( $catalog_variants ) ) : ?>
+				<h3><?php esc_html_e( 'Catalog helper', 'printful-integration-for-fluentcart' ); ?></h3>
+				<p class="description"><?php esc_html_e( 'Click a variant to append its mapping. Showing first 200 cached variants.', 'printful-integration-for-fluentcart' ); ?></p>
+				<input type="search" id="printful_fluentcart_mapping_search" placeholder="<?php esc_attr_e( 'Search Printful variants...', 'printful-integration-for-fluentcart' ); ?>" class="regular-text" />
+				<table class="widefat striped printful-fluentcart-variant-table" id="printful_fluentcart_variant_table">
+					<thead>
+						<tr>
+							<th><?php esc_html_e( 'Printful Variant', 'printful-integration-for-fluentcart' ); ?></th>
+							<th><?php esc_html_e( 'SKU', 'printful-integration-for-fluentcart' ); ?></th>
+							<th><?php esc_html_e( 'Product', 'printful-integration-for-fluentcart' ); ?></th>
+							<th><?php esc_html_e( 'Price', 'printful-integration-for-fluentcart' ); ?></th>
+							<th><?php esc_html_e( 'Insert', 'printful-integration-for-fluentcart' ); ?></th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ( $catalog_variants as $variant ) : ?>
+							<tr data-variant-id="<?php echo esc_attr( $variant['id'] ); ?>" data-name="<?php echo esc_attr( $variant['name'] ); ?>" data-sku="<?php echo esc_attr( $variant['sku'] ); ?>" data-product="<?php echo esc_attr( $variant['product'] ); ?>">
+								<td><strong><?php echo esc_html( $variant['name'] ); ?></strong> (#<?php echo esc_html( $variant['id'] ); ?>)</td>
+								<td><?php echo esc_html( $variant['sku'] ); ?></td>
+								<td><?php echo esc_html( $variant['product'] ); ?></td>
+								<td><?php echo esc_html( $variant['price'] ); ?></td>
+								<td><button type="button" class="button button-small printful-fluentcart-add-mapping"><?php esc_html_e( 'Add', 'printful-integration-for-fluentcart' ); ?></button></td>
+							</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
+				<?php endif; ?>
 
 				<?php submit_button( __( 'Save Settings', 'printful-integration-for-fluentcart' ) ); ?>
 			</form>
@@ -346,7 +482,8 @@ class Printful_Integration_For_Fluentcart_Admin {
                         'enable_polling'          => ! empty( $input['enable_polling'] ),
                         'poll_interval_minutes'   => isset( $input['poll_interval_minutes'] ) ? max( 5, (int) $input['poll_interval_minutes'] ) : 10,
                         'enable_live_rates'       => ! empty( $input['enable_live_rates'] ),
-                        'shipping_markup_percent' => isset( $input['shipping_markup_percent'] ) ? floatval( $input['shipping_markup_percent'] ) : 0,
+			'shipping_markup_percent' => isset( $input['shipping_markup_percent'] ) ? floatval( $input['shipping_markup_percent'] ) : 0,
+			'auto_sync_catalog'       => ! empty( $input['auto_sync_catalog'] ),
                 );
 
 		$general_errors = array();
@@ -426,5 +563,91 @@ class Printful_Integration_For_Fluentcart_Admin {
 		);
 		exit;
 	}
-}
 
+	/**
+	 * AJAX: Test connectivity to Printful using saved API key.
+	 *
+	 * @return void
+	 */
+	public function handle_test_connection() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'printful-integration-for-fluentcart' ) ), 403 );
+		}
+
+		check_ajax_referer( 'printful_fluentcart_admin', 'nonce' );
+
+		$settings = Printful_Integration_For_Fluentcart_Settings::all();
+		$api_key  = isset( $settings['api_key'] ) ? trim( $settings['api_key'] ) : '';
+
+		if ( '' === $api_key ) {
+			wp_send_json_error( array( 'message' => __( 'Please provide an API key first.', 'printful-integration-for-fluentcart' ) ) );
+		}
+
+		$api      = new Printful_Integration_For_Fluentcart_Api( $api_key, isset( $settings['api_base'] ) ? $settings['api_base'] : 'https://api.printful.com', ! empty( $settings['log_api_calls'] ) );
+		$response = $api->get( 'store' );
+
+		if ( is_wp_error( $response ) ) {
+			wp_send_json_error(
+				array(
+					'message' => $response->get_error_message(),
+				)
+			);
+		}
+
+		$result = isset( $response['result'] ) ? $response['result'] : $response;
+		$label  = isset( $result['name'] ) ? $result['name'] : __( 'Connected', 'printful-integration-for-fluentcart' );
+
+		wp_send_json_success(
+			array(
+				'message' => sprintf(
+					/* translators: %s: Printful store name */
+					__( 'Connected to Printful store: %s', 'printful-integration-for-fluentcart' ),
+					$label
+				),
+			)
+		);
+	}
+
+	/**
+	 * AJAX: Pull Printful catalog and cache it for mapping.
+	 *
+	 * @return void
+	 */
+	public function handle_sync_catalog() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'printful-integration-for-fluentcart' ) ), 403 );
+		}
+
+		check_ajax_referer( 'printful_fluentcart_admin', 'nonce' );
+
+		$settings = Printful_Integration_For_Fluentcart_Settings::all();
+		$api_key  = isset( $settings['api_key'] ) ? trim( $settings['api_key'] ) : '';
+
+		if ( '' === $api_key ) {
+			wp_send_json_error( array( 'message' => __( 'Please provide an API key first.', 'printful-integration-for-fluentcart' ) ) );
+		}
+
+		$api      = new Printful_Integration_For_Fluentcart_Api( $api_key, isset( $settings['api_base'] ) ? $settings['api_base'] : 'https://api.printful.com', ! empty( $settings['log_api_calls'] ) );
+		$catalog  = new Printful_Integration_For_Fluentcart_Catalog( $api, $settings );
+		$result   = $catalog->sync();
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error(
+				array(
+					'message' => $result->get_error_message(),
+				)
+			);
+		}
+
+		wp_send_json_success(
+			array(
+				'message' => sprintf(
+					/* translators: 1: product count, 2: variant count */
+					__( 'Catalog synced (%1$s products, %2$s variants).', 'printful-integration-for-fluentcart' ),
+					isset( $result['products'] ) ? count( $result['products'] ) : 0,
+					isset( $result['variants'] ) ? (int) $result['variants'] : 0
+				),
+			)
+		);
+	}
+}

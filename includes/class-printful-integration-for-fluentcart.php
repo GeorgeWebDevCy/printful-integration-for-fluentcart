@@ -135,12 +135,14 @@ class Printful_Integration_For_Fluentcart {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-loader.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-settings.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-api.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-catalog.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-product-mapping.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-sync-queue.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-sync-manager.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-webhook-controller.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-order-sync.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-shipping.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-order-actions.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
@@ -158,6 +160,8 @@ class Printful_Integration_For_Fluentcart {
 		 * side of the site.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-printful-integration-for-fluentcart-public.php';
+
+		Printful_Integration_For_Fluentcart_Catalog::register_cron();
 
 		$this->loader = new Printful_Integration_For_Fluentcart_Loader();
 
@@ -262,6 +266,15 @@ class Printful_Integration_For_Fluentcart {
 
                 $this->shipping = new Printful_Integration_For_Fluentcart_Shipping( $api, $settings );
                 $this->shipping->register();
+
+		$order_actions = new Printful_Integration_For_Fluentcart_Order_Actions( $api, $this->order_sync, $this->sync_manager, $settings );
+		$order_actions->register();
+
+		if ( ! empty( $settings['auto_sync_catalog'] ) ) {
+			Printful_Integration_For_Fluentcart_Catalog::ensure_cron();
+		} else {
+			Printful_Integration_For_Fluentcart_Catalog::clear_cron();
+		}
         }
 
 	/**

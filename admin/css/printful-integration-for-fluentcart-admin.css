@@ -2,3 +2,25 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+
+.printful-fluentcart-status {
+	margin-left: 8px;
+	font-weight: 600;
+}
+
+.printful-fluentcart-status.notice-error {
+	color: #c00;
+}
+
+.printful-fluentcart-status.notice-success {
+	color: #008a20;
+}
+
+.printful-fluentcart-variant-table td button {
+	margin: 0;
+}
+
+#printful_fluentcart_mapping_search {
+	margin-bottom: 8px;
+	min-width: 260px;
+}

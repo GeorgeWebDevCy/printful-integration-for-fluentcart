@@ -1,0 +1,32 @@
+.printful-fc-widget {
+	border: 1px solid #dcdfe4;
+	border-radius: 8px;
+	padding: 12px;
+	background: #f8fafc;
+}
+
+.printful-fc-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	gap: 8px 16px;
+	margin-bottom: 8px;
+}
+
+.printful-fc-label {
+	display: block;
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+	color: #55606e;
+	margin-bottom: 2px;
+}
+
+.printful-fc-actions {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.printful-fc-widget ul {
+	margin: 6px 0 12px 18px;
+}

@@ -16,7 +16,7 @@
  * Plugin Name:       Printful Integration for FluentCart
  * Plugin URI:        https://www.georgenicolaou.me/plugins/printful-integration-for-fluentcart
  * Description:       Printful Integration for FluentCart
- * Version:           1.0.0
+ * Version:           1.1.0
  * Author:            George Nicolaou
  * Author URI:        https://www.georgenicolaou.me//
  * License:           GPL-2.0+
@@ -49,7 +49,7 @@ if ( class_exists( PucFactory::class ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'PRINTFUL_INTEGRATION_FOR_FLUENTCART_VERSION', '1.0.0' );
+define( 'PRINTFUL_INTEGRATION_FOR_FLUENTCART_VERSION', '1.1.0' );
 
 /**
  * The code that runs during plugin activation.

@@ -222,7 +222,7 @@ class Printful_Integration_For_Fluentcart_Sync_Manager {
 	 *
 	 * @return bool
 	 */
-	protected function sync_single_order( $order_id ) {
+	public function sync_single_order( $order_id ) {
 		$order = Order::find( (int) $order_id );
 
 		if ( ! $order ) {
@@ -273,7 +273,7 @@ class Printful_Integration_For_Fluentcart_Sync_Manager {
 	 *
 	 * @return void
 	 */
-	protected function apply_remote_state( Order $order, array $remote ) {
+	public function apply_remote_state( Order $order, array $remote ) {
 		$current_status = $order->getMeta( '_printful_last_status' );
 		$new_status     = isset( $remote['status'] ) ? $remote['status'] : '';
 

@@ -45,26 +45,26 @@ class Printful_Integration_For_Fluentcart_Order_Sync {
 	}
 
 	/**
-	 * Handle paid FluentCart orders and send them to Printful if auto-fulfilment is enabled.
+	 * Manually push a FluentCart order to Printful.
 	 *
-	 * @param array $event_data Event payload (order, transaction, customer, subscription).
+	 * @param \FluentCart\App\Models\Order $order Order model.
 	 *
-	 * @return void
+	 * @return true|\WP_Error
 	 */
-	public function handle_paid_order( $event_data ) {
-		if ( empty( $this->settings['auto_fulfill_paid'] ) ) {
-			return;
-		}
-
-		$order = isset( $event_data['order'] ) ? $event_data['order'] : null;
-
+	public function send_order( $order ) {
 		if ( ! $order || ! $this->has_printful_items( $order ) ) {
-			return;
+			return new WP_Error(
+				'printful_no_items',
+				__( 'No Printful-enabled items were found in this order.', 'printful-integration-for-fluentcart' )
+			);
 		}
 
 		$already_synced = $order->getMeta( '_printful_order_id' );
 		if ( $already_synced ) {
-			return;
+			return new WP_Error(
+				'printful_already_synced',
+				__( 'Order already sent to Printful.', 'printful-integration-for-fluentcart' )
+			);
 		}
 
 		$payload = $this->build_order_payload( $order );
@@ -72,7 +72,7 @@ class Printful_Integration_For_Fluentcart_Order_Sync {
 		if ( is_wp_error( $payload ) ) {
 			$this->log_order_error( $order, $payload->get_error_message() );
 
-			return;
+			return $payload;
 		}
 
 		$response = $this->api->post( 'orders', $payload );
@@ -80,7 +80,7 @@ class Printful_Integration_For_Fluentcart_Order_Sync {
 		if ( is_wp_error( $response ) ) {
 			$this->log_order_error( $order, $response->get_error_message() );
 
-			return;
+			return $response;
 		}
 
 		$result   = isset( $response['result'] ) ? $response['result'] : $response;
@@ -96,6 +96,29 @@ class Printful_Integration_For_Fluentcart_Order_Sync {
 		}
 
 		Printful_Integration_For_Fluentcart_Sync_Manager::enqueue_order( $order->id );
+
+		return true;
+	}
+
+	/**
+	 * Handle paid FluentCart orders and send them to Printful if auto-fulfilment is enabled.
+	 *
+	 * @param array $event_data Event payload (order, transaction, customer, subscription).
+	 *
+	 * @return void
+	*/
+	public function handle_paid_order( $event_data ) {
+		if ( empty( $this->settings['auto_fulfill_paid'] ) ) {
+			return;
+		}
+
+		$order = isset( $event_data['order'] ) ? $event_data['order'] : null;
+
+		if ( ! $order ) {
+			return;
+		}
+
+		$this->send_order( $order );
 	}
 
 	/**
@@ -105,7 +128,7 @@ class Printful_Integration_For_Fluentcart_Order_Sync {
 	 *
 	 * @return array|\WP_Error
 	 */
-	protected function build_order_payload( $order ) {
+	public function build_order_payload( $order ) {
 		$relations = array( 'order_items', 'order_items.product', 'order_items.variants', 'shipping_address', 'customer' );
 		if ( method_exists( $order, 'loadMissing' ) ) {
 			$order->loadMissing( $relations );
