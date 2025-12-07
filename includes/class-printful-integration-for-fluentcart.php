@@ -147,11 +147,12 @@ class Printful_Integration_For_Fluentcart {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-loader.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-settings.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-api.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-catalog.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-api.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-catalog.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-product-mapping.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-sync-queue.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-sync-manager.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/orders/class-pifc-order-tax-helper.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-webhook-controller.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/webhooks/class-printful-integration-for-fluentcart-webhook-alerts.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-order-sync.php';
@@ -169,6 +170,7 @@ class Printful_Integration_For_Fluentcart {
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-product-importer.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/settings/class-pifc-shipping-settings.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-product-meta.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/auth/class-pifc-token-migrator.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-token-migration.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-order-actions.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/printful/class-pifc-printful-catalog.php';
@@ -181,13 +183,14 @@ class Printful_Integration_For_Fluentcart {
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-i18n.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-i18n.php';
 
-		/**
-		 * The class responsible for defining all actions that occur in the admin area.
-		 */
+                /**
+                 * The class responsible for defining all actions that occur in the admin area.
+                 */
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/diagnostics/class-printful-integration-for-fluentcart-diagnostics.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/includes/class-printful-integration-for-fluentcart-status-checklist.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/tools/class-pifc-token-migration-tool.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-printful-integration-for-fluentcart-admin.php';
 
 		/**

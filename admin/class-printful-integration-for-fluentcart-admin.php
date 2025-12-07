@@ -118,10 +118,10 @@ class Printful_Integration_For_Fluentcart_Admin {
 	 *
 	 * @return void
 	 */
-	public function render_diagnostics_page() {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to access this page.', 'printful-integration-for-fluentcart' ) );
-		}
+        public function render_diagnostics_page() {
+                if ( ! current_user_can( 'manage_options' ) ) {
+                        wp_die( esc_html__( 'Sorry, you are not allowed to access this page.', 'printful-integration-for-fluentcart' ) );
+                }
 
                 $settings        = Printful_Integration_For_Fluentcart_Settings::all();
                 $level           = isset( $_GET['printful_log_level'] ) ? sanitize_text_field( wp_unslash( $_GET['printful_log_level'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -357,8 +357,21 @@ class Printful_Integration_For_Fluentcart_Admin {
 				</tbody>
 			</table>
 		</div>
-		<?php
-	}
+                <?php
+        }
+
+        /**
+         * Tools page (token migration utility).
+         *
+         * @return void
+         */
+        public function render_tools_page() {
+                if ( ! current_user_can( 'manage_options' ) ) {
+                        wp_die( esc_html__( 'Sorry, you are not allowed to access this page.', 'printful-integration-for-fluentcart' ) );
+                }
+
+                PIFC_Token_Migration_Tool::render_page();
+        }
 
 	/**
 	 * Register JavaScript in admin when needed.
@@ -416,14 +429,23 @@ class Printful_Integration_For_Fluentcart_Admin {
                        array( $this, 'render_settings_page' )
                );
 
-	       add_submenu_page(
-		       $parent_slug,
-		       __( 'Printful Diagnostics', 'printful-integration-for-fluentcart' ),
-		       __( 'Printful Diagnostics', 'printful-integration-for-fluentcart' ),
-		       'manage_options',
-		       'printful-fluentcart-diagnostics',
-		       array( $this, 'render_diagnostics_page' )
-	       );
+               add_submenu_page(
+                       $parent_slug,
+                       __( 'Printful Diagnostics', 'printful-integration-for-fluentcart' ),
+                       __( 'Printful Diagnostics', 'printful-integration-for-fluentcart' ),
+                       'manage_options',
+                       'printful-fluentcart-diagnostics',
+                       array( $this, 'render_diagnostics_page' )
+               );
+
+               add_submenu_page(
+                       $parent_slug,
+                       __( 'Printful Tools', 'printful-integration-for-fluentcart' ),
+                       __( 'Printful Tools', 'printful-integration-for-fluentcart' ),
+                       'manage_options',
+                       'printful-fluentcart-tools',
+                       array( $this, 'render_tools_page' )
+               );
        }
 
 	/**
@@ -752,20 +774,38 @@ class Printful_Integration_For_Fluentcart_Admin {
 								</label>
 							</td>
 						</tr>
-						<tr>
-							<th scope="row"><?php esc_html_e( 'Prices include tax', 'printful-integration-for-fluentcart' ); ?></th>
-							<td>
-								<label for="printful_fluentcart_tax_inclusive">
-									<input type="checkbox" id="printful_fluentcart_tax_inclusive" name="printful_fluentcart_settings[tax_inclusive_prices]" value="1" <?php checked( ! empty( $settings['tax_inclusive_prices'] ) ); ?> />
-									<?php esc_html_e( 'Indicate that prices passed to Printful are tax-inclusive.', 'printful-integration-for-fluentcart' ); ?>
-								</label>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><?php esc_html_e( 'Embed Printful designer', 'printful-integration-for-fluentcart' ); ?></th>
-							<td>
-								<label for="printful_fluentcart_designer_embed">
-									<input type="checkbox" id="printful_fluentcart_designer_embed" name="printful_fluentcart_settings[enable_designer_embed]" value="1" <?php checked( ! empty( $settings['enable_designer_embed'] ) ); ?> />
+                                                <tr>
+                                                        <th scope="row"><?php esc_html_e( 'Prices include tax', 'printful-integration-for-fluentcart' ); ?></th>
+                                                        <td>
+                                                                <label for="printful_fluentcart_tax_inclusive">
+                                                                        <input type="checkbox" id="printful_fluentcart_tax_inclusive" name="printful_fluentcart_settings[tax_inclusive_prices]" value="1" <?php checked( ! empty( $settings['tax_inclusive_prices'] ) ); ?> />
+                                                                        <?php esc_html_e( 'Indicate that prices passed to Printful are tax-inclusive.', 'printful-integration-for-fluentcart' ); ?>
+                                                                </label>
+                                                        </td>
+                                                </tr>
+                                                <tr>
+                                                        <th scope="row"><?php esc_html_e( 'Sync tax address fallback', 'printful-integration-for-fluentcart' ); ?></th>
+                                                        <td>
+                                                                <label for="printful_fluentcart_sync_tax_addresses">
+                                                                        <input type="checkbox" id="printful_fluentcart_sync_tax_addresses" name="printful_fluentcart_settings[sync_printful_tax_addresses]" value="1" <?php checked( ! empty( $settings['sync_printful_tax_addresses'] ) ); ?> />
+                                                                        <?php esc_html_e( 'Fallback to billing or origin address when shipping is missing before sending to Printful.', 'printful-integration-for-fluentcart' ); ?>
+                                                                </label>
+                                                        </td>
+                                                </tr>
+                                                <tr>
+                                                        <th scope="row"><?php esc_html_e( 'Sync platform tax rules', 'printful-integration-for-fluentcart' ); ?></th>
+                                                        <td>
+                                                                <label for="printful_fluentcart_sync_tax_rules">
+                                                                        <input type="checkbox" id="printful_fluentcart_sync_tax_rules" name="printful_fluentcart_settings[sync_printful_tax_rules]" value="1" <?php checked( ! empty( $settings['sync_printful_tax_rules'] ) ); ?> />
+                                                                        <?php esc_html_e( 'Send FluentCart-calculated tax totals alongside external tax flag.', 'printful-integration-for-fluentcart' ); ?>
+                                                                </label>
+                                                        </td>
+                                                </tr>
+                                                <tr>
+                                                        <th scope="row"><?php esc_html_e( 'Embed Printful designer', 'printful-integration-for-fluentcart' ); ?></th>
+                                                        <td>
+                                                                <label for="printful_fluentcart_designer_embed">
+                                                                        <input type="checkbox" id="printful_fluentcart_designer_embed" name="printful_fluentcart_settings[enable_designer_embed]" value="1" <?php checked( ! empty( $settings['enable_designer_embed'] ) ); ?> />
 									<?php esc_html_e( 'Open Printful designer in an embedded modal (falls back to link).', 'printful-integration-for-fluentcart' ); ?>
 								</label>
 							</td>
@@ -1023,6 +1063,8 @@ class Printful_Integration_For_Fluentcart_Admin {
                         ),
                         'enable_printful_tax'     => ! empty( $input['enable_printful_tax'] ),
                         'tax_inclusive_prices'    => ! empty( $input['tax_inclusive_prices'] ),
+                        'sync_printful_tax_addresses' => ! empty( $input['sync_printful_tax_addresses'] ),
+                        'sync_printful_tax_rules'     => ! empty( $input['sync_printful_tax_rules'] ),
                         'enable_designer_embed'   => ! empty( $input['enable_designer_embed'] ),
                         'enable_request_logging'  => ! empty( $input['enable_request_logging'] ),
                         'enable_size_guides'      => ! empty( $input['enable_size_guides'] ),

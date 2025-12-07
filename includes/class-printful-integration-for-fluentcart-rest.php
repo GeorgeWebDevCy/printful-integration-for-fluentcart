@@ -121,6 +121,16 @@ class Printful_Integration_For_Fluentcart_Rest {
 
                 register_rest_route(
                         self::NAMESPACE,
+                        '/migrate-tokens',
+                        array(
+                                'methods'             => \WP_REST_Server::CREATABLE,
+                                'callback'            => array( __CLASS__, 'migrate_tokens' ),
+                                'permission_callback' => array( __CLASS__, 'permission' ),
+                        )
+                );
+
+                register_rest_route(
+                        self::NAMESPACE,
                         '/status',
                         array(
                                 'methods'             => \WP_REST_Server::READABLE,
@@ -217,14 +227,16 @@ class Printful_Integration_For_Fluentcart_Rest {
 	public static function tax_status( $request ) {
 		$settings = Printful_Integration_For_Fluentcart_Settings::all();
 
-		return new \WP_REST_Response(
-			array(
-				'enable_printful_tax'   => ! empty( $settings['enable_printful_tax'] ),
-				'tax_inclusive_prices'  => ! empty( $settings['tax_inclusive_prices'] ),
-			),
-			200
-		);
-	}
+                return new \WP_REST_Response(
+                        array(
+                                'enable_printful_tax'   => ! empty( $settings['enable_printful_tax'] ),
+                                'tax_inclusive_prices'  => ! empty( $settings['tax_inclusive_prices'] ),
+                                'sync_printful_tax_addresses' => ! empty( $settings['sync_printful_tax_addresses'] ),
+                                'sync_printful_tax_rules'     => ! empty( $settings['sync_printful_tax_rules'] ),
+                        ),
+                        200
+                );
+        }
 
 	/**
 	 * Logs payload.
@@ -233,20 +245,36 @@ class Printful_Integration_For_Fluentcart_Rest {
 	 *
 	 * @return \WP_REST_Response
 	 */
-	public static function logs( $request ) {
-		$level  = $request->get_param( 'level' );
-		$search = $request->get_param( 'search' );
-		$limit  = $request->get_param( 'limit' );
-		$limit  = $limit ? max( 1, (int) $limit ) : 100;
-		$logs   = class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? ( $search ? Printful_Integration_For_Fluentcart_Logger::search( $search ) : Printful_Integration_For_Fluentcart_Logger::filter( $level ) ) : array();
+        public static function logs( $request ) {
+                $level  = $request->get_param( 'level' );
+                $search = $request->get_param( 'search' );
+                $limit  = $request->get_param( 'limit' );
+                $limit  = $limit ? max( 1, (int) $limit ) : 100;
+                $logs   = class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? ( $search ? Printful_Integration_For_Fluentcart_Logger::search( $search ) : Printful_Integration_For_Fluentcart_Logger::filter( $level ) ) : array();
 
-		return new \WP_REST_Response(
-			array(
-				'logs' => class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? Printful_Integration_For_Fluentcart_Logger::limit( $logs, $limit ) : $logs,
-			),
-			200
-		);
-	}
+                return new \WP_REST_Response(
+                        array(
+                                'logs' => class_exists( 'Printful_Integration_For_Fluentcart_Logger' ) ? Printful_Integration_For_Fluentcart_Logger::limit( $logs, $limit ) : $logs,
+                        ),
+                        200
+                );
+        }
+
+        /**
+         * Trigger token migration.
+         *
+         * @param \WP_REST_Request $request Request.
+         *
+         * @return \WP_REST_Response
+         */
+        public static function migrate_tokens( $request ) {
+                $body    = $request->get_json_params();
+                $dry_run = is_array( $body ) && ! empty( $body['dry_run'] );
+
+                $report = Printful_Integration_For_Fluentcart_Token_Migration::migrate( $dry_run );
+
+                return new \WP_REST_Response( $report, 200 );
+        }
 
 	/**
 	 * Return settings subset.
@@ -287,10 +315,12 @@ class Printful_Integration_For_Fluentcart_Rest {
 			'fallback_rate',
 			'origin_address',
 			'origin_overrides',
-			'enable_printful_tax',
-			'tax_inclusive_prices',
-			'designer_links',
-			'enable_designer_embed',
+                        'enable_printful_tax',
+                        'tax_inclusive_prices',
+                        'sync_printful_tax_addresses',
+                        'sync_printful_tax_rules',
+                        'designer_links',
+                        'enable_designer_embed',
 			'last_migration',
 		);
 

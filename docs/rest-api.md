@@ -13,6 +13,7 @@ All endpoints live under the `printful-fluentcart/v1` namespace and require an a
 - `GET /products/{id}/variant-map` – stored variant mapping for a product.
 - `GET /status` – diagnostics snapshot for external monitors.
 - `GET /status-checklist` – health checklist items.
+- `POST /migrate-tokens` – trigger legacy token migration; accepts `{ "dry_run": true }` for discovery only.
 
 ## Settings mutations
 - `POST /settings` – upsert allowed keys (e.g., `enable_webhooks`, `webhook_secret`, origins, carrier lists, tax toggles). Payload is a partial settings object; unrecognised keys are ignored.

@@ -32,6 +32,7 @@ class Printful_Integration_For_Fluentcart_Diagnostics {
                         'last_error'           => $last_error,
                         'request_logging'      => ! empty( $settings['enable_request_logging'] ),
                         'log_api_calls'        => ! empty( $settings['log_api_calls'] ),
+                        'last_migration'       => isset( $settings['last_migration'] ) ? $settings['last_migration'] : array(),
                         'recent_errors'        => self::recent_errors(),
                         'request_log_entries'  => class_exists( 'Printful_Integration_For_Fluentcart_Request_Log' ) ? Printful_Integration_For_Fluentcart_Request_Log::recent( 5 ) : array(),
                 );
