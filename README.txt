@@ -29,6 +29,15 @@ Webhooks are preferred for immediate updates. Enable polling as a fallback or wh
 
 Yes. Only mapped variants are sent to Printful. Live rates require all physical items in the cart to be mapped.
 
+== REST API ==
+
+The plugin exposes REST endpoints under the `printful-fluentcart/v1` namespace for operational tooling and monitoring:
+
+* Read-only: health/config/status, tax toggles, diagnostics logs, mapped products, and variant maps.
+* Mutations: POST/PUT/DELETE for variant mappings, PATCH/DELETE for product-level Printful metadata, and POST/DELETE for updating or clearing settings keys.
+
+See `docs/rest-api.md` for endpoint details and payload examples.
+
 == WooCommerce parity status ==
 
 See `docs/woocommerce-parity.md` for a detailed comparison against the official Printful WooCommerce integration. Highlights:

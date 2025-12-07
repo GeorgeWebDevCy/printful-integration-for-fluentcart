@@ -105,10 +105,13 @@ class Printful_Integration_For_Fluentcart {
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_admin_hooks();
-		$this->define_public_hooks();
+                $this->define_public_hooks();
                 $this->define_integration_bootstrap();
 
                 Printful_Integration_For_Fluentcart_Rest::register();
+                Printful_Integration_For_Fluentcart_Rest_Settings_Controller::register();
+                Printful_Integration_For_Fluentcart_Rest_Mappings_Controller::register();
+                Printful_Integration_For_Fluentcart_Rest_Products_Controller::register();
                 Printful_Integration_For_Fluentcart_Size_Guide::register();
                 Printful_Integration_For_Fluentcart_Size_Charts::register();
                 Printful_Integration_For_Fluentcart_Product_Meta::register();
@@ -116,8 +119,9 @@ class Printful_Integration_For_Fluentcart {
                 PIFC_Variant_Meta::register();
                 PIFC_Delta_Sync::register();
                 PIFC_Product_Import_Screen::register();
+                Printful_Integration_For_Fluentcart_Webhook_Alerts::register();
 
-	}
+        }
 
 	/**
 	 * Load the required dependencies for this plugin.
@@ -145,15 +149,20 @@ class Printful_Integration_For_Fluentcart {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-settings.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-api.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-catalog.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-product-mapping.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-sync-queue.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-sync-manager.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-product-mapping.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-sync-queue.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-sync-manager.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-webhook-controller.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/webhooks/class-printful-integration-for-fluentcart-webhook-alerts.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-order-sync.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-shipping.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-logger.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-request-log.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-rest.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/rest/class-printful-integration-for-fluentcart-rest-controller.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/rest/class-printful-integration-for-fluentcart-rest-mappings-controller.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/rest/class-printful-integration-for-fluentcart-rest-products-controller.php';
+                require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/rest/class-printful-integration-for-fluentcart-rest-settings-controller.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-asset-cache.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-size-guide.php';
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-printful-integration-for-fluentcart-size-charts.php';

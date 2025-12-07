@@ -109,9 +109,29 @@ class Printful_Integration_For_Fluentcart_Settings {
 	 *
 	 * @return void
 	 */
-	public static function set( $key, $value ) {
-		$settings         = self::all();
-		$settings[ $key ] = $value;
-		update_option( self::OPTION_KEY, $settings );
-	}
+        public static function set( $key, $value ) {
+                $settings         = self::all();
+                $settings[ $key ] = $value;
+                update_option( self::OPTION_KEY, $settings );
+        }
+
+        /**
+         * Remove a stored setting key.
+         *
+         * @param string $key Setting key.
+         *
+         * @return bool
+         */
+        public static function remove( $key ) {
+                $settings = self::all();
+
+                if ( ! array_key_exists( $key, $settings ) ) {
+                        return false;
+                }
+
+                unset( $settings[ $key ] );
+                update_option( self::OPTION_KEY, $settings );
+
+                return true;
+        }
 }
