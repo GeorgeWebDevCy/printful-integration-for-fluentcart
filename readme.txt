@@ -4,7 +4,7 @@ Tags: fluentcart, printful, print on demand, ecommerce, fulfillment
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,8 +33,11 @@ Features include:
 
 == Changelog ==
 
+= 1.0.8 =
+* Removed the incompatible FluentCart global admin script from the Printful submenu pages and styled the `fct_*` markup directly so the layout matches FluentCart without requiring the full SPA boot process.
+
 = 1.0.7 =
-* Enqueued FluentCart's actual admin app stylesheet and global admin script on the Printful submenu pages so the shared `fct_*` wrapper renders with the proper FluentCart UI.
+* Enqueued FluentCart's actual admin app stylesheet on the Printful submenu pages so the shared `fct_*` wrapper renders with the proper FluentCart UI foundation.
 
 = 1.0.6 =
 * Added a WordPress `Update URI` header so the plugin reliably uses its custom GitHub update source.

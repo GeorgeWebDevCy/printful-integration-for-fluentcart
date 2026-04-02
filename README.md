@@ -179,7 +179,11 @@ This plugin self-updates from the `main` branch of this repository. When the `Ve
 
 ### 1.0.7
 
-- Enqueued FluentCart's real admin app stylesheet and global admin script on the Printful submenu pages so the `fct_*` layout now has the same CSS/JS foundation as FluentCart itself.
+- Enqueued FluentCart's real admin app stylesheet on the Printful submenu pages so the `fct_*` layout now has the same CSS foundation as FluentCart itself.
+
+### 1.0.8
+
+- Removed the incompatible FluentCart global admin script from the Printful submenu pages and styled the shared `fct_*` markup directly to better match the reference UI on standalone submenu screens.
 
 ## License
 

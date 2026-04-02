@@ -113,11 +113,6 @@ class AdminMenu
                 'fluent_cart_admin_app_css',
                 'styles/tailwind/style.css'
             );
-
-            \FluentCart\App\Vite::enqueueScript(
-                'fluent_cart_admin_global_js',
-                'admin/global.js'
-            );
         }
 
         wp_enqueue_style(
