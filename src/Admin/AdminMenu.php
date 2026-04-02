@@ -61,6 +61,8 @@ class AdminMenu
             'pifc-shipping-setup',
             [$this, 'renderShippingSetup']
         );
+
+        $this->rewriteSettingsMenuUrl();
     }
 
     public function renderSettings()
@@ -139,5 +141,24 @@ class AdminMenu
                 'confirmCancel'  => __('Cancel fulfillment for this order in Printful?', 'printful-for-fluentcart'),
             ],
         ]);
+    }
+
+    private function rewriteSettingsMenuUrl()
+    {
+        global $submenu;
+
+        if (empty($submenu['fluent-cart']) || !is_array($submenu['fluent-cart'])) {
+            return;
+        }
+
+        foreach ($submenu['fluent-cart'] as &$item) {
+            if (!isset($item[2]) || $item[2] !== 'pifc-settings') {
+                continue;
+            }
+
+            $item[2] = 'admin.php?page=fluent-cart#/integrations/printful';
+            break;
+        }
+        unset($item);
     }
 }

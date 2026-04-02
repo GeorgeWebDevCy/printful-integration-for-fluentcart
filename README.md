@@ -190,6 +190,10 @@ This plugin self-updates from the `main` branch of this repository. When the `Ve
 - Registered Printful as a real FluentCart integration module so its configuration now opens inside FluentCart's native Integrations UI.
 - Redirected the old Printful settings submenu into the FluentCart integration screen and updated legacy setup links to land there as well.
 
+### 1.0.10
+
+- Updated the Printful settings submenu link so it now points directly to FluentCart's native `admin.php?page=fluent-cart#/integrations/printful` route.
+
 ## License
 
 GPL-2.0-or-later — see [LICENSE](LICENSE) or <https://www.gnu.org/licenses/gpl-2.0.html>.
