@@ -35,6 +35,11 @@ class Plugin
         $this->registerFulfillmentServices();
         $this->registerShippingServices();
         $this->registerWebhookService();
+        $this->registerEmailService();
+        $this->registerActivityLogger();
+        $this->registerRefundHandler();
+        $this->registerDashboardWidget();
+        $this->registerCliCommands();
         $this->loader->run();
     }
 
@@ -57,6 +62,9 @@ class Plugin
         $settingsPage = new Admin\SettingsPage();
         $syncPage     = new Admin\ProductSyncPage();
         $orderPanel   = new Admin\OrderPanel();
+        $bulkFulfill  = new Admin\BulkFulfillPage();
+        $catalogPage  = new Admin\CatalogBrowserPage();
+        $shippingSetup= new Admin\ShippingSetupPage();
 
         $this->loader->addAction('admin_menu', $adminMenu, 'register', 25);
         $this->loader->addAction('admin_enqueue_scripts', $adminMenu, 'enqueueAssets');
@@ -74,6 +82,19 @@ class Plugin
         $this->loader->addAction('wp_ajax_pifc_fulfill_order', $orderPanel, 'handleManualFulfill');
         $this->loader->addAction('wp_ajax_pifc_cancel_fulfillment', $orderPanel, 'handleCancelFulfillment');
         $this->loader->addAction('wp_ajax_pifc_get_order_detail', $orderPanel, 'handleGetOrderDetail');
+
+        // Bulk fulfill AJAX
+        $this->loader->addAction('wp_ajax_pifc_get_unfulfilled_orders', $bulkFulfill, 'handleGetUnfulfilled');
+        $this->loader->addAction('wp_ajax_pifc_bulk_fulfill', $bulkFulfill, 'handleBulkFulfill');
+
+        // Catalog browser AJAX
+        $this->loader->addAction('wp_ajax_pifc_get_catalog_categories', $catalogPage, 'handleGetCategories');
+        $this->loader->addAction('wp_ajax_pifc_get_catalog_products',   $catalogPage, 'handleGetProducts');
+        $this->loader->addAction('wp_ajax_pifc_get_catalog_product',    $catalogPage, 'handleGetProduct');
+
+        // Shipping setup AJAX
+        $this->loader->addAction('wp_ajax_pifc_save_shipping_services', $shippingSetup, 'handleSave');
+        $this->loader->addAction('wp_ajax_pifc_get_shipping_services',  $shippingSetup, 'handleGet');
     }
 
     private function registerFulfillmentServices()
@@ -112,4 +133,46 @@ class Plugin
         $webhookService = new Services\WebhookService();
         $this->loader->addAction('rest_api_init', $webhookService, 'registerEndpoint');
     }
-}
+
+    private function registerEmailService()
+    {
+        $email = new Services\ShippingEmailService();
+        $this->loader->addAction('pifc/order_shipped', $email, 'onOrderShipped', 10, 2);
+    }
+
+    private function registerActivityLogger()
+    {
+        $logger = new Services\ActivityLogger();
+        $this->loader->addAction('pifc/order_fulfilled',     $logger, 'onOrderFulfilled',    10, 2);
+        $this->loader->addAction('pifc/order_shipped',       $logger, 'onOrderShipped',      10, 2);
+        $this->loader->addAction('pifc/fulfillment_failed',  $logger, 'onFulfillmentFailed', 10, 2);
+        $this->loader->addAction('pifc/order_returned',      $logger, 'onOrderReturned',     10, 2);
+        $this->loader->addAction('pifc/fulfillment_canceled',$logger, 'onFulfillmentCanceled',10, 2);
+    }
+
+    private function registerRefundHandler()
+    {
+        $settings = get_option('pifc_settings', []);
+        if (empty($settings['api_key'])) {
+            return;
+        }
+
+        $refund = new Services\RefundService();
+        $this->loader->addAction('fluent_cart/order_fully_refunded',    $refund, 'onOrderRefunded', 10, 1);
+        $this->loader->addAction('fluent_cart/order_partially_refunded', $refund, 'onOrderRefunded', 10, 1);
+    }
+
+    private function registerDashboardWidget()
+    {
+        if (is_admin()) {
+            $widget = new Admin\DashboardWidget();
+            $this->loader->addAction('wp_dashboard_setup', $widget, 'register');
+        }
+    }
+
+    private function registerCliCommands()
+    {
+        if (defined('WP_CLI') && WP_CLI) {
+            \WP_CLI::add_command('pifc', 'PrintfulForFluentCart\\Cli\\CliCommands');
+        }
+    }
