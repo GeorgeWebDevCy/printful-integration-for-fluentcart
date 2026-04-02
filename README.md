@@ -194,6 +194,11 @@ This plugin self-updates from the `main` branch of this repository. When the `Ve
 
 - Updated the Printful settings submenu link so it now points directly to FluentCart's native `admin.php?page=fluent-cart#/integrations/printful` route.
 
+### 1.0.11
+
+- Rebuilt the Printful integration settings payload to match FluentCart's native global integration schema instead of a custom field format that the Vue app could not render.
+- Removed the submenu URL rewrite hack and kept the old settings page as a normal redirect to the FluentCart integration route to avoid breaking FluentCart's admin runtime.
+
 ## License
 
 GPL-2.0-or-later — see [LICENSE](LICENSE) or <https://www.gnu.org/licenses/gpl-2.0.html>.

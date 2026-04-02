@@ -4,7 +4,7 @@ Tags: fluentcart, printful, print on demand, ecommerce, fulfillment
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.0.10
+Stable tag: 1.0.11
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,6 +32,10 @@ Features include:
 4. Open **FluentCart > Printful** and save your Printful API key.
 
 == Changelog ==
+
+= 1.0.11 =
+* Rebuilt the Printful integration settings payload so it matches FluentCart's native global integration schema instead of a custom format that broke the Vue integration screen.
+* Removed the submenu URL rewrite hack and kept the legacy settings page as a redirect into FluentCart's integration route for safer admin app behavior.
 
 = 1.0.10 =
 * Updated the Printful settings submenu link so it points directly to FluentCart's native `admin.php?page=fluent-cart#/integrations/printful` route instead of first loading a plugin-specific page slug.

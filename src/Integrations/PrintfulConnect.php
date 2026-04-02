@@ -17,7 +17,7 @@ class PrintfulConnect extends \FluentCart\App\Modules\Integrations\BaseIntegrati
         $this->description = __('Connect Printful to sync products, control fulfillment behavior, and manage shipment automation from inside FluentCart.', 'printful-for-fluentcart');
         $this->logo = PIFC_PLUGIN_URL . 'assets/images/printful.svg';
         $this->category = 'core';
-        $this->scopes = [];
+        $this->scopes = ['global'];
     }
 
     public function boot()
@@ -72,14 +72,7 @@ class PrintfulConnect extends \FluentCart\App\Modules\Integrations\BaseIntegrati
 
         return [
             'api_key' => $settings['api_key'],
-            'auto_fulfill' => $settings['auto_fulfill'] ? 'yes' : 'no',
-            'auto_confirm' => $settings['auto_confirm'] ? 'yes' : 'no',
-            'test_mode' => $settings['test_mode'] ? 'yes' : 'no',
-            'sync_on_import' => $settings['sync_on_import'] ? 'yes' : 'no',
-            'sync_product_costs' => $settings['sync_product_costs'] ? 'yes' : 'no',
-            'auto_retry_failed' => $settings['auto_retry_failed'] ? 'yes' : 'no',
-            'disable_shipping_email' => $settings['disable_shipping_email'] ? 'yes' : 'no',
-            'disable_auto_cancel_on_refund' => $settings['disable_auto_cancel_on_refund'] ? 'yes' : 'no',
+            'status' => $this->isConfigured(),
             'webhook_url' => rest_url('pifc/v1/webhook'),
         ];
     }
@@ -87,68 +80,76 @@ class PrintfulConnect extends \FluentCart\App\Modules\Integrations\BaseIntegrati
     public function getGlobalSettingsFields()
     {
         return [
-            'title' => __('Printful', 'printful-for-fluentcart'),
-            'sub_title' => __('Connect your Printful store and control how fulfillment behaves inside FluentCart.', 'printful-for-fluentcart'),
+            'logo' => $this->logo,
+            'menu_title' => __('Printful', 'printful-for-fluentcart'),
+            'menu_description' => __('Connect your Printful store and control how fulfillment behaves inside FluentCart.', 'printful-for-fluentcart'),
+            'config_instruction' => wp_kses_post(
+                __(
+                    '<p>Add your Printful API key to connect the store. After saving, you can use the product sync, orders, shipping, and bulk fulfillment tools from the Printful submenu.</p>',
+                    'printful-for-fluentcart'
+                )
+            ),
             'save_button_text' => __('Save Settings', 'printful-for-fluentcart'),
             'valid_message' => __('Your Printful API key is valid.', 'printful-for-fluentcart'),
             'invalid_message' => __('Your Printful API key is not valid.', 'printful-for-fluentcart'),
             'fields' => [
-                [
-                    'key' => 'api_key',
+                'api_key' => [
                     'label' => __('Printful API Key', 'printful-for-fluentcart'),
-                    'required' => true,
                     'placeholder' => __('Paste your Printful API key here', 'printful-for-fluentcart'),
-                    'component' => 'text',
-                    'inline_tip' => __('Generate your key in Printful Dashboard -> Settings -> API.', 'printful-for-fluentcart'),
+                    'type' => 'password',
+                    'tips' => __('Generate your key in Printful Dashboard -> Settings -> API.', 'printful-for-fluentcart'),
                 ],
-                [
-                    'key' => 'auto_fulfill',
-                    'component' => 'yes-no-checkbox',
-                    'checkbox_label' => __('Automatically send paid orders to Printful for fulfillment', 'printful-for-fluentcart'),
-                    'inline_tip' => __('When enabled, paid FluentCart orders containing mapped Printful items are sent automatically.', 'printful-for-fluentcart'),
+                'connection_test' => [
+                    'label' => __('Connection Test', 'printful-for-fluentcart'),
+                    'type' => 'authenticate-button',
+                    'button_text' => __('Test Connection', 'printful-for-fluentcart'),
+                    'end_point' => '/authenticate',
                 ],
-                [
-                    'key' => 'auto_confirm',
-                    'component' => 'yes-no-checkbox',
-                    'checkbox_label' => __('Automatically confirm Printful orders', 'printful-for-fluentcart'),
-                    'inline_tip' => __('Use with caution. Confirming an order can trigger billing and production in Printful.', 'printful-for-fluentcart'),
-                ],
-                [
-                    'key' => 'test_mode',
-                    'component' => 'yes-no-checkbox',
-                    'checkbox_label' => __('Create orders in Printful draft mode', 'printful-for-fluentcart'),
-                    'inline_tip' => __('Draft mode prevents charging and production while you validate the integration.', 'printful-for-fluentcart'),
-                ],
-                [
-                    'key' => 'sync_on_import',
-                    'component' => 'yes-no-checkbox',
-                    'checkbox_label' => __('Pull fresh product data during product sync', 'printful-for-fluentcart'),
-                ],
-                [
-                    'key' => 'sync_product_costs',
-                    'component' => 'yes-no-checkbox',
-                    'checkbox_label' => __('Store Printful production costs on synced variations', 'printful-for-fluentcart'),
-                ],
-                [
-                    'key' => 'auto_retry_failed',
-                    'component' => 'yes-no-checkbox',
-                    'checkbox_label' => __('Retry failed Printful submissions once automatically', 'printful-for-fluentcart'),
-                ],
-                [
-                    'key' => 'disable_shipping_email',
-                    'component' => 'yes-no-checkbox',
-                    'checkbox_label' => __('Disable the customer tracking email when Printful marks an order as shipped', 'printful-for-fluentcart'),
-                ],
-                [
-                    'key' => 'disable_auto_cancel_on_refund',
-                    'component' => 'yes-no-checkbox',
-                    'checkbox_label' => __('Disable automatic Printful cancel attempts when a FluentCart order is refunded', 'printful-for-fluentcart'),
-                ],
-                [
-                    'key' => 'webhook_url',
+                'webhook_url' => [
                     'label' => __('Webhook URL', 'printful-for-fluentcart'),
-                    'component' => 'text',
-                    'inline_tip' => __('This endpoint is registered with Printful when you save settings. It receives shipment and order events.', 'printful-for-fluentcart'),
+                    'type' => 'text',
+                    'tips' => __('This endpoint is registered with Printful when you save settings. It receives shipment and order events.', 'printful-for-fluentcart'),
+                ],
+                'printful_dashboard' => [
+                    'label' => __('Printful Dashboard', 'printful-for-fluentcart'),
+                    'type' => 'link',
+                    'link' => 'https://www.printful.com/dashboard',
+                    'link_text' => __('Open Printful Dashboard', 'printful-for-fluentcart'),
+                    'target' => '_blank',
+                    'btn_class' => 'el-button el-button--default',
+                    'tips' => __('Manage API keys, billing, and store-level Printful settings.', 'printful-for-fluentcart'),
+                ],
+                'product_sync' => [
+                    'label' => __('Product Sync', 'printful-for-fluentcart'),
+                    'type' => 'link',
+                    'link' => admin_url('admin.php?page=pifc-product-sync'),
+                    'link_text' => __('Open Product Sync', 'printful-for-fluentcart'),
+                    'btn_class' => 'el-button el-button--default',
+                    'tips' => __('Sync catalog products, variants, and mapped data from Printful.', 'printful-for-fluentcart'),
+                ],
+                'orders' => [
+                    'label' => __('Printful Orders', 'printful-for-fluentcart'),
+                    'type' => 'link',
+                    'link' => admin_url('admin.php?page=pifc-orders'),
+                    'link_text' => __('Open Orders Panel', 'printful-for-fluentcart'),
+                    'btn_class' => 'el-button el-button--default',
+                    'tips' => __('Review fulfillment status, inspect payloads, and trigger order actions manually.', 'printful-for-fluentcart'),
+                ],
+                'bulk_fulfill' => [
+                    'label' => __('Bulk Fulfillment', 'printful-for-fluentcart'),
+                    'type' => 'link',
+                    'link' => admin_url('admin.php?page=pifc-bulk-fulfill'),
+                    'link_text' => __('Open Bulk Fulfillment', 'printful-for-fluentcart'),
+                    'btn_class' => 'el-button el-button--default',
+                    'tips' => __('Send multiple eligible orders to Printful in one workflow.', 'printful-for-fluentcart'),
+                ],
+                'shipping_setup' => [
+                    'label' => __('Shipping Setup', 'printful-for-fluentcart'),
+                    'type' => 'link',
+                    'link' => admin_url('admin.php?page=pifc-shipping-setup'),
+                    'link_text' => __('Open Shipping Setup', 'printful-for-fluentcart'),
+                    'btn_class' => 'el-button el-button--default',
+                    'tips' => __('Map Printful shipping services and adjust delivery handling.', 'printful-for-fluentcart'),
                 ],
             ],
         ];
@@ -236,6 +237,7 @@ class PrintfulConnect extends \FluentCart\App\Modules\Integrations\BaseIntegrati
 
         wp_send_json([
             'message' => $message,
+            'status' => !empty($settings['api_key']),
             'integration' => $this->getGlobalSettings(),
         ], 200);
     }
