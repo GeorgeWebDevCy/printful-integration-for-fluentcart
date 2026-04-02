@@ -3,7 +3,7 @@
  * Plugin Name:       Printful Integration for FluentCart
  * Plugin URI:        https://github.com/GeorgeWebDevCy/printful-integration-for-fluentcart
  * Description:       Connects Printful print-on-demand fulfillment with FluentCart - automatic order fulfillment, product sync, live shipping rates, and shipment tracking.
- * Version:           1.0.21
+ * Version:           1.0.22
  * Author:            George Nicolaou
  * Author URI:        https://georgewebdev.cy
  * Update URI:        https://github.com/GeorgeWebDevCy/printful-integration-for-fluentcart
@@ -17,7 +17,7 @@
 
 defined('ABSPATH') || exit;
 
-define('PIFC_VERSION', '1.0.21');
+define('PIFC_VERSION', '1.0.22');
 define('PIFC_PLUGIN_FILE', __FILE__);
 define('PIFC_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('PIFC_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -25,6 +25,16 @@ define('PIFC_PLUGIN_SLUG', 'printful-for-fluentcart');
 
 if (file_exists(PIFC_PLUGIN_DIR . 'vendor/autoload.php')) {
     require_once PIFC_PLUGIN_DIR . 'vendor/autoload.php';
+}
+
+// Composer's generated autoloader in shipped plugin builds does not always
+// include PUC's file-based bootstrap. Load it explicitly so the updater is
+// available on production sites.
+if (
+    !class_exists('\YahnisElsts\PluginUpdateChecker\v5\PucFactory')
+    && file_exists(PIFC_PLUGIN_DIR . 'vendor/yahnis-elsts/plugin-update-checker/load-v5p6.php')
+) {
+    require_once PIFC_PLUGIN_DIR . 'vendor/yahnis-elsts/plugin-update-checker/load-v5p6.php';
 }
 
 if (class_exists('\YahnisElsts\PluginUpdateChecker\v5\PucFactory')) {

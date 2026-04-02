@@ -218,6 +218,10 @@ This plugin self-updates from the `main` branch of this repository. When the `Ve
 
 - Test release bump to verify the GitHub update mechanism on live sites.
 
+### 1.0.22
+
+- Fixed the GitHub updater bootstrap by explicitly loading `plugin-update-checker`'s file-based loader when Composer's generated autoloader does not expose `PucFactory`.
+
 ### 1.0.17
 
 - Fixed the native FluentCart Printful integration screen by returning the wrapped REST payload shape FluentCart's Vue app expects, so the page now renders properly inside FluentCart instead of failing with a blank settings pane.
