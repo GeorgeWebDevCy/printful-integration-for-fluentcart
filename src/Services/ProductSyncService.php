@@ -20,6 +20,8 @@ defined('ABSPATH') || exit;
  * • Each Printful sync-variant  → one ProductVariation row
  *   fct_product_meta row:  object_type=variation, meta_key=_printful_sync_variant_id
  *   fct_product_meta row:  object_type=variation, meta_key=_printful_variant_id (catalog id)
+ *   ProductVariation.other_info.printful_attributes = { Color: 'Black', Size: 'XL', … }
+ *   ProductVariation.item_cost = Printful catalog production cost (if enabled)
  */
 class ProductSyncService
 {
@@ -197,21 +199,28 @@ class ProductSyncService
             ? (int) round((float) $syncVariant['retail_price'] * 100)
             : 0;
 
+        // ── Feature: Product Cost Sync ──────────────────────────────────────
+        $itemCost = $this->fetchProductionCost($syncVariant);
+
+        // ── Feature: Variant Attribute Display ─────────────────────────────
+        $attributes    = $this->parseAttributes($syncVariant['name'] ?? '');
+        $variationTitle = $this->buildVariationTitle($syncVariant, $attributes);
+
         $variation = ProductVariation::create([
             'post_id'              => $postId,
             'serial_index'         => $index,
-            'variation_title'      => sanitize_text_field($syncVariant['name'] ?? 'Default'),
+            'variation_title'      => sanitize_text_field($variationTitle),
             'variation_identifier' => sanitize_text_field($syncVariant['sku'] ?? ''),
             'sku'                  => sanitize_text_field($syncVariant['sku'] ?? ''),
             'item_price'           => $retailPrice,
-            'item_cost'            => 0,
+            'item_cost'            => $itemCost,
             'compare_price'        => 0,
             'manage_stock'         => false,
             'fulfillment_type'     => 'physical',
             'payment_type'         => 'onetime',
             'stock_status'         => 'in_stock',
             'item_status'          => 'active',
-            'other_info'           => [],
+            'other_info'           => ['printful_attributes' => $attributes],
         ]);
 
         if (!$variation || !$variation->id) {
@@ -248,10 +257,17 @@ class ProductSyncService
             ? (int) round((float) $syncVariant['retail_price'] * 100)
             : 0;
 
+        $attributes    = $this->parseAttributes($syncVariant['name'] ?? '');
+        $variationTitle = $this->buildVariationTitle($syncVariant, $attributes);
+        $itemCost       = $this->fetchProductionCost($syncVariant);
+
         ProductVariation::where('id', $variationId)->update([
             'item_price'           => $retailPrice,
+            'item_cost'            => $itemCost,
             'sku'                  => sanitize_text_field($syncVariant['sku'] ?? ''),
             'variation_identifier' => sanitize_text_field($syncVariant['sku'] ?? ''),
+            'variation_title'      => sanitize_text_field($variationTitle),
+            'other_info'           => ['printful_attributes' => $attributes],
         ]);
     }
 
@@ -295,6 +311,95 @@ class ProductSyncService
             ->first();
 
         return $variation ? (int) $variation->id : 0;
+    }
+
+    // ─── Product Cost Sync ────────────────────────────────────────────────────
+
+    /**
+     * Fetch the Printful production cost for a sync-variant via the catalog API.
+     *
+     * Enabled only when 'sync_product_costs' is true in plugin settings.
+     * Returns 0 if disabled, the catalog variant is unavailable, or any error occurs.
+     *
+     * @param  array $syncVariant
+     * @return int  Cost in cents.
+     */
+    private function fetchProductionCost(array $syncVariant)
+    {
+        $settings = get_option('pifc_settings', []);
+
+        if (empty($settings['sync_product_costs'])) {
+            return 0;
+        }
+
+        $catalogVariantId = (int) ($syncVariant['variant_id'] ?? 0);
+
+        if (!$catalogVariantId) {
+            return 0;
+        }
+
+        $catalogVariant = $this->client->getCatalogVariant($catalogVariantId);
+
+        if (is_wp_error($catalogVariant) || empty($catalogVariant['price'])) {
+            return 0;
+        }
+
+        return (int) round((float) $catalogVariant['price'] * 100);
+    }
+
+    // ─── Variant Attribute Display ────────────────────────────────────────────
+
+    /**
+     * Parse a Printful variant name like "Black / XL" or "White - S"
+     * into a key→value attribute map.
+     *
+     * Returns an empty array when no separators are found (single-option variant).
+     *
+     * @param  string $variantName  e.g. "Black / XL"
+     * @return array                e.g. ['Color' => 'Black', 'Size' => 'XL']
+     */
+    private function parseAttributes($variantName)
+    {
+        $name = trim($variantName);
+        if ($name === '') {
+            return [];
+        }
+
+        // Printful uses " / " as a separator between attribute values.
+        $parts = preg_split('/\s*[\/|]\s*/', $name);
+
+        if (count($parts) < 2) {
+            return [];
+        }
+
+        // Map positions to well-known attribute label names.
+        // Printful's convention: first part = color/style, second = size.
+        $labels = apply_filters('pifc/variant_attribute_labels', ['Color', 'Size', 'Style']);
+
+        $attributes = [];
+        foreach ($parts as $i => $part) {
+            $label = $labels[$i] ?? 'Option ' . ($i + 1);
+            $attributes[$label] = trim($part);
+        }
+
+        return $attributes;
+    }
+
+    /**
+     * Build a human-readable variation title from the parsed attributes.
+     * Falls back to the raw Printful variant name.
+     *
+     * @param  array  $syncVariant
+     * @param  array  $attributes   Parsed attribute map.
+     * @return string
+     */
+    private function buildVariationTitle(array $syncVariant, array $attributes)
+    {
+        if (empty($attributes)) {
+            return $syncVariant['name'] ?? 'Default';
+        }
+
+        return implode(' / ', array_values($attributes));
     }
 
     // ─── Thumbnail ────────────────────────────────────────────────────────────
