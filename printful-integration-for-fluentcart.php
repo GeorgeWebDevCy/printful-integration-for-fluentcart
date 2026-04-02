@@ -1,0 +1,59 @@
+<?php
+/**
+ * Plugin Name:       Printful Integration for FluentCart
+ * Plugin URI:        https://github.com/GeorgeWebDevCy/printful-integration-for-fluentcart
+ * Description:       Connects Printful print-on-demand fulfillment with FluentCart — automatic order fulfillment, product sync, live shipping rates, and shipment tracking.
+ * Version:           1.0.0
+ * Author:            George Nicolaou
+ * Author URI:        https://georgewebdev.cy
+ * License:           GPL-2.0+
+ * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
+ * Text Domain:       printful-for-fluentcart
+ * Domain Path:       /languages
+ * Requires at least: 5.8
+ * Requires PHP:      7.4
+ */
+
+defined('ABSPATH') || exit;
+
+define('PIFC_VERSION', '1.0.0');
+define('PIFC_PLUGIN_FILE', __FILE__);
+define('PIFC_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('PIFC_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('PIFC_PLUGIN_SLUG', 'printful-for-fluentcart');
+
+// PSR-4 autoloader for the PrintfulForFluentCart namespace.
+spl_autoload_register(function ($class) {
+    $prefix   = 'PrintfulForFluentCart\\';
+    $base_dir = PIFC_PLUGIN_DIR . 'src/';
+
+    if (strncmp($prefix, $class, strlen($prefix)) !== 0) {
+        return;
+    }
+
+    $relative = substr($class, strlen($prefix));
+    $file     = $base_dir . str_replace('\\', '/', $relative) . '.php';
+
+    if (file_exists($file)) {
+        require $file;
+    }
+});
+
+register_activation_hook(__FILE__, ['PrintfulForFluentCart\\Activator', 'activate']);
+register_deactivation_hook(__FILE__, ['PrintfulForFluentCart\\Deactivator', 'deactivate']);
+
+add_action('plugins_loaded', function () {
+    if (!defined('FLUENT_CART_DIR')) {
+        add_action('admin_notices', function () {
+            echo '<div class="notice notice-error"><p>';
+            echo esc_html__(
+                'Printful for FluentCart requires FluentCart to be installed and active.',
+                'printful-for-fluentcart'
+            );
+            echo '</p></div>';
+        });
+        return;
+    }
+
+    \PrintfulForFluentCart\Plugin::getInstance()->boot();
+}, 20);
