@@ -4,9 +4,8 @@
     <?php
     $pifc_current_page = 'catalog';
     $pifc_page_title = __('Catalog Browser', 'printful-for-fluentcart');
-    $pifc_page_icon = 'dashicons-search';
     $pifc_page_subtitle = __('Browse Printful catalog items, review variants, and jump into your store setup workflow.', 'printful-for-fluentcart');
-    include __DIR__ . '/partials/header.php';
+    include __DIR__ . '/partials/layout-start.php';
     ?>
 
     <div class="pifc-card">
@@ -86,6 +85,7 @@
         </div>
     </div>
 
+    <?php include __DIR__ . '/partials/layout-end.php'; ?>
 </div>
 
 <script type="text/javascript">

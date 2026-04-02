@@ -4,9 +4,8 @@
     <?php
     $pifc_current_page = 'settings';
     $pifc_page_title = __('Printful Settings', 'printful-for-fluentcart');
-    $pifc_page_icon = 'dashicons-store';
     $pifc_page_subtitle = __('Connect your Printful store and control how fulfillment behaves inside FluentCart.', 'printful-for-fluentcart');
-    include __DIR__ . '/partials/header.php';
+    include __DIR__ . '/partials/layout-start.php';
     ?>
 
     <div class="pifc-card">
@@ -176,4 +175,5 @@
         <span id="pifc-save-status"></span>
     </p>
 
+    <?php include __DIR__ . '/partials/layout-end.php'; ?>
 </div>

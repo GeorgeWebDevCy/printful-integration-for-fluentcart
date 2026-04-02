@@ -4,9 +4,8 @@
     <?php
     $pifc_current_page = 'product-sync';
     $pifc_page_title = __('Product Sync', 'printful-for-fluentcart');
-    $pifc_page_icon = 'dashicons-update';
     $pifc_page_subtitle = __('Import prepared Printful store products into FluentCart and keep them up to date.', 'printful-for-fluentcart');
-    include __DIR__ . '/partials/header.php';
+    include __DIR__ . '/partials/layout-start.php';
     ?>
 
     <?php
@@ -85,4 +84,5 @@
         </ol>
     </div>
 
+    <?php include __DIR__ . '/partials/layout-end.php'; ?>
 </div>

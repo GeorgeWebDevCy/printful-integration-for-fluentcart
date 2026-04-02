@@ -9,9 +9,8 @@ $services      = \PrintfulForFluentCart\Admin\ShippingSetupPage::SERVICES;
     <?php
     $pifc_current_page = 'shipping-setup';
     $pifc_page_title = __('Shipping Setup', 'printful-for-fluentcart');
-    $pifc_page_icon = 'dashicons-car';
     $pifc_page_subtitle = __('Map Printful shipping services into FluentCart zones and keep rate selection predictable.', 'printful-for-fluentcart');
-    include __DIR__ . '/partials/header.php';
+    include __DIR__ . '/partials/layout-start.php';
     ?>
 
     <div class="pifc-card">
@@ -96,6 +95,7 @@ $services      = \PrintfulForFluentCart\Admin\ShippingSetupPage::SERVICES;
         </ol>
     </div>
 
+    <?php include __DIR__ . '/partials/layout-end.php'; ?>
 </div>
 
 <script type="text/javascript">

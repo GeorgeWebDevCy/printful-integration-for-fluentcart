@@ -4,9 +4,8 @@
     <?php
     $pifc_current_page = 'orders';
     $pifc_page_title = __('Printful Orders', 'printful-for-fluentcart');
-    $pifc_page_icon = 'dashicons-airplane';
     $pifc_page_subtitle = __('Track synced fulfillment activity, inspect shipment details, and manually resend orders when needed.', 'printful-for-fluentcart');
-    include __DIR__ . '/partials/header.php';
+    include __DIR__ . '/partials/layout-start.php';
     ?>
 
     <?php
@@ -91,6 +90,7 @@
         <div id="pifc-manual-detail"></div>
     </div>
 
+    <?php include __DIR__ . '/partials/layout-end.php'; ?>
 </div>
 
 <script type="text/javascript">

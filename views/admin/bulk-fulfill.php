@@ -4,9 +4,8 @@
     <?php
     $pifc_current_page = 'bulk-fulfill';
     $pifc_page_title = __('Bulk Fulfill Orders', 'printful-for-fluentcart');
-    $pifc_page_icon = 'dashicons-upload';
     $pifc_page_subtitle = __('Load ready-to-send FluentCart orders and push them to Printful in batches.', 'printful-for-fluentcart');
-    include __DIR__ . '/partials/header.php';
+    include __DIR__ . '/partials/layout-start.php';
     ?>
 
     <div class="pifc-card">
@@ -65,6 +64,7 @@
         <div id="pifc-bulk-log" class="pifc-sync-log" style="display:none;margin-top:12px"></div>
     </div>
 
+    <?php include __DIR__ . '/partials/layout-end.php'; ?>
 </div>
 
 <script type="text/javascript">

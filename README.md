@@ -167,6 +167,11 @@ This plugin self-updates from the `main` branch of this repository. When the `Ve
 - Reworked the admin layout to use a shared FluentCart-style header, navigation, and hero section across plugin pages.
 - Brought the overall admin structure closer to the FluentCart reference UI instead of a generic standalone WordPress settings layout.
 
+### 1.0.5
+
+- Switched the plugin admin pages into a FluentCart-style app wrapper using `#fct_admin_app_wrapper`, the global admin menu holder, and a settings-style nav/content shell.
+- Replaced the custom page shell with a layout that more closely matches the FluentCart admin DOM structure shown in the reference markup.
+
 ## License
 
 GPL-2.0-or-later — see [LICENSE](LICENSE) or <https://www.gnu.org/licenses/gpl-2.0.html>.
