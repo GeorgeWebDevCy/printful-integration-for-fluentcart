@@ -33,8 +33,10 @@ class Activator
             'test_mode'             => false,
             'sync_on_import'        => true,
             'sync_product_costs'    => false,
-            'disable_shipping_email'=> false,
-            'webhook_secret'        => wp_generate_password(32, false),
+            'disable_shipping_email'          => false,
+            'disable_auto_cancel_on_refund'   => false,
+            'auto_retry_failed'               => true,
+            'webhook_secret'                  => wp_generate_password(32, false),
         ];
     }
 }

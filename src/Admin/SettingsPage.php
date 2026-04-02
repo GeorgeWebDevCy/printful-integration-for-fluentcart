@@ -57,12 +57,16 @@ class SettingsPage
         $current = get_option('pifc_settings', Activator::defaultSettings());
 
         $settings = [
-            'api_key'        => sanitize_text_field(wp_unslash($_POST['api_key'] ?? '')),
-            'auto_fulfill'   => !empty($_POST['auto_fulfill']),
-            'auto_confirm'   => !empty($_POST['auto_confirm']),
-            'test_mode'      => !empty($_POST['test_mode']),
-            'sync_on_import' => !empty($_POST['sync_on_import']),
-            'webhook_secret' => $current['webhook_secret'] ?? wp_generate_password(32, false),
+            'api_key'                        => sanitize_text_field(wp_unslash($_POST['api_key'] ?? '')),
+            'auto_fulfill'                   => !empty($_POST['auto_fulfill']),
+            'auto_confirm'                   => !empty($_POST['auto_confirm']),
+            'test_mode'                      => !empty($_POST['test_mode']),
+            'sync_on_import'                 => !empty($_POST['sync_on_import']),
+            'sync_product_costs'             => !empty($_POST['sync_product_costs']),
+            'disable_shipping_email'         => !empty($_POST['disable_shipping_email']),
+            'disable_auto_cancel_on_refund'  => !empty($_POST['disable_auto_cancel_on_refund']),
+            'auto_retry_failed'              => !empty($_POST['auto_retry_failed']),
+            'webhook_secret'                 => $current['webhook_secret'] ?? wp_generate_password(32, false),
         ];
 
         update_option('pifc_settings', $settings);

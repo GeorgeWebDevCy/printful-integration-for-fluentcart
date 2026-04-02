@@ -94,6 +94,17 @@
                     </label>
                 </td>
             </tr>
+            <tr>
+                <th scope="row"><?php esc_html_e('Auto-Retry Failed Orders', 'printful-for-fluentcart'); ?></th>
+                <td>
+                    <label>
+                        <input type="checkbox" name="auto_retry_failed" value="1"
+                            <?php checked(!empty($settings['auto_retry_failed'])); ?>>
+                        <?php esc_html_e('Automatically re-submit a Printful order once if Printful reports it as failed', 'printful-for-fluentcart'); ?>
+                    </label>
+                    <p class="description"><?php esc_html_e('Only one retry is attempted per order to prevent infinite loops.', 'printful-for-fluentcart'); ?></p>
+                </td>
+            </tr>
         </table>
     </div>
 

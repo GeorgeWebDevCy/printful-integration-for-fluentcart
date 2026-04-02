@@ -147,6 +147,23 @@ class WebhookService
         $order->updateMeta('_printful_fulfillment_error', $reason);
 
         do_action('pifc/fulfillment_failed', $order, $reason);
+
+        // Auto-retry: re-create the Printful order once unless already retried.
+        $settings = get_option('pifc_settings', []);
+        if (!empty($settings['auto_retry_failed']) && !$order->getMeta('_printful_retry_attempted')) {
+            $order->updateMeta('_printful_retry_attempted', 1);
+            // Remove the old failed order ID so fulfillOrder creates a fresh one.
+            $order->deleteMeta('_printful_order_id');
+            $order->deleteMeta('_printful_order_status');
+
+            $service = new OrderFulfillmentService();
+            $result  = $service->fulfillOrder($order);
+
+            if (is_wp_error($result)) {
+                $order->updateMeta('_printful_order_status', 'failed');
+                $order->updateMeta('_printful_fulfillment_error', $result->get_error_message());
+            }
+        }
     }
 
     /** @param array $body */
