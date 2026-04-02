@@ -4,7 +4,7 @@ Tags: fluentcart, printful, print on demand, ecommerce, fulfillment
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.0.6
+Stable tag: 1.0.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,6 +32,9 @@ Features include:
 4. Open **FluentCart > Printful** and save your Printful API key.
 
 == Changelog ==
+
+= 1.0.7 =
+* Enqueued FluentCart's actual admin app stylesheet and global admin script on the Printful submenu pages so the shared `fct_*` wrapper renders with the proper FluentCart UI.
 
 = 1.0.6 =
 * Added a WordPress `Update URI` header so the plugin reliably uses its custom GitHub update source.

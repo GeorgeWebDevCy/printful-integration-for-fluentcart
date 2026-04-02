@@ -177,6 +177,10 @@ This plugin self-updates from the `main` branch of this repository. When the `Ve
 - Added a WordPress `Update URI` header so the plugin reliably uses its custom GitHub update source instead of any WordPress.org lookup path.
 - Added a WordPress-style `readme.txt` so plugin-update-checker can expose proper update metadata, changelog details, and stable version info.
 
+### 1.0.7
+
+- Enqueued FluentCart's real admin app stylesheet and global admin script on the Printful submenu pages so the `fct_*` layout now has the same CSS/JS foundation as FluentCart itself.
+
 ## License
 
 GPL-2.0-or-later — see [LICENSE](LICENSE) or <https://www.gnu.org/licenses/gpl-2.0.html>.
