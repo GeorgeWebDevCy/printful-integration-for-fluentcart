@@ -172,6 +172,11 @@ This plugin self-updates from the `main` branch of this repository. When the `Ve
 - Switched the plugin admin pages into a FluentCart-style app wrapper using `#fct_admin_app_wrapper`, the global admin menu holder, and a settings-style nav/content shell.
 - Replaced the custom page shell with a layout that more closely matches the FluentCart admin DOM structure shown in the reference markup.
 
+### 1.0.6
+
+- Added a WordPress `Update URI` header so the plugin reliably uses its custom GitHub update source instead of any WordPress.org lookup path.
+- Added a WordPress-style `readme.txt` so plugin-update-checker can expose proper update metadata, changelog details, and stable version info.
+
 ## License
 
 GPL-2.0-or-later — see [LICENSE](LICENSE) or <https://www.gnu.org/licenses/gpl-2.0.html>.
