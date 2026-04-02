@@ -106,7 +106,8 @@ class Plugin
         }
 
         $fulfillment = new Services\OrderFulfillmentService();
-        $this->loader->addAction('fluent_cart/order_paid_done', $fulfillment, 'onOrderPaid', 10, 1);
+        $this->loader->addAction('fluent_cart/order_paid_done',     $fulfillment, 'onOrderPaid',          10, 1);
+        $this->loader->addAction('fluent_cart/order_placed_offline', $fulfillment, 'onOrderPlacedOffline', 10, 1);
     }
 
     private function registerShippingServices()

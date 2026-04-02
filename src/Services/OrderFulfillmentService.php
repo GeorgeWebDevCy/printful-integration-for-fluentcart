@@ -69,6 +69,39 @@ class OrderFulfillmentService
         $this->fulfillOrder($order);
     }
 
+    /**
+     * Called on fluent_cart/order_placed_offline (Cash on Delivery / offline payment).
+     *
+     * $data = [
+     *   'order'       => Order,
+     *   'customer'    => Customer,
+     *   'transaction' => OrderTransaction,
+     * ]
+     *
+     * @param array $data
+     */
+    public function onOrderPlacedOffline(array $data)
+    {
+        $settings = get_option('pifc_settings', []);
+
+        if (empty($settings['auto_fulfill'])) {
+            return;
+        }
+
+        /** @var Order|null $order */
+        $order = $data['order'] ?? null;
+
+        if (!$order instanceof Order) {
+            return;
+        }
+
+        if ($order->getMeta('_printful_order_id')) {
+            return;
+        }
+
+        $this->fulfillOrder($order);
+    }
+
     // ─── Core fulfillment ─────────────────────────────────────────────────────
 
     /**
