@@ -185,6 +185,11 @@ This plugin self-updates from the `main` branch of this repository. When the `Ve
 
 - Removed the incompatible FluentCart global admin script from the Printful submenu pages and styled the shared `fct_*` markup directly to better match the reference UI on standalone submenu screens.
 
+### 1.0.9
+
+- Registered Printful as a real FluentCart integration module so its configuration now opens inside FluentCart's native Integrations UI.
+- Redirected the old Printful settings submenu into the FluentCart integration screen and updated legacy setup links to land there as well.
+
 ## License
 
 GPL-2.0-or-later — see [LICENSE](LICENSE) or <https://www.gnu.org/licenses/gpl-2.0.html>.

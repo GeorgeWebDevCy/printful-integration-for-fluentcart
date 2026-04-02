@@ -19,7 +19,7 @@ class AdminMenu
 
         add_submenu_page(
             'fluent-cart',
-            __('Printful — Product Sync', 'printful-for-fluentcart'),
+            __('Printful - Product Sync', 'printful-for-fluentcart'),
             __('Printful Sync', 'printful-for-fluentcart'),
             'manage_options',
             'pifc-product-sync',
@@ -28,7 +28,7 @@ class AdminMenu
 
         add_submenu_page(
             'fluent-cart',
-            __('Printful — Orders', 'printful-for-fluentcart'),
+            __('Printful - Orders', 'printful-for-fluentcart'),
             __('Printful Orders', 'printful-for-fluentcart'),
             'manage_options',
             'pifc-orders',
@@ -37,7 +37,7 @@ class AdminMenu
 
         add_submenu_page(
             'fluent-cart',
-            __('Printful — Bulk Fulfill', 'printful-for-fluentcart'),
+            __('Printful - Bulk Fulfill', 'printful-for-fluentcart'),
             __('Printful Bulk Fulfill', 'printful-for-fluentcart'),
             'manage_options',
             'pifc-bulk-fulfill',
@@ -46,7 +46,7 @@ class AdminMenu
 
         add_submenu_page(
             'fluent-cart',
-            __('Printful — Catalog Browser', 'printful-for-fluentcart'),
+            __('Printful - Catalog Browser', 'printful-for-fluentcart'),
             __('Printful Catalog', 'printful-for-fluentcart'),
             'manage_options',
             'pifc-catalog',
@@ -55,7 +55,7 @@ class AdminMenu
 
         add_submenu_page(
             'fluent-cart',
-            __('Printful — Shipping Setup', 'printful-for-fluentcart'),
+            __('Printful - Shipping Setup', 'printful-for-fluentcart'),
             __('Printful Shipping', 'printful-for-fluentcart'),
             'manage_options',
             'pifc-shipping-setup',
@@ -65,7 +65,8 @@ class AdminMenu
 
     public function renderSettings()
     {
-        (new SettingsPage())->render();
+        wp_safe_redirect(admin_url('admin.php?page=fluent-cart#/integrations/printful'));
+        exit;
     }
 
     public function renderProductSync()
@@ -108,13 +109,6 @@ class AdminMenu
             return;
         }
 
-        if (class_exists('\FluentCart\App\Vite')) {
-            \FluentCart\App\Vite::enqueueStyle(
-                'fluent_cart_admin_app_css',
-                'styles/tailwind/style.css'
-            );
-        }
-
         wp_enqueue_style(
             'pifc-admin',
             PIFC_PLUGIN_URL . 'assets/css/admin.css',
@@ -135,12 +129,12 @@ class AdminMenu
             'nonce'       => wp_create_nonce('pifc_admin_nonce'),
             'currentPage' => $hook,
             'i18n'        => [
-                'testing'      => __('Testing…', 'printful-for-fluentcart'),
-                'saving'       => __('Saving…', 'printful-for-fluentcart'),
-                'syncing'      => __('Syncing…', 'printful-for-fluentcart'),
-                'fulfilling'   => __('Sending to Printful…', 'printful-for-fluentcart'),
-                'canceling'    => __('Canceling…', 'printful-for-fluentcart'),
-                'loading'      => __('Loading…', 'printful-for-fluentcart'),
+                'testing'        => __('Testing...', 'printful-for-fluentcart'),
+                'saving'         => __('Saving...', 'printful-for-fluentcart'),
+                'syncing'        => __('Syncing...', 'printful-for-fluentcart'),
+                'fulfilling'     => __('Sending to Printful...', 'printful-for-fluentcart'),
+                'canceling'      => __('Canceling...', 'printful-for-fluentcart'),
+                'loading'        => __('Loading...', 'printful-for-fluentcart'),
                 'confirmFulfill' => __('Send this order to Printful for fulfillment?', 'printful-for-fluentcart'),
                 'confirmCancel'  => __('Cancel fulfillment for this order in Printful?', 'printful-for-fluentcart'),
             ],

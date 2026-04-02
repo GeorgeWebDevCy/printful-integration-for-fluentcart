@@ -4,7 +4,7 @@ Tags: fluentcart, printful, print on demand, ecommerce, fulfillment
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,6 +32,11 @@ Features include:
 4. Open **FluentCart > Printful** and save your Printful API key.
 
 == Changelog ==
+
+= 1.0.9 =
+* Registered Printful as a real FluentCart integration module so configuration now lives in FluentCart's native Integrations UI.
+* Redirected the old Printful settings submenu into the FluentCart integrations screen to keep the entry point consistent.
+* Updated legacy configuration links to point to the new FluentCart integration route.
 
 = 1.0.8 =
 * Removed the incompatible FluentCart global admin script from the Printful submenu pages and styled the `fct_*` markup directly so the layout matches FluentCart without requiring the full SPA boot process.

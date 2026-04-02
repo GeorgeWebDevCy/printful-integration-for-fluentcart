@@ -2,9 +2,9 @@
 
 namespace PrintfulForFluentCart\Admin;
 
+use FluentCart\App\Helpers\Status;
 use FluentCart\App\Models\Order;
 use FluentCart\App\Models\OrderMeta;
-use FluentCart\App\Helpers\Status;
 
 defined('ABSPATH') || exit;
 
@@ -32,7 +32,7 @@ class DashboardWidget
             printf(
                 /* translators: %s: settings page link */
                 esc_html__('No API key configured. %s to get started.', 'printful-for-fluentcart'),
-                '<a href="' . esc_url(admin_url('admin.php?page=pifc-settings')) . '">'
+                '<a href="' . esc_url(admin_url('admin.php?page=fluent-cart#/integrations/printful')) . '">'
                     . esc_html__('Configure Printful', 'printful-for-fluentcart')
                     . '</a>'
             );
@@ -68,17 +68,17 @@ class DashboardWidget
 
             <div class="pifc-widget-links">
                 <a href="<?php echo esc_url(admin_url('admin.php?page=pifc-orders')); ?>">
-                    <?php esc_html_e('View Printful Orders →', 'printful-for-fluentcart'); ?>
+                    <?php esc_html_e('View Printful Orders ->', 'printful-for-fluentcart'); ?>
                 </a>
                 &nbsp;|&nbsp;
                 <a href="<?php echo esc_url(admin_url('admin.php?page=pifc-bulk-fulfill')); ?>">
-                    <?php esc_html_e('Bulk Fulfill →', 'printful-for-fluentcart'); ?>
+                    <?php esc_html_e('Bulk Fulfill ->', 'printful-for-fluentcart'); ?>
                 </a>
             </div>
 
             <?php if (!empty($settings['test_mode'])): ?>
             <p style="color:#9a6700;font-weight:600;margin-top:8px">
-                ⚠ <?php esc_html_e('Test / Draft mode is active.', 'printful-for-fluentcart'); ?>
+                <?php esc_html_e('Test / Draft mode is active.', 'printful-for-fluentcart'); ?>
             </p>
             <?php endif; ?>
         </div>
@@ -95,8 +95,6 @@ class DashboardWidget
         <?php
     }
 
-    // ─── Stats ────────────────────────────────────────────────────────────────
-
     /**
      * @return array
      */
@@ -109,48 +107,41 @@ class DashboardWidget
             return $cached;
         }
 
-        // Orders that have been sent to Printful
         $fulfilledMetas = OrderMeta::where('meta_key', '_printful_order_id')->get();
         $fulfilledIds   = $fulfilledMetas->pluck('order_id')->toArray();
 
-        // Orders NOT yet sent (paid, have FC order IDs that aren't in fulfilled list)
         $pendingCount = Order::where('payment_status', Status::PAYMENT_PAID)
             ->when(!empty($fulfilledIds), function ($q) use ($fulfilledIds) {
                 $q->whereNotIn('id', $fulfilledIds);
             })
             ->count();
 
-        // Shipped today
         $todayStart    = date('Y-m-d 00:00:00');
         $shippedToday  = OrderMeta::where('meta_key', '_printful_order_status')
             ->where('meta_value', 'fulfilled')
             ->whereDate('updated_at', '>=', $todayStart)
             ->count();
 
-        // Total fulfilled
         $totalFulfilled = OrderMeta::where('meta_key', '_printful_order_status')
             ->whereIn('meta_value', ['fulfilled', 'shipped', 'pending', 'in_process'])
             ->count();
 
-        // Failed
         $failed = OrderMeta::where('meta_key', '_printful_order_status')
             ->where('meta_value', 'failed')
             ->count();
 
-        // Needs manual return
         $needsReturn = OrderMeta::where('meta_key', '_printful_needs_manual_return')
             ->where('meta_value', '1')
             ->count();
 
         $stats = [
-            'pending'           => $pendingCount,
-            'shipped_today'     => $shippedToday,
-            'total_fulfilled'   => $totalFulfilled,
-            'failed'            => $failed,
+            'pending'             => $pendingCount,
+            'shipped_today'       => $shippedToday,
+            'total_fulfilled'     => $totalFulfilled,
+            'failed'              => $failed,
             'needs_manual_return' => $needsReturn,
         ];
 
-        // Cache for 5 minutes
         set_transient($cacheKey, $stats, 5 * MINUTE_IN_SECONDS);
 
         return $stats;

@@ -31,6 +31,7 @@ class Plugin
     public function boot()
     {
         $this->loadTextDomain();
+        $this->registerFluentCartIntegration();
         $this->registerAdminServices();
         $this->registerFulfillmentServices();
         $this->registerShippingServices();
@@ -55,49 +56,52 @@ class Plugin
         );
     }
 
+    private function registerFluentCartIntegration()
+    {
+        if (!class_exists('\FluentCart\App\Modules\Integrations\BaseIntegrationManager')) {
+            return;
+        }
+
+        (new Integrations\PrintfulConnect())->boot();
+    }
+
     private function registerAdminServices()
     {
         if (!is_admin()) {
             return;
         }
 
-        $adminMenu    = new Admin\AdminMenu();
-        $settingsPage = new Admin\SettingsPage();
-        $syncPage     = new Admin\ProductSyncPage();
-        $orderPanel   = new Admin\OrderPanel();
-        $bulkFulfill  = new Admin\BulkFulfillPage();
-        $catalogPage  = new Admin\CatalogBrowserPage();
-        $shippingSetup= new Admin\ShippingSetupPage();
+        $adminMenu     = new Admin\AdminMenu();
+        $settingsPage  = new Admin\SettingsPage();
+        $syncPage      = new Admin\ProductSyncPage();
+        $orderPanel    = new Admin\OrderPanel();
+        $bulkFulfill   = new Admin\BulkFulfillPage();
+        $catalogPage   = new Admin\CatalogBrowserPage();
+        $shippingSetup = new Admin\ShippingSetupPage();
 
         $this->loader->addAction('admin_menu', $adminMenu, 'register', 25);
         $this->loader->addAction('admin_enqueue_scripts', $adminMenu, 'enqueueAssets');
 
-        // Settings AJAX
         $this->loader->addAction('wp_ajax_pifc_test_connection', $settingsPage, 'handleConnectionTest');
         $this->loader->addAction('wp_ajax_pifc_save_settings', $settingsPage, 'handleSaveSettings');
 
-        // Product sync AJAX
         $this->loader->addAction('wp_ajax_pifc_sync_all_products', $syncPage, 'handleSyncAll');
         $this->loader->addAction('wp_ajax_pifc_sync_single_product', $syncPage, 'handleSyncSingle');
 
-        // Order panel AJAX
         $this->loader->addAction('wp_ajax_pifc_get_orders', $orderPanel, 'handleGetOrders');
         $this->loader->addAction('wp_ajax_pifc_fulfill_order', $orderPanel, 'handleManualFulfill');
         $this->loader->addAction('wp_ajax_pifc_cancel_fulfillment', $orderPanel, 'handleCancelFulfillment');
         $this->loader->addAction('wp_ajax_pifc_get_order_detail', $orderPanel, 'handleGetOrderDetail');
 
-        // Bulk fulfill AJAX
         $this->loader->addAction('wp_ajax_pifc_get_unfulfilled_orders', $bulkFulfill, 'handleGetUnfulfilled');
         $this->loader->addAction('wp_ajax_pifc_bulk_fulfill', $bulkFulfill, 'handleBulkFulfill');
 
-        // Catalog browser AJAX
         $this->loader->addAction('wp_ajax_pifc_get_catalog_categories', $catalogPage, 'handleGetCategories');
-        $this->loader->addAction('wp_ajax_pifc_get_catalog_products',   $catalogPage, 'handleGetProducts');
-        $this->loader->addAction('wp_ajax_pifc_get_catalog_product',    $catalogPage, 'handleGetProduct');
+        $this->loader->addAction('wp_ajax_pifc_get_catalog_products', $catalogPage, 'handleGetProducts');
+        $this->loader->addAction('wp_ajax_pifc_get_catalog_product', $catalogPage, 'handleGetProduct');
 
-        // Shipping setup AJAX
         $this->loader->addAction('wp_ajax_pifc_save_shipping_services', $shippingSetup, 'handleSave');
-        $this->loader->addAction('wp_ajax_pifc_get_shipping_services',  $shippingSetup, 'handleGet');
+        $this->loader->addAction('wp_ajax_pifc_get_shipping_services', $shippingSetup, 'handleGet');
     }
 
     private function registerFulfillmentServices()
@@ -109,7 +113,7 @@ class Plugin
         }
 
         $fulfillment = new Services\OrderFulfillmentService();
-        $this->loader->addAction('fluent_cart/order_paid_done',     $fulfillment, 'onOrderPaid',          10, 1);
+        $this->loader->addAction('fluent_cart/order_paid_done', $fulfillment, 'onOrderPaid', 10, 1);
         $this->loader->addAction('fluent_cart/order_placed_offline', $fulfillment, 'onOrderPlacedOffline', 10, 1);
     }
 
@@ -122,7 +126,6 @@ class Plugin
         }
 
         $shipping = new Services\ShippingRateService();
-        // Hook into checkout data patching to inject Printful rates
         $this->loader->addFilter(
             'fluent_cart/checkout/before_patch_checkout_data',
             $shipping,
@@ -147,11 +150,11 @@ class Plugin
     private function registerActivityLogger()
     {
         $logger = new Services\ActivityLogger();
-        $this->loader->addAction('pifc/order_fulfilled',     $logger, 'onOrderFulfilled',    10, 2);
-        $this->loader->addAction('pifc/order_shipped',       $logger, 'onOrderShipped',      10, 2);
-        $this->loader->addAction('pifc/fulfillment_failed',  $logger, 'onFulfillmentFailed', 10, 2);
-        $this->loader->addAction('pifc/order_returned',      $logger, 'onOrderReturned',     10, 2);
-        $this->loader->addAction('pifc/fulfillment_canceled',$logger, 'onFulfillmentCanceled',10, 2);
+        $this->loader->addAction('pifc/order_fulfilled', $logger, 'onOrderFulfilled', 10, 2);
+        $this->loader->addAction('pifc/order_shipped', $logger, 'onOrderShipped', 10, 2);
+        $this->loader->addAction('pifc/fulfillment_failed', $logger, 'onFulfillmentFailed', 10, 2);
+        $this->loader->addAction('pifc/order_returned', $logger, 'onOrderReturned', 10, 2);
+        $this->loader->addAction('pifc/fulfillment_canceled', $logger, 'onFulfillmentCanceled', 10, 2);
     }
 
     private function registerRefundHandler()
@@ -162,7 +165,7 @@ class Plugin
         }
 
         $refund = new Services\RefundService();
-        $this->loader->addAction('fluent_cart/order_fully_refunded',    $refund, 'onOrderRefunded', 10, 1);
+        $this->loader->addAction('fluent_cart/order_fully_refunded', $refund, 'onOrderRefunded', 10, 1);
         $this->loader->addAction('fluent_cart/order_partially_refunded', $refund, 'onOrderRefunded', 10, 1);
     }
 
