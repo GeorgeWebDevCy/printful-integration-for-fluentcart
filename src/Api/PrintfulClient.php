@@ -179,11 +179,13 @@ class PrintfulClient
     // ─── HTTP layer ───────────────────────────────────────────────────────────
 
     /**
+     * Public pass-through for arbitrary GET endpoints (e.g. catalog browsing).
+     *
      * @param  string $endpoint
      * @param  array  $params    Query-string params.
      * @return array|\WP_Error
      */
-    private function get($endpoint, array $params = [])
+    public function get($endpoint, array $params = [])
     {
         $url = self::API_BASE . $endpoint;
 
