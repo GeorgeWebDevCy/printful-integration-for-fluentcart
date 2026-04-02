@@ -14,6 +14,15 @@ class AdminMenu
             __('Printful', 'printful-for-fluentcart'),
             'manage_options',
             'pifc-settings',
+            [$this, 'renderSettingsRedirect']
+        );
+
+        add_submenu_page(
+            'fluent-cart',
+            __('Printful - Advanced Settings', 'printful-for-fluentcart'),
+            __('Printful Advanced', 'printful-for-fluentcart'),
+            'manage_options',
+            'pifc-advanced',
             [$this, 'renderSettings']
         );
 
@@ -68,6 +77,25 @@ class AdminMenu
         (new SettingsPage())->render();
     }
 
+    public function renderSettingsRedirect()
+    {
+        $target = admin_url('admin.php?page=fluent-cart#/integrations/printful');
+        ?>
+        <div class="wrap">
+            <meta http-equiv="refresh" content="0;url=<?php echo esc_url($target); ?>">
+            <script>
+                window.location.replace(<?php echo wp_json_encode($target); ?>);
+            </script>
+            <p>
+                <?php esc_html_e('Redirecting to the FluentCart Printful integration screen...', 'printful-for-fluentcart'); ?>
+                <a href="<?php echo esc_url($target); ?>">
+                    <?php esc_html_e('Continue', 'printful-for-fluentcart'); ?>
+                </a>
+            </p>
+        </div>
+        <?php
+    }
+
     public function renderProductSync()
     {
         (new ProductSyncPage())->render();
@@ -96,7 +124,7 @@ class AdminMenu
     public function enqueueAssets($hook)
     {
         $pifc_pages = [
-            'fluent-cart_page_pifc-settings',
+            'fluent-cart_page_pifc-advanced',
             'fluent-cart_page_pifc-product-sync',
             'fluent-cart_page_pifc-orders',
             'fluent-cart_page_pifc-bulk-fulfill',

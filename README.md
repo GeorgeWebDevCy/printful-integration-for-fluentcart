@@ -199,6 +199,22 @@ This plugin self-updates from the `main` branch of this repository. When the `Ve
 - Rebuilt the Printful integration settings payload to match FluentCart's native global integration schema instead of a custom field format that the Vue app could not render.
 - Removed the submenu URL rewrite hack and kept the old settings page as a normal redirect to the FluentCart integration route to avoid breaking FluentCart's admin runtime.
 
+### 1.0.18
+
+- Removed the broken copied FluentCart shell from the standalone Printful tool pages and replaced it with a clean shared Printful tools header and nav.
+- Kept the main Printful settings entry native inside FluentCart while making the remaining standalone admin screens usable and visually consistent again.
+
+### 1.0.17
+
+- Fixed the native FluentCart Printful integration screen by returning the wrapped REST payload shape FluentCart's Vue app expects, so the page now renders properly inside FluentCart instead of failing with a blank settings pane.
+- Changed `FluentCart > Printful` to redirect cleanly into the native FluentCart integration route instead of landing on a broken standalone page.
+- Moved the main fulfillment and sync behavior toggles into the native FluentCart integration screen so core Printful settings are managed inside FluentCart itself.
+
+### 1.0.16
+
+- Changed the main `FluentCart > Printful` submenu to hand off directly to FluentCart's native integration screen so the primary settings entry now uses the real FluentCart UI.
+- Moved the old standalone behavior toggles to a dedicated `Printful Advanced` page and updated internal links to point to the correct native or advanced screen.
+
 ### 1.0.15
 
 - Added self-healing option initialization so plugin defaults and version metadata are restored automatically if activation did not re-run after a path or bootstrap-file change.

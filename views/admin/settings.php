@@ -2,9 +2,9 @@
 
 <div class="wrap pifc-wrap">
     <?php
-    $pifc_current_page = 'settings';
-    $pifc_page_title = __('Printful Settings', 'printful-for-fluentcart');
-    $pifc_page_subtitle = __('Connect your Printful store and control how fulfillment behaves inside FluentCart.', 'printful-for-fluentcart');
+    $pifc_current_page = 'advanced-settings';
+    $pifc_page_title = __('Printful Advanced Settings', 'printful-for-fluentcart');
+    $pifc_page_subtitle = __('Manage fulfillment behavior, retry rules, sync options, and webhook details for the Printful integration.', 'printful-for-fluentcart');
     include __DIR__ . '/partials/layout-start.php';
     ?>
 
@@ -13,7 +13,7 @@
             <?php
             printf(
                 /* translators: %s: native integration route */
-                esc_html__('The native FluentCart connection screen is also available in %s.', 'printful-for-fluentcart'),
+                esc_html__('The main connection screen lives in %s. Use this page for the advanced Printful behavior controls that FluentCart does not render natively.', 'printful-for-fluentcart'),
                 '<a href="' . esc_url(admin_url('admin.php?page=fluent-cart#/integrations/printful')) . '">'
                     . esc_html__('FluentCart -> Integrations -> Printful', 'printful-for-fluentcart')
                     . '</a>'

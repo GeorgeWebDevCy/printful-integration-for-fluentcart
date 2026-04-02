@@ -28,6 +28,7 @@ class PrintfulConnect extends \FluentCart\App\Modules\Integrations\BaseIntegrati
         add_filter('fluent_cart/integration/global_integration_fields_printful', [$this, 'getGlobalSettingsFields']);
         add_action('fluent_cart/integration/authenticate_global_credentials_printful', [$this, 'authenticateGlobalCredentials']);
         add_action('fluent_cart/integration/save_global_integration_settings_printful', [$this, 'saveGlobalSettings']);
+        add_filter('rest_pre_dispatch', [$this, 'interceptGlobalSettingsRequests'], 10, 3);
     }
 
     public function processAction($order, $eventData)
@@ -74,6 +75,14 @@ class PrintfulConnect extends \FluentCart\App\Modules\Integrations\BaseIntegrati
             'api_key' => $settings['api_key'],
             'status' => $this->isConfigured(),
             'webhook_url' => WebhookService::getWebhookUrl(),
+            'auto_fulfill' => !empty($settings['auto_fulfill']) ? 'yes' : 'no',
+            'auto_confirm' => !empty($settings['auto_confirm']) ? 'yes' : 'no',
+            'test_mode' => !empty($settings['test_mode']) ? 'yes' : 'no',
+            'sync_on_import' => !empty($settings['sync_on_import']) ? 'yes' : 'no',
+            'sync_product_costs' => !empty($settings['sync_product_costs']) ? 'yes' : 'no',
+            'auto_retry_failed' => !empty($settings['auto_retry_failed']) ? 'yes' : 'no',
+            'disable_shipping_email' => !empty($settings['disable_shipping_email']) ? 'yes' : 'no',
+            'disable_auto_cancel_on_refund' => !empty($settings['disable_auto_cancel_on_refund']) ? 'yes' : 'no',
         ];
     }
 
@@ -109,6 +118,78 @@ class PrintfulConnect extends \FluentCart\App\Modules\Integrations\BaseIntegrati
                     'label' => __('Webhook URL', 'printful-for-fluentcart'),
                     'type' => 'text',
                     'tips' => __('This endpoint is registered with Printful when you save settings. It receives shipment and order events.', 'printful-for-fluentcart'),
+                ],
+                'auto_fulfill' => [
+                    'label' => __('Auto-Fulfill Orders', 'printful-for-fluentcart'),
+                    'type' => 'select',
+                    'options' => [
+                        'yes' => __('Enabled', 'printful-for-fluentcart'),
+                        'no' => __('Disabled', 'printful-for-fluentcart'),
+                    ],
+                    'tips' => __('Automatically send paid orders to Printful for fulfillment.', 'printful-for-fluentcart'),
+                ],
+                'auto_confirm' => [
+                    'label' => __('Auto-Confirm Orders', 'printful-for-fluentcart'),
+                    'type' => 'select',
+                    'options' => [
+                        'no' => __('Disabled', 'printful-for-fluentcart'),
+                        'yes' => __('Enabled', 'printful-for-fluentcart'),
+                    ],
+                    'tips' => __('Automatically confirm Printful orders. This can trigger charges in your Printful account.', 'printful-for-fluentcart'),
+                ],
+                'test_mode' => [
+                    'label' => __('Draft / Test Mode', 'printful-for-fluentcart'),
+                    'type' => 'select',
+                    'options' => [
+                        'no' => __('Disabled', 'printful-for-fluentcart'),
+                        'yes' => __('Enabled', 'printful-for-fluentcart'),
+                    ],
+                    'tips' => __('Create Printful orders in draft mode so they do not charge or enter production immediately.', 'printful-for-fluentcart'),
+                ],
+                'sync_on_import' => [
+                    'label' => __('Sync On Import', 'printful-for-fluentcart'),
+                    'type' => 'select',
+                    'options' => [
+                        'yes' => __('Enabled', 'printful-for-fluentcart'),
+                        'no' => __('Disabled', 'printful-for-fluentcart'),
+                    ],
+                    'tips' => __('Pull fresh product data from Printful whenever you run a product sync.', 'printful-for-fluentcart'),
+                ],
+                'sync_product_costs' => [
+                    'label' => __('Sync Product Costs', 'printful-for-fluentcart'),
+                    'type' => 'select',
+                    'options' => [
+                        'no' => __('Disabled', 'printful-for-fluentcart'),
+                        'yes' => __('Enabled', 'printful-for-fluentcart'),
+                    ],
+                    'tips' => __('Store Printful production costs on synced variations when Printful provides them.', 'printful-for-fluentcart'),
+                ],
+                'auto_retry_failed' => [
+                    'label' => __('Auto-Retry Failed Orders', 'printful-for-fluentcart'),
+                    'type' => 'select',
+                    'options' => [
+                        'yes' => __('Enabled', 'printful-for-fluentcart'),
+                        'no' => __('Disabled', 'printful-for-fluentcart'),
+                    ],
+                    'tips' => __('Retry a failed Printful order once after a recoverable failure is reported.', 'printful-for-fluentcart'),
+                ],
+                'disable_shipping_email' => [
+                    'label' => __('Shipping Emails', 'printful-for-fluentcart'),
+                    'type' => 'select',
+                    'options' => [
+                        'no' => __('Enabled', 'printful-for-fluentcart'),
+                        'yes' => __('Disabled', 'printful-for-fluentcart'),
+                    ],
+                    'tips' => __('Disable the customer tracking email that would normally be sent when Printful marks an order as shipped.', 'printful-for-fluentcart'),
+                ],
+                'disable_auto_cancel_on_refund' => [
+                    'label' => __('Refund Handling', 'printful-for-fluentcart'),
+                    'type' => 'select',
+                    'options' => [
+                        'no' => __('Automatic cancel attempts enabled', 'printful-for-fluentcart'),
+                        'yes' => __('Automatic cancel attempts disabled', 'printful-for-fluentcart'),
+                    ],
+                    'tips' => __('Control whether the plugin attempts to cancel the related Printful order when a FluentCart order is refunded.', 'printful-for-fluentcart'),
                 ],
                 'printful_dashboard' => [
                     'label' => __('Printful Dashboard', 'printful-for-fluentcart'),
@@ -154,8 +235,8 @@ class PrintfulConnect extends \FluentCart\App\Modules\Integrations\BaseIntegrati
                 'advanced_settings' => [
                     'label' => __('Advanced Settings', 'printful-for-fluentcart'),
                     'type' => 'link',
-                    'link' => admin_url('admin.php?page=pifc-settings'),
-                    'link_text' => __('Open Printful Settings', 'printful-for-fluentcart'),
+                    'link' => admin_url('admin.php?page=pifc-advanced'),
+                    'link_text' => __('Open Advanced Settings', 'printful-for-fluentcart'),
                     'btn_class' => 'el-button el-button--default',
                     'tips' => __('Manage auto-fulfillment, draft mode, retry, refund, shipping email, and product sync behavior.', 'printful-for-fluentcart'),
                 ],
@@ -165,45 +246,104 @@ class PrintfulConnect extends \FluentCart\App\Modules\Integrations\BaseIntegrati
 
     public function authenticateGlobalCredentials($payload)
     {
+        $result = $this->authenticateGlobalCredentialsData($payload);
+        $this->sendWrappedJsonResult($result);
+    }
+
+    public function saveGlobalSettings($payload)
+    {
+        $result = $this->saveGlobalSettingsData($payload);
+        $this->sendWrappedJsonResult($result);
+    }
+
+    public function interceptGlobalSettingsRequests($response, $server, $request)
+    {
+        if (!($request instanceof \WP_REST_Request)) {
+            return $response;
+        }
+
+        $route = $request->get_route();
+        $settingsKey = sanitize_text_field((string) $request->get_param('settings_key'));
+
+        if ($settingsKey !== 'printful') {
+            return $response;
+        }
+
+        if ($route === '/fluent-cart/v2/integration/global-settings' && $request->get_method() === 'GET') {
+            return new \WP_REST_Response([
+                'data' => [
+                    'integration' => $this->getGlobalSettings(),
+                    'settings' => $this->getGlobalSettingsFields(),
+                ],
+            ], 200);
+        }
+
+        if ($route === '/fluent-cart/v2/integration/global-settings' && $request->get_method() === 'POST') {
+            return $this->toWrappedRestResponse($this->saveGlobalSettingsData($request->get_params()));
+        }
+
+        if ($route === '/fluent-cart/v2/integration/global-settings/authenticate' && $request->get_method() === 'POST') {
+            return $this->toWrappedRestResponse($this->authenticateGlobalCredentialsData($request->get_params()));
+        }
+
+        return $response;
+    }
+
+    private function getStoredSettings()
+    {
+        return array_merge(
+            Activator::defaultSettings(),
+            get_option('pifc_settings', [])
+        );
+    }
+
+    private function authenticateGlobalCredentialsData($payload)
+    {
         if (!current_user_can('manage_options')) {
-            wp_send_json([
-                'message' => __('Unauthorized.', 'printful-for-fluentcart'),
-            ], 403);
+            return new \WP_Error(
+                'pifc_unauthorized',
+                __('Unauthorized.', 'printful-for-fluentcart'),
+                ['status' => 403]
+            );
         }
 
         $integration = $this->normalizePayload($payload);
         $apiKey = sanitize_text_field((string) ($integration['api_key'] ?? ''));
 
         if ($apiKey === '') {
-            wp_send_json([
+            return [
                 'message' => __('API key is required.', 'printful-for-fluentcart'),
-            ], 422);
+                'status' => false,
+            ];
         }
 
         $client = new PrintfulClient($apiKey);
         $store = $client->getStore();
 
         if (is_wp_error($store)) {
-            wp_send_json([
+            return [
                 'message' => $store->get_error_message(),
-            ], 422);
+                'status' => false,
+            ];
         }
 
-        wp_send_json([
+        return [
             'message' => sprintf(
                 __('Connected to "%s" successfully.', 'printful-for-fluentcart'),
                 esc_html($store['name'] ?? __('your store', 'printful-for-fluentcart'))
             ),
             'status' => true,
-        ], 200);
+        ];
     }
 
-    public function saveGlobalSettings($payload)
+    private function saveGlobalSettingsData($payload)
     {
         if (!current_user_can('manage_options')) {
-            wp_send_json([
-                'message' => __('Unauthorized.', 'printful-for-fluentcart'),
-            ], 403);
+            return new \WP_Error(
+                'pifc_unauthorized',
+                __('Unauthorized.', 'printful-for-fluentcart'),
+                ['status' => 403]
+            );
         }
 
         $current = $this->getStoredSettings();
@@ -243,19 +383,11 @@ class PrintfulConnect extends \FluentCart\App\Modules\Integrations\BaseIntegrati
             }
         }
 
-        wp_send_json([
+        return [
             'message' => $message,
             'status' => !empty($settings['api_key']),
             'integration' => $this->getGlobalSettings(),
-        ], 200);
-    }
-
-    private function getStoredSettings()
-    {
-        return array_merge(
-            Activator::defaultSettings(),
-            get_option('pifc_settings', [])
-        );
+        ];
     }
 
     private function normalizePayload($payload)
@@ -298,5 +430,35 @@ class PrintfulConnect extends \FluentCart\App\Modules\Integrations\BaseIntegrati
             'apiKey' => $settings['api_key'],
             'status' => !empty($settings['api_key']),
         ]);
+    }
+
+    private function toWrappedRestResponse($result)
+    {
+        if (is_wp_error($result)) {
+            return new \WP_REST_Response([
+                'data' => [
+                    'message' => $result->get_error_message(),
+                ],
+            ], (int) ($result->get_error_data()['status'] ?? 422));
+        }
+
+        return new \WP_REST_Response([
+            'data' => $result,
+        ], 200);
+    }
+
+    private function sendWrappedJsonResult($result)
+    {
+        if (is_wp_error($result)) {
+            wp_send_json([
+                'data' => [
+                    'message' => $result->get_error_message(),
+                ],
+            ], (int) ($result->get_error_data()['status'] ?? 422));
+        }
+
+        wp_send_json([
+            'data' => $result,
+        ], 200);
     }
 }
