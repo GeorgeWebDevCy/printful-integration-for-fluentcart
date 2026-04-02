@@ -199,6 +199,13 @@ This plugin self-updates from the `main` branch of this repository. When the `Ve
 - Rebuilt the Printful integration settings payload to match FluentCart's native global integration schema instead of a custom field format that the Vue app could not render.
 - Removed the submenu URL rewrite hack and kept the old settings page as a normal redirect to the FluentCart integration route to avoid breaking FluentCart's admin runtime.
 
+### 1.0.13
+
+- Secured the Printful webhook endpoint by requiring the generated shared secret on inbound requests and on the registered webhook URL.
+- Fixed refund automation so it now matches FluentCart's refund event payload shape instead of expecting a bare `Order` model.
+- Removed the WooCommerce-only currency dependency from live shipping rate calculation and now resolve checkout currency from FluentCart request data.
+- Mark locally synced variations inactive when they are removed from Printful, and tightened catalog "already synced" detection to reduce false positives.
+
 ### 1.0.12
 
 - Restored the standalone Printful settings screen so advanced fulfillment, retry, sync, refund, and shipping email options are editable again.

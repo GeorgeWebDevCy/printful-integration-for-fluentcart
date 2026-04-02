@@ -17,8 +17,8 @@ defined('ABSPATH') || exit;
  * it manually or via a third-party notification.
  *
  * Hooks into:
- *   fluent_cart/order_fully_refunded    — $order (Order model)
- *   fluent_cart/order_partially_refunded — $order (Order model)
+ *   fluent_cart/order_fully_refunded    — array payload
+ *   fluent_cart/order_partially_refunded — array payload
  */
 class RefundService
 {
@@ -34,15 +34,17 @@ class RefundService
     }
 
     /**
-     * @param Order $order
+     * @param array $payload
      */
-    public function onOrderRefunded(Order $order)
+    public function onOrderRefunded(array $payload)
     {
         $settings = get_option('pifc_settings', []);
 
         if (!empty($settings['disable_auto_cancel_on_refund'])) {
             return;
         }
+
+        $order = $payload['order'] ?? null;
 
         if (!$order instanceof Order) {
             return;

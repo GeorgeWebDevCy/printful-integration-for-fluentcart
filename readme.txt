@@ -4,7 +4,7 @@ Tags: fluentcart, printful, print on demand, ecommerce, fulfillment
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.0.12
+Stable tag: 1.0.13
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,6 +32,12 @@ Features include:
 4. Open **FluentCart > Printful** and save your Printful API key.
 
 == Changelog ==
+
+= 1.0.13 =
+* Secured the Printful webhook endpoint by requiring the generated shared secret on inbound requests and on the registered webhook URL.
+* Fixed refund automation so it now matches FluentCart's refund event payload shape instead of expecting a bare Order model.
+* Removed the WooCommerce-only currency dependency from live shipping rate calculation and now resolve checkout currency from FluentCart request data.
+* Mark locally synced variations inactive when they are removed from Printful, and tightened catalog "already synced" detection to reduce false positives.
 
 = 1.0.12 =
 * Restored the standalone Printful settings screen so advanced fulfillment and sync options are editable again.

@@ -73,7 +73,7 @@ class PrintfulConnect extends \FluentCart\App\Modules\Integrations\BaseIntegrati
         return [
             'api_key' => $settings['api_key'],
             'status' => $this->isConfigured(),
-            'webhook_url' => rest_url('pifc/v1/webhook'),
+            'webhook_url' => WebhookService::getWebhookUrl(),
         ];
     }
 

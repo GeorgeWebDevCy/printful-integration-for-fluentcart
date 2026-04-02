@@ -25,6 +25,8 @@ defined('ABSPATH') || exit;
  */
 class WebhookService
 {
+    const SECRET_QUERY_ARG = 'pifc_webhook_secret';
+
     // ─── Bootstrap ───────────────────────────────────────────────────────────
 
     public function registerEndpoint()
@@ -44,6 +46,10 @@ class WebhookService
      */
     public function handleWebhook(\WP_REST_Request $request)
     {
+        if (!$this->isAuthorizedRequest($request)) {
+            return new \WP_REST_Response(['ok' => false, 'message' => 'Unauthorized webhook request.'], 403);
+        }
+
         $body = $request->get_json_params();
 
         if (empty($body) || !is_array($body)) {
@@ -244,7 +250,7 @@ class WebhookService
         }
 
         $result = $client->setWebhooks(
-            rest_url('pifc/v1/webhook'),
+            self::getWebhookUrl(),
             [
                 'package_shipped',
                 'package_returned',
@@ -259,5 +265,53 @@ class WebhookService
         }
 
         return true;
+    }
+
+    /**
+     * Returns the full webhook URL, including the shared-secret query arg.
+     *
+     * @return string
+     */
+    public static function getWebhookUrl()
+    {
+        $settings = get_option('pifc_settings', []);
+        $secret = (string) ($settings['webhook_secret'] ?? '');
+
+        $url = rest_url('pifc/v1/webhook');
+
+        if ($secret === '') {
+            return $url;
+        }
+
+        return add_query_arg(self::SECRET_QUERY_ARG, $secret, $url);
+    }
+
+    /**
+     * Accept either the query arg we register with Printful or a header for
+     * manual/testing requests.
+     *
+     * @param  \WP_REST_Request $request
+     * @return bool
+     */
+    private function isAuthorizedRequest(\WP_REST_Request $request)
+    {
+        $settings = get_option('pifc_settings', []);
+        $expectedSecret = (string) ($settings['webhook_secret'] ?? '');
+
+        if ($expectedSecret === '') {
+            return false;
+        }
+
+        $providedSecret = (string) $request->get_param(self::SECRET_QUERY_ARG);
+
+        if ($providedSecret === '') {
+            $providedSecret = (string) $request->get_header('x-pifc-webhook-secret');
+        }
+
+        if ($providedSecret === '') {
+            return false;
+        }
+
+        return hash_equals($expectedSecret, $providedSecret);
     }
 }

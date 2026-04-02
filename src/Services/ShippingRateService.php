@@ -50,6 +50,7 @@ class ShippingRateService
     {
         $cartItems = $fillData['cart_items'] ?? $fillData['checkout_data']['cart_items'] ?? [];
         $shipping  = $fillData['checkout_data']['shipping_data'] ?? [];
+        $currency  = $this->resolveCurrency($fillData, $data);
 
         $address = [
             'country'  => $shipping['country']  ?? $data['country']  ?? '',
@@ -64,7 +65,7 @@ class ShippingRateService
             return $fillData;
         }
 
-        $rates = $this->getRatesForCart($cartItems, $address);
+        $rates = $this->getRatesForCart($cartItems, $address, $currency);
 
         if (is_wp_error($rates) || empty($rates)) {
             return $fillData;
@@ -122,11 +123,12 @@ class ShippingRateService
      *
      * Results are cached per unique cart+address combination for 30 minutes.
      *
-     * @param  array $cartItems  Cart item rows from FluentCart checkout data.
-     * @param  array $address    Keys: country, state, city, postcode, address_1
+     * @param  array  $cartItems  Cart item rows from FluentCart checkout data.
+     * @param  array  $address    Keys: country, state, city, postcode, address_1
+     * @param  string $currency   Checkout/store currency.
      * @return array|\WP_Error
      */
-    public function getRatesForCart(array $cartItems, array $address)
+    public function getRatesForCart(array $cartItems, array $address, $currency = 'USD')
     {
         $printfulItems = $this->buildItemsForRating($cartItems);
 
@@ -134,7 +136,7 @@ class ShippingRateService
             return [];
         }
 
-        $cacheKey = 'pifc_rates_' . md5(serialize($printfulItems) . serialize($address));
+        $cacheKey = 'pifc_rates_' . md5(serialize($printfulItems) . serialize($address) . '|' . $currency);
         $cached   = get_transient($cacheKey);
 
         if ($cached !== false) {
@@ -150,7 +152,7 @@ class ShippingRateService
                 'zip'          => sanitize_text_field($address['postcode']  ?? ''),
             ],
             'items'     => $printfulItems,
-            'currency'  => strtoupper(get_woocommerce_currency() !== '' ? get_woocommerce_currency() : 'USD'),
+            'currency'  => strtoupper($currency !== '' ? $currency : 'USD'),
             'locale'    => str_replace('_', '-', get_locale()),
         ];
 
@@ -203,5 +205,32 @@ class ShippingRateService
         }
 
         return $items;
+    }
+
+    /**
+     * Resolve the active checkout currency without depending on WooCommerce.
+     *
+     * @param  array $fillData
+     * @param  array $data
+     * @return string
+     */
+    private function resolveCurrency(array $fillData, array $data)
+    {
+        $candidates = [
+            $fillData['currency'] ?? '',
+            $fillData['checkout_data']['currency'] ?? '',
+            $fillData['checkout_data']['cart']['currency'] ?? '',
+            $data['currency'] ?? '',
+        ];
+
+        foreach ($candidates as $candidate) {
+            $candidate = strtoupper(sanitize_text_field((string) $candidate));
+
+            if (preg_match('/^[A-Z]{3}$/', $candidate)) {
+                return $candidate;
+            }
+        }
+
+        return 'USD';
     }
 }

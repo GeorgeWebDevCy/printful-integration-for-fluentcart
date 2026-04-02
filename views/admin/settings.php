@@ -169,7 +169,7 @@
             <tr>
                 <th scope="row"><?php esc_html_e('Webhook URL', 'printful-for-fluentcart'); ?></th>
                 <td>
-                    <code class="pifc-code"><?php echo esc_html(rest_url('pifc/v1/webhook')); ?></code>
+                    <code class="pifc-code"><?php echo esc_html(\PrintfulForFluentCart\Services\WebhookService::getWebhookUrl()); ?></code>
                     <p class="description">
                         <?php esc_html_e('This URL is registered with Printful automatically when you save settings. It receives shipment and order events.', 'printful-for-fluentcart'); ?>
                     </p>

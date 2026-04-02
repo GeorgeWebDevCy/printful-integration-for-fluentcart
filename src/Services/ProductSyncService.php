@@ -171,7 +171,11 @@ class ProductSyncService
             'post_title' => sanitize_text_field($syncProduct['name']),
         ]);
 
+        $activeSyncVariantIds = [];
+
         foreach ($syncVariants as $index => $syncVariant) {
+            $activeSyncVariantIds[] = (int) ($syncVariant['id'] ?? 0);
+
             $existingVariationId = $this->findVariationByPrintfulSyncId(
                 $postId,
                 (int) $syncVariant['id']
@@ -183,6 +187,8 @@ class ProductSyncService
                 $this->createVariation($postId, $syncVariant, $index);
             }
         }
+
+        $this->deactivateMissingVariations($postId, $activeSyncVariantIds);
     }
 
     // ─── ProductVariation ─────────────────────────────────────────────────────
@@ -268,8 +274,45 @@ class ProductSyncService
             'sku'                  => sanitize_text_field($syncVariant['sku'] ?? ''),
             'variation_identifier' => sanitize_text_field($syncVariant['sku'] ?? ''),
             'variation_title'      => sanitize_text_field($variationTitle),
+            'stock_status'         => 'in_stock',
+            'item_status'          => 'active',
             'other_info'           => ['printful_attributes' => $attributes],
         ]);
+    }
+
+    /**
+     * Mark locally synced variations inactive when they no longer exist in
+     * Printful's current sync-variant list.
+     *
+     * @param int   $postId
+     * @param int[] $activeSyncVariantIds
+     */
+    private function deactivateMissingVariations($postId, array $activeSyncVariantIds)
+    {
+        $activeSyncVariantIds = array_values(array_filter(array_map('intval', $activeSyncVariantIds)));
+
+        $metas = ProductMeta::where('object_type', 'variation')
+            ->where('meta_key', '_printful_sync_variant_id')
+            ->get();
+
+        foreach ($metas as $meta) {
+            $variation = ProductVariation::where('id', $meta->object_id)
+                ->where('post_id', $postId)
+                ->first();
+
+            if (!$variation) {
+                continue;
+            }
+
+            if (in_array((int) $meta->meta_value, $activeSyncVariantIds, true)) {
+                continue;
+            }
+
+            $variation->update([
+                'item_status'  => 'inactive',
+                'stock_status' => 'out_of_stock',
+            ]);
+        }
     }
 
     // ─── Lookup helpers ───────────────────────────────────────────────────────

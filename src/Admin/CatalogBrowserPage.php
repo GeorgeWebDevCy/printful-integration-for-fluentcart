@@ -3,7 +3,6 @@
 namespace PrintfulForFluentCart\Admin;
 
 use PrintfulForFluentCart\Api\PrintfulClient;
-use PrintfulForFluentCart\Services\ProductSyncService;
 
 defined('ABSPATH') || exit;
 
@@ -104,13 +103,22 @@ class CatalogBrowserPage
         }
 
         // Check if already in the store (synced)
-        $service      = new ProductSyncService();
         $syncService  = new PrintfulClient();
         $storeProduct = $syncService->get('/store/products', ['search' => $product['model'] ?? '']);
         $alreadySynced = false;
 
         if (!is_wp_error($storeProduct) && !empty($storeProduct)) {
-            $alreadySynced = true;
+            $catalogModel = strtolower(trim((string) ($product['model'] ?? '')));
+
+            foreach ($storeProduct as $candidate) {
+                $candidateName = strtolower(trim(sanitize_text_field((string) ($candidate['name'] ?? ''))));
+                $candidateExternalId = strtolower(trim(sanitize_text_field((string) ($candidate['external_id'] ?? ''))));
+
+                if ($catalogModel !== '' && ($candidateName === $catalogModel || $candidateExternalId === $catalogModel)) {
+                    $alreadySynced = true;
+                    break;
+                }
+            }
         }
 
         $variants = array_map(function ($v) {
