@@ -79,12 +79,14 @@ class Plugin
         $bulkFulfill   = new Admin\BulkFulfillPage();
         $catalogPage   = new Admin\CatalogBrowserPage();
         $shippingSetup = new Admin\ShippingSetupPage();
+        $nativeBridge  = new Admin\NativeAdminBridge();
 
         $this->loader->addAction('admin_menu', $adminMenu, 'register', 25);
         $this->loader->addAction('admin_enqueue_scripts', $adminMenu, 'enqueueAssets');
 
         $this->loader->addAction('wp_ajax_pifc_test_connection', $settingsPage, 'handleConnectionTest');
         $this->loader->addAction('wp_ajax_pifc_save_settings', $settingsPage, 'handleSaveSettings');
+        $this->loader->addAction('wp_ajax_pifc_get_native_panel', $nativeBridge, 'handleGetPanel');
 
         $this->loader->addAction('wp_ajax_pifc_sync_all_products', $syncPage, 'handleSyncAll');
         $this->loader->addAction('wp_ajax_pifc_sync_single_product', $syncPage, 'handleSyncSingle');

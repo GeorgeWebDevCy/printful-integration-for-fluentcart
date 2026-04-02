@@ -42,6 +42,11 @@ class ShippingSetupPage
         include PIFC_PLUGIN_DIR . 'views/admin/shipping-setup.php';
     }
 
+    public function getZonesForNativePanel()
+    {
+        return $this->getShippingZones();
+    }
+
     // ─── AJAX ─────────────────────────────────────────────────────────────────
 
     public function handleGet()

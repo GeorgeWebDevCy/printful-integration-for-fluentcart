@@ -203,7 +203,7 @@ class PrintfulConnect extends \FluentCart\App\Modules\Integrations\BaseIntegrati
                 'product_sync' => [
                     'label' => __('Product Sync', 'printful-for-fluentcart'),
                     'type' => 'link',
-                    'link' => admin_url('admin.php?page=pifc-product-sync'),
+                    'link' => admin_url('admin.php?page=fluent-cart#/integrations/printful?view=sync'),
                     'link_text' => __('Open Product Sync', 'printful-for-fluentcart'),
                     'btn_class' => 'el-button el-button--default',
                     'tips' => __('Sync catalog products, variants, and mapped data from Printful.', 'printful-for-fluentcart'),
@@ -211,7 +211,7 @@ class PrintfulConnect extends \FluentCart\App\Modules\Integrations\BaseIntegrati
                 'orders' => [
                     'label' => __('Printful Orders', 'printful-for-fluentcart'),
                     'type' => 'link',
-                    'link' => admin_url('admin.php?page=pifc-orders'),
+                    'link' => admin_url('admin.php?page=fluent-cart#/integrations/printful?view=orders'),
                     'link_text' => __('Open Orders Panel', 'printful-for-fluentcart'),
                     'btn_class' => 'el-button el-button--default',
                     'tips' => __('Review fulfillment status, inspect payloads, and trigger order actions manually.', 'printful-for-fluentcart'),
@@ -219,7 +219,7 @@ class PrintfulConnect extends \FluentCart\App\Modules\Integrations\BaseIntegrati
                 'bulk_fulfill' => [
                     'label' => __('Bulk Fulfillment', 'printful-for-fluentcart'),
                     'type' => 'link',
-                    'link' => admin_url('admin.php?page=pifc-bulk-fulfill'),
+                    'link' => admin_url('admin.php?page=fluent-cart#/integrations/printful?view=bulk'),
                     'link_text' => __('Open Bulk Fulfillment', 'printful-for-fluentcart'),
                     'btn_class' => 'el-button el-button--default',
                     'tips' => __('Send multiple eligible orders to Printful in one workflow.', 'printful-for-fluentcart'),
@@ -227,7 +227,7 @@ class PrintfulConnect extends \FluentCart\App\Modules\Integrations\BaseIntegrati
                 'shipping_setup' => [
                     'label' => __('Shipping Setup', 'printful-for-fluentcart'),
                     'type' => 'link',
-                    'link' => admin_url('admin.php?page=pifc-shipping-setup'),
+                    'link' => admin_url('admin.php?page=fluent-cart#/integrations/printful?view=shipping'),
                     'link_text' => __('Open Shipping Setup', 'printful-for-fluentcart'),
                     'btn_class' => 'el-button el-button--default',
                     'tips' => __('Map Printful shipping services and adjust delivery handling.', 'printful-for-fluentcart'),
@@ -235,7 +235,7 @@ class PrintfulConnect extends \FluentCart\App\Modules\Integrations\BaseIntegrati
                 'advanced_settings' => [
                     'label' => __('Advanced Settings', 'printful-for-fluentcart'),
                     'type' => 'link',
-                    'link' => admin_url('admin.php?page=pifc-advanced'),
+                    'link' => admin_url('admin.php?page=fluent-cart#/integrations/printful?view=advanced'),
                     'link_text' => __('Open Advanced Settings', 'printful-for-fluentcart'),
                     'btn_class' => 'el-button el-button--default',
                     'tips' => __('Manage auto-fulfillment, draft mode, retry, refund, shipping email, and product sync behavior.', 'printful-for-fluentcart'),

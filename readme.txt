@@ -4,7 +4,7 @@ Tags: fluentcart, printful, print on demand, ecommerce, fulfillment
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.0.18
+Stable tag: 1.0.19
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,6 +32,11 @@ Features include:
 4. Open **FluentCart > Printful** and save your Printful API key.
 
 == Changelog ==
+
+= 1.0.19 =
+* Moved the remaining Printful admin tools into FluentCart's native Printful integration route using in-app tabs and AJAX-loaded panels.
+* Redirected the old Printful submenu pages into `FluentCart -> Integrations -> Printful` with the correct tool view in the hash route.
+* Verified the full admin flow on the live Docker WordPress site with browser automation and removed the split standalone-screen experience.
 
 = 1.0.18 =
 * Removed the broken copied FluentCart shell from the standalone Printful tool pages and replaced it with a clean shared Printful tools header and nav.

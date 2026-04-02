@@ -204,6 +204,12 @@ This plugin self-updates from the `main` branch of this repository. When the `Ve
 - Removed the broken copied FluentCart shell from the standalone Printful tool pages and replaced it with a clean shared Printful tools header and nav.
 - Kept the main Printful settings entry native inside FluentCart while making the remaining standalone admin screens usable and visually consistent again.
 
+### 1.0.19
+
+- Moved the remaining Printful admin tools into FluentCart's native Printful integration route using in-app tabs and AJAX-loaded panels.
+- Redirected the old Printful submenu pages into `FluentCart -> Integrations -> Printful` with the matching tool view in the hash route.
+- Verified the full admin flow on the live Docker WordPress site with browser automation so the Printful admin experience now lives in one real FluentCart surface.
+
 ### 1.0.17
 
 - Fixed the native FluentCart Printful integration screen by returning the wrapped REST payload shape FluentCart's Vue app expects, so the page now renders properly inside FluentCart instead of failing with a blank settings pane.

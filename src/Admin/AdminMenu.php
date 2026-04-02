@@ -14,7 +14,9 @@ class AdminMenu
             __('Printful', 'printful-for-fluentcart'),
             'manage_options',
             'pifc-settings',
-            [$this, 'renderSettingsRedirect']
+            function () {
+                $this->renderNativeRouteRedirect('settings');
+            }
         );
 
         add_submenu_page(
@@ -23,7 +25,9 @@ class AdminMenu
             __('Printful Advanced', 'printful-for-fluentcart'),
             'manage_options',
             'pifc-advanced',
-            [$this, 'renderSettings']
+            function () {
+                $this->renderNativeRouteRedirect('advanced');
+            }
         );
 
         add_submenu_page(
@@ -32,7 +36,9 @@ class AdminMenu
             __('Printful Sync', 'printful-for-fluentcart'),
             'manage_options',
             'pifc-product-sync',
-            [$this, 'renderProductSync']
+            function () {
+                $this->renderNativeRouteRedirect('sync');
+            }
         );
 
         add_submenu_page(
@@ -41,7 +47,9 @@ class AdminMenu
             __('Printful Orders', 'printful-for-fluentcart'),
             'manage_options',
             'pifc-orders',
-            [$this, 'renderOrders']
+            function () {
+                $this->renderNativeRouteRedirect('orders');
+            }
         );
 
         add_submenu_page(
@@ -50,7 +58,9 @@ class AdminMenu
             __('Printful Bulk Fulfill', 'printful-for-fluentcart'),
             'manage_options',
             'pifc-bulk-fulfill',
-            [$this, 'renderBulkFulfill']
+            function () {
+                $this->renderNativeRouteRedirect('bulk');
+            }
         );
 
         add_submenu_page(
@@ -59,7 +69,9 @@ class AdminMenu
             __('Printful Catalog', 'printful-for-fluentcart'),
             'manage_options',
             'pifc-catalog',
-            [$this, 'renderCatalog']
+            function () {
+                $this->renderNativeRouteRedirect('catalog');
+            }
         );
 
         add_submenu_page(
@@ -68,18 +80,15 @@ class AdminMenu
             __('Printful Shipping', 'printful-for-fluentcart'),
             'manage_options',
             'pifc-shipping-setup',
-            [$this, 'renderShippingSetup']
+            function () {
+                $this->renderNativeRouteRedirect('shipping');
+            }
         );
     }
 
-    public function renderSettings()
+    public function renderNativeRouteRedirect($view = 'settings')
     {
-        (new SettingsPage())->render();
-    }
-
-    public function renderSettingsRedirect()
-    {
-        $target = admin_url('admin.php?page=fluent-cart#/integrations/printful');
+        $target = $this->getNativeRouteUrl($view);
         ?>
         <div class="wrap">
             <meta http-equiv="refresh" content="0;url=<?php echo esc_url($target); ?>">
@@ -96,34 +105,11 @@ class AdminMenu
         <?php
     }
 
-    public function renderProductSync()
-    {
-        (new ProductSyncPage())->render();
-    }
-
-    public function renderOrders()
-    {
-        (new OrderPanel())->render();
-    }
-
-    public function renderBulkFulfill()
-    {
-        (new BulkFulfillPage())->render();
-    }
-
-    public function renderCatalog()
-    {
-        (new CatalogBrowserPage())->render();
-    }
-
-    public function renderShippingSetup()
-    {
-        (new ShippingSetupPage())->render();
-    }
-
     public function enqueueAssets($hook)
     {
         $pifc_pages = [
+            'toplevel_page_fluent-cart',
+            'fluent-cart_page_pifc-settings',
             'fluent-cart_page_pifc-advanced',
             'fluent-cart_page_pifc-product-sync',
             'fluent-cart_page_pifc-orders',
@@ -155,6 +141,15 @@ class AdminMenu
             'ajaxUrl'     => admin_url('admin-ajax.php'),
             'nonce'       => wp_create_nonce('pifc_admin_nonce'),
             'currentPage' => $hook,
+            'routes'      => [
+                'settings' => $this->getNativeRouteUrl('settings'),
+                'advanced' => $this->getNativeRouteUrl('advanced'),
+                'sync'     => $this->getNativeRouteUrl('sync'),
+                'orders'   => $this->getNativeRouteUrl('orders'),
+                'bulk'     => $this->getNativeRouteUrl('bulk'),
+                'catalog'  => $this->getNativeRouteUrl('catalog'),
+                'shipping' => $this->getNativeRouteUrl('shipping'),
+            ],
             'i18n'        => [
                 'testing'        => __('Testing...', 'printful-for-fluentcart'),
                 'saving'         => __('Saving...', 'printful-for-fluentcart'),
@@ -162,10 +157,22 @@ class AdminMenu
                 'fulfilling'     => __('Sending to Printful...', 'printful-for-fluentcart'),
                 'canceling'      => __('Canceling...', 'printful-for-fluentcart'),
                 'loading'        => __('Loading...', 'printful-for-fluentcart'),
+                'loadingPanel'   => __('Loading panel...', 'printful-for-fluentcart'),
                 'confirmFulfill' => __('Send this order to Printful for fulfillment?', 'printful-for-fluentcart'),
                 'confirmCancel'  => __('Cancel fulfillment for this order in Printful?', 'printful-for-fluentcart'),
             ],
         ]);
+    }
+
+    private function getNativeRouteUrl($view = 'settings')
+    {
+        $base = 'admin.php?page=fluent-cart#/integrations/printful';
+
+        if ($view && $view !== 'settings') {
+            $base .= '?view=' . rawurlencode($view);
+        }
+
+        return admin_url($base);
     }
 
 }
