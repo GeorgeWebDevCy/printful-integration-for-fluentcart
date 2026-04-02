@@ -2,8 +2,10 @@
 
 namespace PrintfulForFluentCart\Services;
 
+use FluentCart\App\Models\Cart;
 use FluentCart\App\Models\Order;
 use FluentCart\App\Models\ProductMeta;
+use FluentCart\App\Models\ShippingMethod;
 use FluentCart\App\Helpers\Status;
 use PrintfulForFluentCart\Api\PrintfulClient;
 use PrintfulForFluentCart\Helpers\OrderMapper;
@@ -137,7 +139,7 @@ class OrderFulfillmentService
 
         $payload = [
             'external_id'   => 'fct-' . $order->id,
-            'shipping'      => 'STANDARD',
+            'shipping'      => $this->resolveShippingServiceCode($order),
             'recipient'     => $recipient,
             'items'         => $items,
             'retail_costs'  => [
@@ -260,5 +262,50 @@ class OrderFulfillmentService
         }
 
         return $items;
+    }
+
+    /**
+     * Determine which Printful shipping service code to use for this order.
+     *
+     * Priority:
+     * 1. The Printful service code stored on the FluentCart ShippingMethod that
+     *    the customer selected — looked up via the cart's checkout_data.
+     * 2. STANDARD as a safe fallback.
+     *
+     * @param  Order $order
+     * @return string  Printful service code, e.g. 'STANDARD', 'PRINTFUL_FAST'.
+     */
+    private function resolveShippingServiceCode(Order $order)
+    {
+        try {
+            $cart = Cart::where('order_id', $order->id)->first();
+
+            if (!$cart) {
+                return 'STANDARD';
+            }
+
+            $methodId = $cart->checkout_data['shipping_data']['shipping_method_id'] ?? null;
+
+            if (!$methodId) {
+                return 'STANDARD';
+            }
+
+            $method = ShippingMethod::find($methodId);
+
+            if (!$method) {
+                return 'STANDARD';
+            }
+
+            $meta        = is_array($method->meta) ? $method->meta : [];
+            $serviceCode = $meta['printful_service_code'] ?? '';
+
+            if ($serviceCode && preg_match('/^[A-Z0-9_]+$/', $serviceCode)) {
+                return $serviceCode;
+            }
+        } catch (\Exception $e) {
+            // Silently fall through to default
+        }
+
+        return 'STANDARD';
     }
 }
