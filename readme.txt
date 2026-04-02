@@ -4,7 +4,7 @@ Tags: fluentcart, printful, print on demand, ecommerce, fulfillment
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.0.14
+Stable tag: 1.0.15
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,6 +32,11 @@ Features include:
 4. Open **FluentCart > Printful** and save your Printful API key.
 
 == Changelog ==
+
+= 1.0.15 =
+* Added self-healing option initialization so plugin defaults and version metadata are restored automatically if activation did not re-run after a path or bootstrap-file change.
+* Synced the FluentCart integration option automatically during boot so local and migrated environments expose the Printful integration state consistently.
+* Added backward-compatible support for the older `fluent-cart-printful/v1/webhook` namespace alongside the current `pifc/v1/webhook` route.
 
 = 1.0.14 =
 * Reworked Printful shipping-method sync to avoid relying on JSON-path queries in the FluentCart model layer when locating existing managed methods.

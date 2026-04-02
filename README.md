@@ -199,6 +199,12 @@ This plugin self-updates from the `main` branch of this repository. When the `Ve
 - Rebuilt the Printful integration settings payload to match FluentCart's native global integration schema instead of a custom field format that the Vue app could not render.
 - Removed the submenu URL rewrite hack and kept the old settings page as a normal redirect to the FluentCart integration route to avoid breaking FluentCart's admin runtime.
 
+### 1.0.15
+
+- Added self-healing option initialization so plugin defaults and version metadata are restored automatically if activation did not re-run after a path or bootstrap-file change.
+- Synced the FluentCart integration option automatically during boot so local and migrated environments expose the Printful integration state consistently.
+- Added backward-compatible support for the older `fluent-cart-printful/v1/webhook` namespace alongside the current `pifc/v1/webhook` route.
+
 ### 1.0.14
 
 - Reworked Printful shipping-method sync to avoid relying on JSON-path queries in the FluentCart model layer when locating existing managed methods.

@@ -31,11 +31,17 @@ class WebhookService
 
     public function registerEndpoint()
     {
-        register_rest_route('pifc/v1', '/webhook', [
+        $routeArgs = [
             'methods'             => \WP_REST_Server::CREATABLE,
             'callback'            => [$this, 'handleWebhook'],
             'permission_callback' => '__return_true',
-        ]);
+        ];
+
+        register_rest_route('pifc/v1', '/webhook', $routeArgs);
+
+        // Backward compatibility for older environments still posting to the
+        // previous namespace.
+        register_rest_route('fluent-cart-printful/v1', '/webhook', $routeArgs);
     }
 
     // ─── Webhook dispatcher ───────────────────────────────────────────────────

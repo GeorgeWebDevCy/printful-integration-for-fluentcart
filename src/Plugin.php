@@ -30,6 +30,7 @@ class Plugin
 
     public function boot()
     {
+        $this->ensureOptions();
         $this->loadTextDomain();
         $this->registerFluentCartIntegration();
         $this->registerAdminServices();
@@ -223,5 +224,33 @@ class Plugin
     {
         $syncStatus = new Services\ProductSyncStatusService();
         $this->loader->addAction('fluent_cart/product_updated', $syncStatus, 'onProductUpdated', 10, 1);
+    }
+
+    /**
+     * Self-heal required options for environments where WordPress did not
+     * re-run the activation hook after the plugin path or bootstrap file changed.
+     */
+    private function ensureOptions()
+    {
+        $settings = get_option('pifc_settings');
+
+        if ($settings === false || !is_array($settings)) {
+            $settings = Activator::defaultSettings();
+            update_option('pifc_settings', $settings);
+        } else {
+            $settings = array_merge(Activator::defaultSettings(), $settings);
+            update_option('pifc_settings', $settings);
+        }
+
+        if (get_option('pifc_version') !== PIFC_VERSION) {
+            update_option('pifc_version', PIFC_VERSION);
+        }
+
+        if (function_exists('fluent_cart_update_option')) {
+            fluent_cart_update_option('_integration_api_printful', [
+                'apiKey' => $settings['api_key'] ?? '',
+                'status' => !empty($settings['api_key']),
+            ]);
+        }
     }
 }
