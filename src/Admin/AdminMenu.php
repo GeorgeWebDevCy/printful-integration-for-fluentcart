@@ -34,6 +34,33 @@ class AdminMenu
             'pifc-orders',
             [$this, 'renderOrders']
         );
+
+        add_submenu_page(
+            'fluent-cart',
+            __('Printful — Bulk Fulfill', 'printful-for-fluentcart'),
+            __('Printful Bulk Fulfill', 'printful-for-fluentcart'),
+            'manage_options',
+            'pifc-bulk-fulfill',
+            [$this, 'renderBulkFulfill']
+        );
+
+        add_submenu_page(
+            'fluent-cart',
+            __('Printful — Catalog Browser', 'printful-for-fluentcart'),
+            __('Printful Catalog', 'printful-for-fluentcart'),
+            'manage_options',
+            'pifc-catalog',
+            [$this, 'renderCatalog']
+        );
+
+        add_submenu_page(
+            'fluent-cart',
+            __('Printful — Shipping Setup', 'printful-for-fluentcart'),
+            __('Printful Shipping', 'printful-for-fluentcart'),
+            'manage_options',
+            'pifc-shipping-setup',
+            [$this, 'renderShippingSetup']
+        );
     }
 
     public function renderSettings()
@@ -51,12 +78,30 @@ class AdminMenu
         (new OrderPanel())->render();
     }
 
+    public function renderBulkFulfill()
+    {
+        (new BulkFulfillPage())->render();
+    }
+
+    public function renderCatalog()
+    {
+        (new CatalogBrowserPage())->render();
+    }
+
+    public function renderShippingSetup()
+    {
+        (new ShippingSetupPage())->render();
+    }
+
     public function enqueueAssets($hook)
     {
         $pifc_pages = [
             'fluent-cart_page_pifc-settings',
             'fluent-cart_page_pifc-product-sync',
             'fluent-cart_page_pifc-orders',
+            'fluent-cart_page_pifc-bulk-fulfill',
+            'fluent-cart_page_pifc-catalog',
+            'fluent-cart_page_pifc-shipping-setup',
         ];
 
         if (!in_array($hook, $pifc_pages, true)) {
