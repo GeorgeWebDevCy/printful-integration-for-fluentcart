@@ -10,6 +10,8 @@ class Activator
     {
         if (get_option('pifc_version') === false) {
             add_option('pifc_version', PIFC_VERSION);
+        } else {
+            update_option('pifc_version', PIFC_VERSION);
         }
 
         if (get_option('pifc_settings') === false) {

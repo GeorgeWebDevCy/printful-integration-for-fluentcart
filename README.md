@@ -145,6 +145,12 @@ views/
 
 This plugin self-updates from the `main` branch of this repository. When the `Version:` header in the main plugin file is bumped and pushed, WordPress sites running this plugin will see an update notification in **Dashboard → Updates**.
 
+## Release Notes
+
+### 1.0.1
+
+- Fixed FluentCart dependency detection so the plugin no longer shows a false "requires FluentCart to be installed and active" notice on valid installs.
+
 ## License
 
 GPL-2.0-or-later — see [LICENSE](LICENSE) or <https://www.gnu.org/licenses/gpl-2.0.html>.

@@ -3,7 +3,7 @@
  * Plugin Name:       Printful Integration for FluentCart
  * Plugin URI:        https://github.com/GeorgeWebDevCy/printful-integration-for-fluentcart
  * Description:       Connects Printful print-on-demand fulfillment with FluentCart — automatic order fulfillment, product sync, live shipping rates, and shipment tracking.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            George Nicolaou
  * Author URI:        https://georgewebdev.cy
  * License:           GPL-2.0+
@@ -16,7 +16,7 @@
 
 defined('ABSPATH') || exit;
 
-define('PIFC_VERSION', '1.0.0');
+define('PIFC_VERSION', '1.0.1');
 define('PIFC_PLUGIN_FILE', __FILE__);
 define('PIFC_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('PIFC_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -58,7 +58,12 @@ register_activation_hook(__FILE__, ['PrintfulForFluentCart\\Activator', 'activat
 register_deactivation_hook(__FILE__, ['PrintfulForFluentCart\\Deactivator', 'deactivate']);
 
 add_action('plugins_loaded', function () {
-    if (!defined('FLUENT_CART_DIR')) {
+    $hasFluentCart = defined('FLUENTCART_PLUGIN_PATH')
+        || defined('FLUENT_CART_DIR_FILE')
+        || function_exists('fluentCart')
+        || class_exists('\FluentCart\App\App');
+
+    if (!$hasFluentCart) {
         add_action('admin_notices', function () {
             echo '<div class="notice notice-error"><p>';
             echo esc_html__(
