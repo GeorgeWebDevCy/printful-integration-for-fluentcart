@@ -1,11 +1,13 @@
 <?php defined('ABSPATH') || exit; ?>
 
 <div class="wrap pifc-wrap">
-
-    <h1 class="pifc-page-title">
-        <span class="dashicons dashicons-update"></span>
-        <?php esc_html_e('Printful — Product Sync', 'printful-for-fluentcart'); ?>
-    </h1>
+    <?php
+    $pifc_current_page = 'product-sync';
+    $pifc_page_title = __('Product Sync', 'printful-for-fluentcart');
+    $pifc_page_icon = 'dashicons-update';
+    $pifc_page_subtitle = __('Import prepared Printful store products into FluentCart and keep them up to date.', 'printful-for-fluentcart');
+    include __DIR__ . '/partials/header.php';
+    ?>
 
     <?php
     $settings = get_option('pifc_settings', []);

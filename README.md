@@ -162,6 +162,11 @@ This plugin self-updates from the `main` branch of this repository. When the `Ve
 - Added visible loading indicators for connection testing, settings saves, product sync actions, order lookups, and bulk fulfillment actions.
 - Refreshed the admin screens to better match FluentCart's visual language and workflow patterns.
 
+### 1.0.4
+
+- Reworked the admin layout to use a shared FluentCart-style header, navigation, and hero section across plugin pages.
+- Brought the overall admin structure closer to the FluentCart reference UI instead of a generic standalone WordPress settings layout.
+
 ## License
 
 GPL-2.0-or-later — see [LICENSE](LICENSE) or <https://www.gnu.org/licenses/gpl-2.0.html>.

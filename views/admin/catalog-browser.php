@@ -1,11 +1,13 @@
 <?php defined('ABSPATH') || exit; ?>
 
 <div class="wrap pifc-wrap">
-
-    <h1 class="pifc-page-title">
-        <span class="dashicons dashicons-search"></span>
-        <?php esc_html_e('Printful Catalog Browser', 'printful-for-fluentcart'); ?>
-    </h1>
+    <?php
+    $pifc_current_page = 'catalog';
+    $pifc_page_title = __('Catalog Browser', 'printful-for-fluentcart');
+    $pifc_page_icon = 'dashicons-search';
+    $pifc_page_subtitle = __('Browse Printful catalog items, review variants, and jump into your store setup workflow.', 'printful-for-fluentcart');
+    include __DIR__ . '/partials/header.php';
+    ?>
 
     <div class="pifc-card">
         <h2><?php esc_html_e('Browse Products', 'printful-for-fluentcart'); ?></h2>

@@ -6,11 +6,13 @@ $services      = \PrintfulForFluentCart\Admin\ShippingSetupPage::SERVICES;
 ?>
 
 <div class="wrap pifc-wrap">
-
-    <h1 class="pifc-page-title">
-        <span class="dashicons dashicons-car"></span>
-        <?php esc_html_e('Printful Shipping Setup', 'printful-for-fluentcart'); ?>
-    </h1>
+    <?php
+    $pifc_current_page = 'shipping-setup';
+    $pifc_page_title = __('Shipping Setup', 'printful-for-fluentcart');
+    $pifc_page_icon = 'dashicons-car';
+    $pifc_page_subtitle = __('Map Printful shipping services into FluentCart zones and keep rate selection predictable.', 'printful-for-fluentcart');
+    include __DIR__ . '/partials/header.php';
+    ?>
 
     <div class="pifc-card">
         <h2><?php esc_html_e('Shipping Services', 'printful-for-fluentcart'); ?></h2>

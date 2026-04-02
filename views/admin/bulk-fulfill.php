@@ -1,11 +1,13 @@
 <?php defined('ABSPATH') || exit; ?>
 
 <div class="wrap pifc-wrap">
-
-    <h1 class="pifc-page-title">
-        <span class="dashicons dashicons-upload"></span>
-        <?php esc_html_e('Bulk Fulfill Orders', 'printful-for-fluentcart'); ?>
-    </h1>
+    <?php
+    $pifc_current_page = 'bulk-fulfill';
+    $pifc_page_title = __('Bulk Fulfill Orders', 'printful-for-fluentcart');
+    $pifc_page_icon = 'dashicons-upload';
+    $pifc_page_subtitle = __('Load ready-to-send FluentCart orders and push them to Printful in batches.', 'printful-for-fluentcart');
+    include __DIR__ . '/partials/header.php';
+    ?>
 
     <div class="pifc-card">
         <h2><?php esc_html_e('Unfulfilled Printful Orders', 'printful-for-fluentcart'); ?></h2>
