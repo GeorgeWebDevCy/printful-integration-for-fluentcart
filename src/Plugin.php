@@ -42,6 +42,7 @@ class Plugin
         $this->registerCliCommands();
         $this->registerAddressUpdateService();
         $this->registerCustomerPortalService();
+        $this->registerProductSyncStatusService();
         $this->loader->run();
     }
 
@@ -214,3 +215,10 @@ class Plugin
         $logger = new Services\ActivityLogger();
         $this->loader->addAction('pifc/order_address_updated', $logger, 'onOrderAddressUpdated', 10, 3);
     }
+
+    private function registerProductSyncStatusService()
+    {
+        $syncStatus = new Services\ProductSyncStatusService();
+        $this->loader->addAction('fluent_cart/product_updated', $syncStatus, 'onProductUpdated', 10, 1);
+    }
+}

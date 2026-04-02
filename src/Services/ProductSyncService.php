@@ -108,6 +108,7 @@ class ProductSyncService
 
         if ($existingPostId) {
             $this->updatePost($existingPostId, $syncProduct, $syncVariants);
+            ProductSyncStatusService::clearResyncFlag($existingPostId);
             return 'updated';
         }
 
