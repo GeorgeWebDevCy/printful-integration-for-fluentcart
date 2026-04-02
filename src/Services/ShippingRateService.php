@@ -70,29 +70,43 @@ class ShippingRateService
             return $fillData;
         }
 
-        // Sort by rate (ascending) and pick the cheapest
-        usort($rates, function ($a, $b) {
-            return (float) ($a['rate'] ?? 0) <=> (float) ($b['rate'] ?? 0);
-        });
+        // Build a lookup map: service_code → rate object
+        $rateByCode = [];
+        foreach ($rates as $r) {
+            $rateByCode[$r['id'] ?? ''] = $r;
+        }
 
-        $cheapest = $rates[0];
-        $rateInCents = (int) round((float) ($cheapest['rate'] ?? 0) * 100);
+        // If the customer has selected a specific Printful-managed shipping method,
+        // use that service code's rate. Otherwise fall back to the cheapest.
+        $selectedMethodMeta  = $fillData['checkout_data']['shipping_data']['selected_method_meta'] ?? [];
+        $selectedServiceCode = $selectedMethodMeta['printful_service_code'] ?? '';
+
+        if ($selectedServiceCode && isset($rateByCode[$selectedServiceCode])) {
+            $chosen = $rateByCode[$selectedServiceCode];
+        } else {
+            usort($rates, function ($a, $b) {
+                return (float) ($a['rate'] ?? 0) <=> (float) ($b['rate'] ?? 0);
+            });
+            $chosen = $rates[0];
+        }
+
+        $rateInCents = (int) round((float) ($chosen['rate'] ?? 0) * 100);
 
         // Inject into the checkout data path FluentCart reads
-        $fillData['checkout_data']['shipping_data']['shipping_charge'] = $rateInCents;
-        $fillData['checkout_data']['shipping_data']['shipping_rate_id'] = $cheapest['id']   ?? '';
-        $fillData['checkout_data']['shipping_data']['shipping_rate_name'] = $cheapest['name'] ?? '';
+        $fillData['checkout_data']['shipping_data']['shipping_charge']    = $rateInCents;
+        $fillData['checkout_data']['shipping_data']['shipping_rate_id']   = $chosen['id']   ?? '';
+        $fillData['checkout_data']['shipping_data']['shipping_rate_name'] = $chosen['name'] ?? '';
 
         // Store full rates list for potential front-end use
         $fillData['checkout_data']['shipping_data']['printful_rates'] = array_map(
             function ($r) {
                 return [
-                    'id'    => $r['id']   ?? '',
-                    'name'  => $r['name'] ?? '',
-                    'rate'  => $r['rate'] ?? '0.00',
-                    'currency' => $r['currency'] ?? 'USD',
-                    'minDeliveryDays' => $r['minDeliveryDays'] ?? null,
-                    'maxDeliveryDays' => $r['maxDeliveryDays'] ?? null,
+                    'id'             => $r['id']              ?? '',
+                    'name'           => $r['name']            ?? '',
+                    'rate'           => $r['rate']            ?? '0.00',
+                    'currency'       => $r['currency']        ?? 'USD',
+                    'minDeliveryDays'=> $r['minDeliveryDays'] ?? null,
+                    'maxDeliveryDays'=> $r['maxDeliveryDays'] ?? null,
                 ];
             },
             $rates
