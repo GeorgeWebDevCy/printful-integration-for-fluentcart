@@ -151,6 +151,14 @@ class PrintfulConnect extends \FluentCart\App\Modules\Integrations\BaseIntegrati
                     'btn_class' => 'el-button el-button--default',
                     'tips' => __('Map Printful shipping services and adjust delivery handling.', 'printful-for-fluentcart'),
                 ],
+                'advanced_settings' => [
+                    'label' => __('Advanced Settings', 'printful-for-fluentcart'),
+                    'type' => 'link',
+                    'link' => admin_url('admin.php?page=pifc-settings'),
+                    'link_text' => __('Open Printful Settings', 'printful-for-fluentcart'),
+                    'btn_class' => 'el-button el-button--default',
+                    'tips' => __('Manage auto-fulfillment, draft mode, retry, refund, shipping email, and product sync behavior.', 'printful-for-fluentcart'),
+                ],
             ],
         ];
     }

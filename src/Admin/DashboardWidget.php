@@ -32,7 +32,7 @@ class DashboardWidget
             printf(
                 /* translators: %s: settings page link */
                 esc_html__('No API key configured. %s to get started.', 'printful-for-fluentcart'),
-                '<a href="' . esc_url(admin_url('admin.php?page=fluent-cart#/integrations/printful')) . '">'
+                '<a href="' . esc_url(admin_url('admin.php?page=pifc-settings')) . '">'
                     . esc_html__('Configure Printful', 'printful-for-fluentcart')
                     . '</a>'
             );

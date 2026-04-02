@@ -65,8 +65,7 @@ class AdminMenu
 
     public function renderSettings()
     {
-        wp_safe_redirect(admin_url('admin.php?page=fluent-cart#/integrations/printful'));
-        exit;
+        (new SettingsPage())->render();
     }
 
     public function renderProductSync()

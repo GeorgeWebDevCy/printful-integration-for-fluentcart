@@ -199,6 +199,12 @@ This plugin self-updates from the `main` branch of this repository. When the `Ve
 - Rebuilt the Printful integration settings payload to match FluentCart's native global integration schema instead of a custom field format that the Vue app could not render.
 - Removed the submenu URL rewrite hack and kept the old settings page as a normal redirect to the FluentCart integration route to avoid breaking FluentCart's admin runtime.
 
+### 1.0.12
+
+- Restored the standalone Printful settings screen so advanced fulfillment, retry, sync, refund, and shipping email options are editable again.
+- Synced the standalone settings save flow with FluentCart's integration option store so both admin entry points stay consistent.
+- Added a direct advanced-settings link inside the native FluentCart integration screen.
+
 ## License
 
 GPL-2.0-or-later — see [LICENSE](LICENSE) or <https://www.gnu.org/licenses/gpl-2.0.html>.

@@ -18,7 +18,7 @@
             printf(
                 /* translators: %s: settings page link */
                 esc_html__('No Printful API key configured. %s first.', 'printful-for-fluentcart'),
-                '<a href="' . esc_url(admin_url('admin.php?page=fluent-cart#/integrations/printful')) . '">'
+                '<a href="' . esc_url(admin_url('admin.php?page=pifc-settings')) . '">'
                     . esc_html__('Configure your settings', 'printful-for-fluentcart')
                     . '</a>'
             );

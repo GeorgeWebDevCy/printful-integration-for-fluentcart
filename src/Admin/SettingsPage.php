@@ -75,6 +75,7 @@ class SettingsPage
         ]);
 
         update_option('pifc_settings', $settings);
+        $this->syncFluentCartIntegrationOption($settings);
 
         // Re-register webhook with Printful whenever settings are saved.
         $message = __('Settings saved.', 'printful-for-fluentcart');
@@ -92,5 +93,17 @@ class SettingsPage
         }
 
         wp_send_json_success(['message' => $message]);
+    }
+
+    private function syncFluentCartIntegrationOption(array $settings)
+    {
+        if (!function_exists('fluent_cart_update_option')) {
+            return;
+        }
+
+        fluent_cart_update_option('_integration_api_printful', [
+            'apiKey' => $settings['api_key'],
+            'status' => !empty($settings['api_key']),
+        ]);
     }
 }

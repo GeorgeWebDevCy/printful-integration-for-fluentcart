@@ -9,6 +9,17 @@
     ?>
 
     <div class="pifc-card">
+        <p class="description" style="margin-top:0">
+            <?php
+            printf(
+                /* translators: %s: native integration route */
+                esc_html__('The native FluentCart connection screen is also available in %s.', 'printful-for-fluentcart'),
+                '<a href="' . esc_url(admin_url('admin.php?page=fluent-cart#/integrations/printful')) . '">'
+                    . esc_html__('FluentCart -> Integrations -> Printful', 'printful-for-fluentcart')
+                    . '</a>'
+            );
+            ?>
+        </p>
         <h2><?php esc_html_e('API Connection', 'printful-for-fluentcart'); ?></h2>
 
         <table class="form-table" role="presentation">

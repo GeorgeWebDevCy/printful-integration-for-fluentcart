@@ -6,7 +6,7 @@ $pifcPageTitle    = $pifc_page_title ?? __('Printful for FluentCart', 'printful-
 $pifcPageSubtitle = $pifc_page_subtitle ?? '';
 
 $pifcMenuItems = [
-    'settings' => ['label' => __('Settings', 'printful-for-fluentcart'), 'url' => admin_url('admin.php?page=fluent-cart#/integrations/printful')],
+    'settings' => ['label' => __('Settings', 'printful-for-fluentcart'), 'url' => admin_url('admin.php?page=pifc-settings')],
     'product-sync' => ['label' => __('Product Sync', 'printful-for-fluentcart'), 'url' => admin_url('admin.php?page=pifc-product-sync')],
     'orders' => ['label' => __('Orders', 'printful-for-fluentcart'), 'url' => admin_url('admin.php?page=pifc-orders')],
     'bulk-fulfill' => ['label' => __('Bulk Fulfill', 'printful-for-fluentcart'), 'url' => admin_url('admin.php?page=pifc-bulk-fulfill')],
