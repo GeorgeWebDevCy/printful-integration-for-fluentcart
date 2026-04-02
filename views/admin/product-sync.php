@@ -41,6 +41,7 @@
                 <?php echo empty($settings['api_key']) ? 'disabled' : ''; ?>>
                 <?php esc_html_e('Sync All Products from Printful', 'printful-for-fluentcart'); ?>
             </button>
+            <span class="spinner pifc-inline-spinner" id="pifc-sync-all-spinner"></span>
         </p>
         <div id="pifc-sync-log"></div>
     </div>
@@ -67,6 +68,7 @@
                 <?php echo empty($settings['api_key']) ? 'disabled' : ''; ?>>
                 <?php esc_html_e('Sync Product', 'printful-for-fluentcart'); ?>
             </button>
+            <span class="spinner pifc-inline-spinner" id="pifc-sync-single-spinner"></span>
             <span id="pifc-single-sync-status"></span>
         </p>
     </div>

@@ -151,6 +151,17 @@ This plugin self-updates from the `main` branch of this repository. When the `Ve
 
 - Fixed FluentCart dependency detection so the plugin no longer shows a false "requires FluentCart to be installed and active" notice on valid installs.
 
+### 1.0.2
+
+- Fixed the settings save flow so an existing Printful API key is preserved unless you intentionally replace it.
+- Fixed missing settings UI and save handling for product costs, shipping emails, refund auto-cancel, and failed-order retry options.
+- Added webhook registration feedback after saving settings so configuration problems are surfaced in the admin UI.
+
+### 1.0.3
+
+- Added visible loading indicators for connection testing, settings saves, product sync actions, order lookups, and bulk fulfillment actions.
+- Refreshed the admin screens to better match FluentCart's visual language and workflow patterns.
+
 ## License
 
 GPL-2.0-or-later — see [LICENSE](LICENSE) or <https://www.gnu.org/licenses/gpl-2.0.html>.

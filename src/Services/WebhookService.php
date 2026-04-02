@@ -231,15 +231,19 @@ class WebhookService
      * Called automatically after settings are saved.
      *
      * @param string $apiKey
+     * @return true|\WP_Error
      */
     public static function registerWithPrintful($apiKey = '')
     {
         $client = new PrintfulClient($apiKey);
 
         // Remove any existing webhook registration to avoid duplicates
-        $client->deleteWebhooks();
+        $deleteResult = $client->deleteWebhooks();
+        if (is_wp_error($deleteResult) && (int) $deleteResult->get_error_data('status') !== 404) {
+            return $deleteResult;
+        }
 
-        $client->setWebhooks(
+        $result = $client->setWebhooks(
             rest_url('pifc/v1/webhook'),
             [
                 'package_shipped',
@@ -249,5 +253,11 @@ class WebhookService
                 'order_updated',
             ]
         );
+
+        if (is_wp_error($result)) {
+            return $result;
+        }
+
+        return true;
     }
 }

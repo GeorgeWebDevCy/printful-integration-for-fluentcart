@@ -55,9 +55,14 @@ class SettingsPage
         }
 
         $current = get_option('pifc_settings', Activator::defaultSettings());
+        $apiKey  = sanitize_text_field(trim((string) wp_unslash($_POST['api_key'] ?? '')));
 
-        $settings = [
-            'api_key'                        => sanitize_text_field(wp_unslash($_POST['api_key'] ?? '')),
+        if ($apiKey === '') {
+            $apiKey = $current['api_key'] ?? '';
+        }
+
+        $settings = array_merge(Activator::defaultSettings(), $current, [
+            'api_key'                        => $apiKey,
             'auto_fulfill'                   => !empty($_POST['auto_fulfill']),
             'auto_confirm'                   => !empty($_POST['auto_confirm']),
             'test_mode'                      => !empty($_POST['test_mode']),
@@ -67,15 +72,25 @@ class SettingsPage
             'disable_auto_cancel_on_refund'  => !empty($_POST['disable_auto_cancel_on_refund']),
             'auto_retry_failed'              => !empty($_POST['auto_retry_failed']),
             'webhook_secret'                 => $current['webhook_secret'] ?? wp_generate_password(32, false),
-        ];
+        ]);
 
         update_option('pifc_settings', $settings);
 
         // Re-register webhook with Printful whenever settings are saved.
+        $message = __('Settings saved.', 'printful-for-fluentcart');
+
         if (!empty($settings['api_key'])) {
-            WebhookService::registerWithPrintful($settings['api_key']);
+            $webhookResult = WebhookService::registerWithPrintful($settings['api_key']);
+
+            if (is_wp_error($webhookResult)) {
+                $message = sprintf(
+                    /* translators: %s: webhook error message */
+                    __('Settings saved, but webhook registration failed: %s', 'printful-for-fluentcart'),
+                    $webhookResult->get_error_message()
+                );
+            }
         }
 
-        wp_send_json_success(['message' => __('Settings saved.', 'printful-for-fluentcart')]);
+        wp_send_json_success(['message' => $message]);
     }
 }

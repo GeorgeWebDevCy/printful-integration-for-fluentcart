@@ -10,6 +10,12 @@
            .text(message);
     }
 
+    function toggleSpinner($el, isActive) {
+        if ($el.length) {
+            $el.toggleClass('is-active', !!isActive);
+        }
+    }
+
     function noop() {}
 
     // ─── Settings Page ───────────────────────────────────────────────────────────
@@ -21,9 +27,11 @@
         $('#pifc-test-connection').on('click', function () {
             var $btn    = $(this);
             var $status = $('#pifc-connection-status');
+            var $spinner = $('#pifc-test-spinner');
             var apiKey  = $('#pifc_api_key').val();
 
             $btn.prop('disabled', true).text(pifcAdmin.i18n.testing);
+            toggleSpinner($spinner, true);
             $status.removeClass('pifc-ok pifc-err').text('');
 
             $.post(pifcAdmin.ajaxUrl, {
@@ -38,6 +46,7 @@
                 setStatus($status, pifcAdmin.i18n.failed || 'Request failed.', true);
             })
             .always(function () {
+                toggleSpinner($spinner, false);
                 $btn.prop('disabled', false).text('Test Connection');
             });
         });
@@ -46,8 +55,10 @@
         $('#pifc-save-settings').on('click', function () {
             var $btn    = $(this);
             var $status = $('#pifc-save-status');
+            var $spinner = $('#pifc-save-spinner');
 
             $btn.prop('disabled', true).text(pifcAdmin.i18n.saving);
+            toggleSpinner($spinner, true);
             $status.removeClass('pifc-ok pifc-err').text('');
 
             $.post(pifcAdmin.ajaxUrl, {
@@ -57,7 +68,11 @@
                 auto_fulfill:  $('input[name="auto_fulfill"]').is(':checked') ? 1 : '',
                 auto_confirm:  $('input[name="auto_confirm"]').is(':checked') ? 1 : '',
                 test_mode:     $('input[name="test_mode"]').is(':checked') ? 1 : '',
-                sync_on_import:$('input[name="sync_on_import"]').is(':checked') ? 1 : ''
+                sync_on_import:$('input[name="sync_on_import"]').is(':checked') ? 1 : '',
+                sync_product_costs: $('input[name="sync_product_costs"]').is(':checked') ? 1 : '',
+                disable_shipping_email: $('input[name="disable_shipping_email"]').is(':checked') ? 1 : '',
+                disable_auto_cancel_on_refund: $('input[name="disable_auto_cancel_on_refund"]').is(':checked') ? 1 : '',
+                auto_retry_failed: $('input[name="auto_retry_failed"]').is(':checked') ? 1 : ''
             })
             .done(function (res) {
                 setStatus($status, res.data.message, !res.success);
@@ -66,6 +81,7 @@
                 setStatus($status, 'Request failed.', true);
             })
             .always(function () {
+                toggleSpinner($spinner, false);
                 $btn.prop('disabled', false).text('Save Settings');
             });
         });
@@ -87,7 +103,9 @@
         // Sync all
         $('#pifc-sync-all').on('click', function () {
             var $btn = $(this);
+            var $spinner = $('#pifc-sync-all-spinner');
             $btn.prop('disabled', true).text(pifcAdmin.i18n.syncing);
+            toggleSpinner($spinner, true);
             $log.empty().hide();
 
             $.post(pifcAdmin.ajaxUrl, {
@@ -110,6 +128,7 @@
                 appendLog('Request failed.', true);
             })
             .always(function () {
+                toggleSpinner($spinner, false);
                 $btn.prop('disabled', false).text('Sync All Products from Printful');
             });
         });
@@ -118,6 +137,7 @@
         $('#pifc-sync-single').on('click', function () {
             var $btn  = $(this);
             var $span = $('#pifc-single-sync-status');
+            var $spinner = $('#pifc-sync-single-spinner');
             var id    = parseInt($('#pifc-single-product-id').val(), 10);
 
             if (!id) {
@@ -126,6 +146,7 @@
             }
 
             $btn.prop('disabled', true).text(pifcAdmin.i18n.syncing);
+            toggleSpinner($spinner, true);
             $span.removeClass('pifc-ok pifc-err').text('');
 
             $.post(pifcAdmin.ajaxUrl, {
@@ -140,6 +161,7 @@
                 setStatus($span, 'Request failed.', true);
             })
             .always(function () {
+                toggleSpinner($spinner, false);
                 $btn.prop('disabled', false).text('Sync Product');
             });
         });
@@ -169,7 +191,9 @@
 
         function loadOrders(page) {
             var $tbody = $('#pifc-orders-tbody');
+            var $tableWrap = $('#pifc-orders-table-wrap');
             $tbody.html('<tr><td colspan="7">' + pifcAdmin.i18n.loading + '</td></tr>');
+            $tableWrap.addClass('pifc-loading-panel');
             $('#pifc-order-detail').hide();
 
             $.post(pifcAdmin.ajaxUrl, {
@@ -215,6 +239,9 @@
             })
             .fail(function () {
                 $tbody.html('<tr><td colspan="7">Request failed.</td></tr>');
+            })
+            .always(function () {
+                $tableWrap.removeClass('pifc-loading-panel');
             });
         }
 
@@ -233,6 +260,7 @@
 
         function loadOrderDetail(orderId) {
             var $detail = $('#pifc-order-detail');
+            $detail.addClass('pifc-loading-panel');
             $detail.show().html('<p>' + pifcAdmin.i18n.loading + '</p>');
 
             $.post(pifcAdmin.ajaxUrl, {
@@ -288,6 +316,9 @@
             })
             .fail(function () {
                 $detail.html('<p class="pifc-log-error">Request failed.</p>');
+            })
+            .always(function () {
+                $detail.removeClass('pifc-loading-panel');
             });
         }
 

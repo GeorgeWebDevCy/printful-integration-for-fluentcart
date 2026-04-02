@@ -22,15 +22,27 @@
                         type="password"
                         id="pifc_api_key"
                         name="api_key"
-                        value="<?php echo esc_attr($settings['api_key'] ?? ''); ?>"
+                        value=""
                         class="regular-text"
                         autocomplete="off"
-                        placeholder="<?php esc_attr_e('Paste your Printful API key here', 'printful-for-fluentcart'); ?>"
+                        placeholder="<?php echo !empty($settings['api_key']) ? esc_attr__('Enter a new Printful API key to replace the saved one', 'printful-for-fluentcart') : esc_attr__('Paste your Printful API key here', 'printful-for-fluentcart'); ?>"
                     >
                     <button type="button" id="pifc-test-connection" class="button button-secondary">
                         <?php esc_html_e('Test Connection', 'printful-for-fluentcart'); ?>
                     </button>
+                    <span class="spinner pifc-inline-spinner" id="pifc-test-spinner"></span>
                     <span id="pifc-connection-status"></span>
+                    <?php if (!empty($settings['api_key'])): ?>
+                        <p class="description">
+                            <?php
+                            printf(
+                                /* translators: %s: masked api key suffix */
+                                esc_html__('A Printful API key is already saved. Enter a new key only if you want to replace it. Current key ending: %s', 'printful-for-fluentcart'),
+                                esc_html(substr($settings['api_key'], -6))
+                            );
+                            ?>
+                        </p>
+                    <?php endif; ?>
                     <p class="description">
                         <?php
                         printf(
@@ -95,6 +107,16 @@
                 </td>
             </tr>
             <tr>
+                <th scope="row"><?php esc_html_e('Sync Product Costs', 'printful-for-fluentcart'); ?></th>
+                <td>
+                    <label>
+                        <input type="checkbox" name="sync_product_costs" value="1"
+                            <?php checked(!empty($settings['sync_product_costs'])); ?>>
+                        <?php esc_html_e('Store Printful production costs on synced variations when available', 'printful-for-fluentcart'); ?>
+                    </label>
+                </td>
+            </tr>
+            <tr>
                 <th scope="row"><?php esc_html_e('Auto-Retry Failed Orders', 'printful-for-fluentcart'); ?></th>
                 <td>
                     <label>
@@ -103,6 +125,26 @@
                         <?php esc_html_e('Automatically re-submit a Printful order once if Printful reports it as failed', 'printful-for-fluentcart'); ?>
                     </label>
                     <p class="description"><?php esc_html_e('Only one retry is attempted per order to prevent infinite loops.', 'printful-for-fluentcart'); ?></p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><?php esc_html_e('Shipping Emails', 'printful-for-fluentcart'); ?></th>
+                <td>
+                    <label>
+                        <input type="checkbox" name="disable_shipping_email" value="1"
+                            <?php checked(!empty($settings['disable_shipping_email'])); ?>>
+                        <?php esc_html_e('Disable the customer tracking email sent when Printful marks an order as shipped', 'printful-for-fluentcart'); ?>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><?php esc_html_e('Refund Handling', 'printful-for-fluentcart'); ?></th>
+                <td>
+                    <label>
+                        <input type="checkbox" name="disable_auto_cancel_on_refund" value="1"
+                            <?php checked(!empty($settings['disable_auto_cancel_on_refund'])); ?>>
+                        <?php esc_html_e('Disable automatic cancel attempts in Printful when a FluentCart order is refunded', 'printful-for-fluentcart'); ?>
+                    </label>
                 </td>
             </tr>
         </table>
@@ -128,6 +170,7 @@
         <button type="button" id="pifc-save-settings" class="button button-primary">
             <?php esc_html_e('Save Settings', 'printful-for-fluentcart'); ?>
         </button>
+        <span class="spinner pifc-inline-spinner" id="pifc-save-spinner"></span>
         <span id="pifc-save-status"></span>
     </p>
 
