@@ -222,6 +222,10 @@ This plugin self-updates from the `main` branch of this repository. When the `Ve
 
 - Fixed the GitHub updater bootstrap by explicitly loading `plugin-update-checker`'s file-based loader when Composer's generated autoloader does not expose `PucFactory`.
 
+### 1.0.23
+
+- Test version bump to confirm the updater is visible and detecting new GitHub-tagged releases.
+
 ### 1.0.17
 
 - Fixed the native FluentCart Printful integration screen by returning the wrapped REST payload shape FluentCart's Vue app expects, so the page now renders properly inside FluentCart instead of failing with a blank settings pane.
