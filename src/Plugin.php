@@ -41,6 +41,7 @@ class Plugin
         $this->registerDashboardWidget();
         $this->registerCliCommands();
         $this->registerAddressUpdateService();
+        $this->registerCustomerPortalService();
         $this->loader->run();
     }
 
@@ -177,6 +178,27 @@ class Plugin
         if (defined('WP_CLI') && WP_CLI) {
             \WP_CLI::add_command('pifc', 'PrintfulForFluentCart\\Cli\\CliCommands');
         }
+    }
+
+    private function registerCustomerPortalService()
+    {
+        $portal = new Services\CustomerPortalService();
+
+        $this->loader->addFilter(
+            'fluent_cart/customer/order_details_section_parts',
+            $portal,
+            'injectPortalTracking',
+            10,
+            2
+        );
+
+        $this->loader->addAction(
+            'fluent_cart/receipt/thank_you/after_order_items',
+            $portal,
+            'injectThankYouTracking',
+            10,
+            1
+        );
     }
 
     private function registerAddressUpdateService()
