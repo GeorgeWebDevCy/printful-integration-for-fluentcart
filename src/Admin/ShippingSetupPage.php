@@ -109,8 +109,7 @@ class ShippingSetupPage
         $count = 0;
 
         foreach ($services as $code => $config) {
-            // Find existing method by our meta marker
-            $existing = ShippingMethod::where('meta->printful_service_code', $code)->first();
+            $existing = $this->findManagedShippingMethodByCode($code);
 
             $methodData = [
                 'title'      => $config['title'],
@@ -135,6 +134,28 @@ class ShippingSetupPage
         }
 
         return $count;
+    }
+
+    /**
+     * Find an existing Printful-managed shipping method without relying on
+     * JSON-path query support in the model layer.
+     *
+     * @param  string $code
+     * @return ShippingMethod|null
+     */
+    private function findManagedShippingMethodByCode($code)
+    {
+        $methods = ShippingMethod::query()->get();
+
+        foreach ($methods as $method) {
+            $meta = is_array($method->meta) ? $method->meta : [];
+
+            if (($meta['printful_service_code'] ?? '') === $code) {
+                return $method;
+            }
+        }
+
+        return null;
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────

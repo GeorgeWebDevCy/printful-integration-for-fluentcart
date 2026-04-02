@@ -199,6 +199,12 @@ This plugin self-updates from the `main` branch of this repository. When the `Ve
 - Rebuilt the Printful integration settings payload to match FluentCart's native global integration schema instead of a custom field format that the Vue app could not render.
 - Removed the submenu URL rewrite hack and kept the old settings page as a normal redirect to the FluentCart integration route to avoid breaking FluentCart's admin runtime.
 
+### 1.0.14
+
+- Reworked Printful shipping-method sync to avoid relying on JSON-path queries in the FluentCart model layer when locating existing managed methods.
+- Updated address-sync handling so customer changes also propagate to connected orders when the linked Printful orders are still editable.
+- Clear stale fulfillment error meta after a successful recipient update.
+
 ### 1.0.13
 
 - Secured the Printful webhook endpoint by requiring the generated shared secret on inbound requests and on the registered webhook URL.

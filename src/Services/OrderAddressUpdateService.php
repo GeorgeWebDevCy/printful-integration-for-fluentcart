@@ -39,13 +39,46 @@ class OrderAddressUpdateService
      */
     public function onCustomerChanged(array $data)
     {
+        $orders = [];
+
         /** @var Order|null $order */
         $order = $data['order'] ?? null;
 
-        if (!$order instanceof Order) {
+        if ($order instanceof Order) {
+            $orders[$order->id] = $order;
+        }
+
+        $connectedOrderIds = array_filter(array_map('intval', (array) ($data['connected_order_ids'] ?? [])));
+
+        foreach ($connectedOrderIds as $connectedOrderId) {
+            if (isset($orders[$connectedOrderId])) {
+                continue;
+            }
+
+            $connectedOrder = Order::find($connectedOrderId);
+
+            if ($connectedOrder instanceof Order) {
+                $orders[$connectedOrderId] = $connectedOrder;
+            }
+        }
+
+        if (!$orders) {
             return;
         }
 
+        foreach ($orders as $targetOrder) {
+            $this->syncRecipientForOrder($targetOrder);
+        }
+    }
+
+    /**
+     * Push recipient changes for one order if the linked Printful order is still
+     * editable.
+     *
+     * @param Order $order
+     */
+    private function syncRecipientForOrder(Order $order)
+    {
         $printfulOrderId = (int) $order->getMeta('_printful_order_id');
 
         if (!$printfulOrderId) {
@@ -71,6 +104,8 @@ class OrderAddressUpdateService
 
         if (is_wp_error($result)) {
             $order->updateMeta('_printful_fulfillment_error', $result->get_error_message());
+        } else {
+            $order->deleteMeta('_printful_fulfillment_error');
         }
 
         do_action('pifc/order_address_updated', $order, $printfulOrderId, $result);

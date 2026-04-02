@@ -4,7 +4,7 @@ Tags: fluentcart, printful, print on demand, ecommerce, fulfillment
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.0.13
+Stable tag: 1.0.14
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,6 +32,11 @@ Features include:
 4. Open **FluentCart > Printful** and save your Printful API key.
 
 == Changelog ==
+
+= 1.0.14 =
+* Reworked Printful shipping-method sync to avoid relying on JSON-path queries in the FluentCart model layer when locating existing managed methods.
+* Updated address-sync handling so customer changes also propagate to connected orders when the linked Printful orders are still editable.
+* Clear stale fulfillment error meta after a successful recipient update.
 
 = 1.0.13 =
 * Secured the Printful webhook endpoint by requiring the generated shared secret on inbound requests and on the registered webhook URL.
