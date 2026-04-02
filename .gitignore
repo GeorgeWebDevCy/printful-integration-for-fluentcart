@@ -1,1 +1,4 @@
 References Plugins/
+References Plugins/**
+.vs/
+References .vs/

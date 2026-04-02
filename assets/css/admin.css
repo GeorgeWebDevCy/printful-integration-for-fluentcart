@@ -1,0 +1,201 @@
+/* ============================================================
+   Printful for FluentCart — Admin Styles
+   ============================================================ */
+
+/* Page wrapper */
+.pifc-wrap {
+    max-width: 860px;
+}
+
+.pifc-page-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+/* Card */
+.pifc-card {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 16px 20px 20px;
+    margin-bottom: 20px;
+}
+
+.pifc-card h2 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f1;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: #50575e;
+}
+
+/* Inline code */
+.pifc-code {
+    display: inline-block;
+    padding: 4px 8px;
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    border-radius: 3px;
+    font-size: 12px;
+    word-break: break-all;
+}
+
+/* Connection / save status */
+#pifc-connection-status,
+#pifc-save-status {
+    margin-left: 10px;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+#pifc-connection-status.pifc-ok,
+#pifc-save-status.pifc-ok {
+    color: #00a32a;
+}
+
+#pifc-connection-status.pifc-err,
+#pifc-save-status.pifc-err {
+    color: #d63638;
+}
+
+/* Warning notice */
+.pifc-notice-warning {
+    color: #9a6700;
+    font-weight: 600;
+}
+
+/* ============================================================
+   Product Sync page
+   ============================================================ */
+
+#pifc-sync-log {
+    margin-top: 12px;
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    border-radius: 3px;
+    padding: 10px 14px;
+    font-family: monospace;
+    font-size: 12px;
+    max-height: 240px;
+    overflow-y: auto;
+    display: none;
+}
+
+#pifc-sync-log p {
+    margin: 2px 0;
+}
+
+#pifc-sync-log .pifc-log-error {
+    color: #d63638;
+}
+
+/* ============================================================
+   Orders page
+   ============================================================ */
+
+.pifc-orders-table-wrap {
+    overflow-x: auto;
+}
+
+.pifc-orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.pifc-orders-table th,
+.pifc-orders-table td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f1;
+    vertical-align: middle;
+}
+
+.pifc-orders-table th {
+    background: #f6f7f7;
+    font-weight: 600;
+    color: #50575e;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: .04em;
+}
+
+.pifc-orders-table tr:hover td {
+    background: #f9f9f9;
+}
+
+/* Status badges */
+.pifc-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.pifc-badge-pending    { background: #f0f6fc; color: #0073aa; }
+.pifc-badge-draft      { background: #f0f6fc; color: #0073aa; }
+.pifc-badge-fulfilled  { background: #edfaef; color: #007a2f; }
+.pifc-badge-shipped    { background: #edfaef; color: #007a2f; }
+.pifc-badge-failed     { background: #fcf0f1; color: #b32d2e; }
+.pifc-badge-canceled   { background: #f6f7f7; color: #50575e; }
+.pifc-badge-returned   { background: #fef9e7; color: #9a6700; }
+.pifc-badge-none       { background: #f6f7f7; color: #a7aaad; }
+
+/* Order detail panel */
+#pifc-order-detail {
+    display: none;
+    margin-top: 16px;
+}
+
+.pifc-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.pifc-detail-item label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #50575e;
+    margin-bottom: 3px;
+    font-weight: 600;
+}
+
+.pifc-detail-item span {
+    font-size: 13px;
+    word-break: break-word;
+}
+
+.pifc-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+/* Pagination */
+.pifc-pagination {
+    margin-top: 12px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.pifc-pagination button {
+    min-width: 32px;
+}
+
+/* Loading overlay */
+.pifc-loading {
+    opacity: .5;
+    pointer-events: none;
+}
