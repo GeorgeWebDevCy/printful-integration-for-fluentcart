@@ -22,6 +22,21 @@ define('PIFC_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('PIFC_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('PIFC_PLUGIN_SLUG', 'printful-for-fluentcart');
 
+// Composer autoloader (includes plugin-update-checker and our own classes).
+if (file_exists(PIFC_PLUGIN_DIR . 'vendor/autoload.php')) {
+    require_once PIFC_PLUGIN_DIR . 'vendor/autoload.php';
+}
+
+// GitHub-based auto-updates via plugin-update-checker (watches the main branch).
+if (class_exists('\YahnisElsts\PluginUpdateChecker\v5\PucFactory')) {
+    $pifcUpdateChecker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+        'https://github.com/GeorgeWebDevCy/printful-integration-for-fluentcart/',
+        __FILE__,
+        'printful-integration-for-fluentcart'
+    );
+    $pifcUpdateChecker->setBranch('main');
+}
+
 // PSR-4 autoloader for the PrintfulForFluentCart namespace.
 spl_autoload_register(function ($class) {
     $prefix   = 'PrintfulForFluentCart\\';

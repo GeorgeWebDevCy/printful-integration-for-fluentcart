@@ -1,0 +1,27 @@
+{
+    "name": "georgewebdevcy/printful-integration-for-fluentcart",
+    "description": "Printful print-on-demand integration for FluentCart",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "George Nicolaou",
+            "homepage": "https://georgewebdev.cy"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "yahnis-elsts/plugin-update-checker": "^5.6"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "platform": {
+            "php": "7.4"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "PrintfulForFluentCart\\": "src/"
+        }
+    }
+}
