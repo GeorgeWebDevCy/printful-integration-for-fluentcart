@@ -40,6 +40,7 @@ class Plugin
         $this->registerRefundHandler();
         $this->registerDashboardWidget();
         $this->registerCliCommands();
+        $this->registerAddressUpdateService();
         $this->loader->run();
     }
 
@@ -176,4 +177,18 @@ class Plugin
         if (defined('WP_CLI') && WP_CLI) {
             \WP_CLI::add_command('pifc', 'PrintfulForFluentCart\\Cli\\CliCommands');
         }
+    }
+
+    private function registerAddressUpdateService()
+    {
+        $settings = get_option('pifc_settings', []);
+        if (empty($settings['api_key'])) {
+            return;
+        }
+
+        $addressUpdate = new Services\OrderAddressUpdateService();
+        $this->loader->addAction('fluent_cart/order_customer_changed', $addressUpdate, 'onCustomerChanged', 10, 1);
+
+        $logger = new Services\ActivityLogger();
+        $this->loader->addAction('pifc/order_address_updated', $logger, 'onOrderAddressUpdated', 10, 3);
     }

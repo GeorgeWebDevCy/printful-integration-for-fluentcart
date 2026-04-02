@@ -119,6 +119,37 @@ class ActivityLogger
         );
     }
 
+    /**
+     * pifc/order_address_updated
+     *
+     * @param Order $order
+     * @param int   $printfulOrderId
+     * @param mixed $result  API response array or WP_Error.
+     */
+    public function onOrderAddressUpdated(Order $order, $printfulOrderId, $result)
+    {
+        if (is_wp_error($result)) {
+            $this->log($order, 'warning',
+                __('Printful recipient update failed', 'printful-for-fluentcart'),
+                sprintf(
+                    /* translators: %s: error message */
+                    __('Could not update recipient for Printful order #%1$s: %2$s', 'printful-for-fluentcart'),
+                    $printfulOrderId,
+                    $result->get_error_message()
+                )
+            );
+        } else {
+            $this->log($order, 'info',
+                __('Printful recipient updated', 'printful-for-fluentcart'),
+                sprintf(
+                    /* translators: %d: Printful order ID */
+                    __('Shipping address synced to Printful order #%d after customer change.', 'printful-for-fluentcart'),
+                    $printfulOrderId
+                )
+            );
+        }
+    }
+
     // ─── Internal ─────────────────────────────────────────────────────────────
 
     /**
