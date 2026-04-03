@@ -14,7 +14,7 @@
 
 <div class="pifc-card">
     <h2><?php esc_html_e('Sync All Products', 'printful-for-fluentcart'); ?></h2>
-    <p><?php esc_html_e('Imports every product from your connected Printful store into FluentCart. Existing products are updated; new products are created. Product images are downloaded and set as the featured image.', 'printful-for-fluentcart'); ?></p>
+    <p><?php esc_html_e('Imports every product from your connected Printful store into FluentCart. Existing products are updated; new products are created. Product images are downloaded into the FluentCart gallery and the first imported image is set as the featured image.', 'printful-for-fluentcart'); ?></p>
     <p>
         <button type="button" id="pifc-sync-all" class="button button-primary" <?php echo empty($settings['api_key']) ? 'disabled' : ''; ?>>
             <?php esc_html_e('Sync All Products from Printful', 'printful-for-fluentcart'); ?>

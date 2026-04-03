@@ -140,10 +140,7 @@ class ProductSyncService
 
         update_post_meta($postId, '_printful_sync_product_id', (int) $syncProduct['id']);
         update_post_meta($postId, '_printful_external_id', sanitize_text_field($syncProduct['external_id'] ?? ''));
-
-        if (!empty($syncProduct['thumbnail_url'])) {
-            $this->maybeSetThumbnail($postId, $syncProduct['thumbnail_url']);
-        }
+        $this->syncProductImages($postId, $syncProduct, $syncVariants);
 
         $variationIds = [];
         foreach ($syncVariants as $index => $syncVariant) {
@@ -170,6 +167,8 @@ class ProductSyncService
             'post_title' => sanitize_text_field($syncProduct['name']),
             'post_content' => wp_kses_post($syncProduct['description'] ?? ''),
         ]);
+
+        $this->syncProductImages($postId, $syncProduct, $syncVariants);
 
         $activeSyncVariantIds = [];
         $variationIds         = [];
@@ -533,39 +532,200 @@ class ProductSyncService
     // ─── Thumbnail ────────────────────────────────────────────────────────────
 
     /**
-     * Downloads the Printful thumbnail and sets it as the post thumbnail.
-     * Silently bails on any error to avoid blocking the sync.
+     * Import all known product images from Printful and keep the FluentCart
+     * gallery metadata in sync with the imported attachments.
      *
-     * @param int    $postId
-     * @param string $imageUrl
+     * @param int   $postId
+     * @param array $syncProduct
+     * @param array $syncVariants
      */
-    private function maybeSetThumbnail($postId, $imageUrl)
+    private function syncProductImages($postId, array $syncProduct, array $syncVariants)
     {
-        if (!filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+        $imageUrls = $this->extractProductImageUrls($syncProduct, $syncVariants);
+
+        if (empty($imageUrls)) {
             return;
         }
 
-        if (has_post_thumbnail($postId)) {
+        $gallery = [];
+
+        foreach ($imageUrls as $index => $imageUrl) {
+            $attachmentId = $this->importImageAttachment($postId, $imageUrl);
+
+            if (!$attachmentId) {
+                continue;
+            }
+
+            $attachment = wp_prepare_attachment_for_js($attachmentId);
+            $resolvedUrl = $attachment['url'] ?? wp_get_attachment_url($attachmentId);
+
+            if (!$resolvedUrl) {
+                continue;
+            }
+
+            $gallery[] = [
+                'id'    => (int) $attachmentId,
+                'url'   => esc_url_raw($resolvedUrl),
+                'title' => sanitize_text_field($attachment['title'] ?? get_the_title($attachmentId)),
+            ];
+
+            if ($index === 0) {
+                set_post_thumbnail($postId, $attachmentId);
+            }
+        }
+
+        if (!empty($gallery)) {
+            update_post_meta($postId, 'fluent-products-gallery-image', $gallery);
+        }
+    }
+
+    /**
+     * Collect all unique product image URLs we can confidently identify in the
+     * Printful sync product payload.
+     *
+     * @param array $syncProduct
+     * @param array $syncVariants
+     * @return string[]
+     */
+    private function extractProductImageUrls(array $syncProduct, array $syncVariants)
+    {
+        $urls = [];
+
+        $this->appendImageUrlsFromPayload($urls, $syncProduct);
+
+        foreach ($syncVariants as $syncVariant) {
+            if (!is_array($syncVariant)) {
+                continue;
+            }
+
+            $this->appendImageUrlsFromPayload($urls, $syncVariant);
+        }
+
+        return array_values(array_unique(array_filter($urls)));
+    }
+
+    /**
+     * Recursively scan a Printful payload and extract values that look like
+     * image URLs. This keeps the sync tolerant of minor payload shape changes.
+     *
+     * @param array    $urls
+     * @param mixed    $payload
+     * @param string[] $path
+     */
+    private function appendImageUrlsFromPayload(array &$urls, $payload, array $path = [])
+    {
+        if (is_string($payload)) {
+            $currentKey = (string) end($path);
+
+            if ($this->isLikelyImageUrl($payload, $currentKey, $path)) {
+                $urls[] = esc_url_raw($payload);
+            }
+
             return;
+        }
+
+        if (!is_array($payload)) {
+            return;
+        }
+
+        foreach ($payload as $key => $value) {
+            $nextPath   = $path;
+            $nextPath[] = (string) $key;
+            $this->appendImageUrlsFromPayload($urls, $value, $nextPath);
+        }
+    }
+
+    /**
+     * @param string   $url
+     * @param string   $currentKey
+     * @param string[] $path
+     * @return bool
+     */
+    private function isLikelyImageUrl($url, $currentKey, array $path = [])
+    {
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+            return false;
+        }
+
+        $normalizedPath = strtolower(implode('.', $path));
+        $normalizedKey  = strtolower($currentKey);
+
+        $imageHints = [
+            'thumbnail',
+            'preview',
+            'image',
+            'image_url',
+            'thumbnail_url',
+            'preview_url',
+            'files',
+        ];
+
+        foreach ($imageHints as $hint) {
+            if ($normalizedKey === $hint || strpos($normalizedPath, $hint) !== false) {
+                return true;
+            }
+        }
+
+        $pathPart = strtolower((string) wp_parse_url($url, PHP_URL_PATH));
+
+        return (bool) preg_match('/\.(?:jpg|jpeg|png|gif|webp|avif)(?:$|\?)/', $pathPart);
+    }
+
+    /**
+     * Reuse an existing attachment for the same source URL when possible, and
+     * sideload a new one only when needed.
+     *
+     * @param int    $postId
+     * @param string $imageUrl
+     * @return int
+     */
+    private function importImageAttachment($postId, $imageUrl)
+    {
+        if (!filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+            return 0;
+        }
+
+        $existingAttachments = get_posts([
+            'post_type'      => 'attachment',
+            'post_parent'    => $postId,
+            'post_status'    => 'inherit',
+            'meta_key'       => '_pifc_source_image_url',
+            'meta_value'     => esc_url_raw($imageUrl),
+            'posts_per_page' => 1,
+            'fields'         => 'ids',
+        ]);
+
+        if (!empty($existingAttachments[0])) {
+            return (int) $existingAttachments[0];
         }
 
         $tmpFile = download_url($imageUrl);
         if (is_wp_error($tmpFile)) {
-            return;
+            return 0;
         }
 
-        $filename  = basename(wp_parse_url($imageUrl, PHP_URL_PATH));
+        $filename = basename((string) wp_parse_url($imageUrl, PHP_URL_PATH));
+        if ($filename === '' || $filename === '/') {
+            $filename = 'printful-image-' . wp_generate_password(8, false) . '.jpg';
+        }
+
         $fileArray = [
-            'name'     => $filename,
+            'name'     => sanitize_file_name($filename),
             'tmp_name' => $tmpFile,
         ];
 
         $attachId = media_handle_sideload($fileArray, $postId);
 
-        if (!is_wp_error($attachId)) {
-            set_post_thumbnail($postId, $attachId);
-        } elseif (file_exists($tmpFile)) {
-            @unlink($tmpFile); // phpcs:ignore
+        if (is_wp_error($attachId)) {
+            if (file_exists($tmpFile)) {
+                @unlink($tmpFile); // phpcs:ignore
+            }
+
+            return 0;
         }
+
+        update_post_meta((int) $attachId, '_pifc_source_image_url', esc_url_raw($imageUrl));
+
+        return (int) $attachId;
     }
 }

@@ -33,7 +33,7 @@
             <?php esc_html_e(
                 'Imports every product from your connected Printful store into FluentCart. '
                 . 'Existing products are updated; new products are created. '
-                . 'Product images are downloaded and set as the featured image.',
+                . 'Product images are downloaded into the FluentCart gallery and the first imported image is set as the featured image.',
                 'printful-for-fluentcart'
             ); ?>
         </p>

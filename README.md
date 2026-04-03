@@ -6,7 +6,7 @@ Connects [Printful](https://printful.com) print-on-demand fulfillment with [Flue
 
 | # | Feature | Description |
 |---|---------|-------------|
-| 1 | **Product Sync** | Import Printful sync-products into FluentCart as physical products with variations, thumbnails, and optional production costs |
+| 1 | **Product Sync** | Import Printful sync-products into FluentCart as physical products with variations, full product galleries, and optional production costs |
 | 2 | **Automatic Order Fulfillment** | Paid FluentCart orders containing Printful-linked items are automatically sent to Printful |
 | 3 | **Live Shipping Rates** | Real-time rates fetched from Printful at checkout and injected into the FluentCart checkout flow |
 | 4 | **Webhook Handler** | Receives Printful webhooks for shipment events, updates order status and stores tracking data |
@@ -221,6 +221,10 @@ This plugin self-updates from the `main` branch of this repository. When the `Ve
 ### 1.0.22
 
 - Fixed the GitHub updater bootstrap by explicitly loading `plugin-update-checker`'s file-based loader when Composer's generated autoloader does not expose `PucFactory`.
+
+### 1.0.25
+
+- Synced all identifiable Printful product images into FluentCart's native product gallery and set the first imported image as the featured image.
 
 ### 1.0.24
 
