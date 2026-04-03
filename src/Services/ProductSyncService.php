@@ -2,6 +2,8 @@
 
 namespace PrintfulForFluentCart\Services;
 
+use FluentCart\App\CPT\FluentProducts;
+use FluentCart\App\Helpers\Helper;
 use FluentCart\App\Models\ProductDetail;
 use FluentCart\App\Models\ProductMeta;
 use FluentCart\App\Models\ProductVariation;
@@ -14,7 +16,7 @@ defined('ABSPATH') || exit;
  *
  * Mapping strategy
  * ─────────────────
- * • Each Printful sync-product  → one WordPress post (CPT fluent_cart_product)
+ * • Each Printful sync-product  → one WordPress post (CPT fluent-products)
  *   post_meta key: _printful_sync_product_id = <printful product id>
  *
  * • Each Printful sync-variant  → one ProductVariation row
@@ -128,8 +130,8 @@ class ProductSyncService
         $postId = wp_insert_post([
             'post_title'   => sanitize_text_field($syncProduct['name']),
             'post_status'  => 'publish',
-            'post_type'    => 'fluent_cart_product',
-            'post_content' => '',
+            'post_type'    => FluentProducts::CPT_NAME,
+            'post_content' => wp_kses_post($syncProduct['description'] ?? ''),
         ], true);
 
         if (is_wp_error($postId)) {
@@ -143,18 +145,15 @@ class ProductSyncService
             $this->maybeSetThumbnail($postId, $syncProduct['thumbnail_url']);
         }
 
-        // ProductDetail record required by FluentCart
-        ProductDetail::create([
-            'post_id'            => $postId,
-            'fulfillment_type'   => 'physical',
-            'variation_type'     => 'simple',
-            'stock_availability' => 'yes',
-            'other_info'         => [],
-        ]);
-
+        $variationIds = [];
         foreach ($syncVariants as $index => $syncVariant) {
-            $this->createVariation($postId, $syncVariant, $index);
+            $variationId = $this->createVariation($postId, $syncVariant, $index);
+            if ($variationId) {
+                $variationIds[] = $variationId;
+            }
         }
+
+        $this->syncProductDetail($postId, $variationIds);
 
         return $postId;
     }
@@ -169,9 +168,11 @@ class ProductSyncService
         wp_update_post([
             'ID'         => $postId,
             'post_title' => sanitize_text_field($syncProduct['name']),
+            'post_content' => wp_kses_post($syncProduct['description'] ?? ''),
         ]);
 
         $activeSyncVariantIds = [];
+        $variationIds         = [];
 
         foreach ($syncVariants as $index => $syncVariant) {
             $activeSyncVariantIds[] = (int) ($syncVariant['id'] ?? 0);
@@ -183,12 +184,17 @@ class ProductSyncService
 
             if ($existingVariationId) {
                 $this->updateVariation($existingVariationId, $syncVariant);
+                $variationIds[] = $existingVariationId;
             } else {
-                $this->createVariation($postId, $syncVariant, $index);
+                $variationId = $this->createVariation($postId, $syncVariant, $index);
+                if ($variationId) {
+                    $variationIds[] = $variationId;
+                }
             }
         }
 
         $this->deactivateMissingVariations($postId, $activeSyncVariantIds);
+        $this->syncProductDetail($postId, $variationIds);
     }
 
     // ─── ProductVariation ─────────────────────────────────────────────────────
@@ -217,15 +223,15 @@ class ProductSyncService
             'post_id'              => $postId,
             'serial_index'         => $index,
             'variation_title'      => sanitize_text_field($variationTitle),
-            'variation_identifier' => sanitize_text_field($syncVariant['sku'] ?? ''),
+            'variation_identifier' => $this->getVariationIdentifier($syncVariant),
             'sku'                  => sanitize_text_field($syncVariant['sku'] ?? ''),
             'item_price'           => $retailPrice,
             'item_cost'            => $itemCost,
             'compare_price'        => 0,
-            'manage_stock'         => false,
+            'manage_stock'         => 0,
             'fulfillment_type'     => 'physical',
             'payment_type'         => 'onetime',
-            'stock_status'         => 'in_stock',
+            'stock_status'         => Helper::IN_STOCK,
             'item_status'          => 'active',
             'other_info'           => ['printful_attributes' => $attributes],
         ]);
@@ -272,9 +278,9 @@ class ProductSyncService
             'item_price'           => $retailPrice,
             'item_cost'            => $itemCost,
             'sku'                  => sanitize_text_field($syncVariant['sku'] ?? ''),
-            'variation_identifier' => sanitize_text_field($syncVariant['sku'] ?? ''),
+            'variation_identifier' => $this->getVariationIdentifier($syncVariant),
             'variation_title'      => sanitize_text_field($variationTitle),
-            'stock_status'         => 'in_stock',
+            'stock_status'         => Helper::IN_STOCK,
             'item_status'          => 'active',
             'other_info'           => ['printful_attributes' => $attributes],
         ]);
@@ -310,9 +316,56 @@ class ProductSyncService
 
             $variation->update([
                 'item_status'  => 'inactive',
-                'stock_status' => 'out_of_stock',
+                'stock_status' => Helper::OUT_OF_STOCK,
             ]);
         }
+    }
+
+    /**
+     * Ensure the FluentCart product detail row reflects the imported variants.
+     *
+     * @param int   $postId
+     * @param int[] $variationIds
+     */
+    private function syncProductDetail($postId, array $variationIds)
+    {
+        $variationIds = array_values(array_filter(array_map('intval', $variationIds)));
+        $variants     = ProductVariation::where('post_id', $postId)
+            ->where('item_status', 'active')
+            ->orderBy('serial_index', 'asc')
+            ->get();
+
+        $defaultVariationId = $variationIds[0] ?? (int) ($variants->first()->id ?? 0);
+        $prices             = [];
+
+        foreach ($variants as $variant) {
+            $prices[] = (int) ($variant->item_price ?? 0);
+        }
+
+        $detailData = [
+            'post_id'               => $postId,
+            'fulfillment_type'      => 'physical',
+            'variation_type'        => count($variants) > 1 ? Helper::PRODUCT_TYPE_SIMPLE_VARIATION : Helper::PRODUCT_TYPE_SIMPLE,
+            'min_price'             => !empty($prices) ? min($prices) : 0,
+            'max_price'             => !empty($prices) ? max($prices) : 0,
+            'default_variation_id'  => $defaultVariationId ?: null,
+            'stock_availability'    => !empty($variants) ? Helper::IN_STOCK : Helper::OUT_OF_STOCK,
+            'manage_stock'          => 0,
+            'manage_downloadable'   => 0,
+            'other_info'            => [
+                'group_pricing_by' => 'payment_type',
+                'use_pricing_table' => 'no',
+            ],
+        ];
+
+        $detail = ProductDetail::where('post_id', $postId)->first();
+
+        if ($detail) {
+            $detail->update($detailData);
+            return;
+        }
+
+        ProductDetail::create($detailData);
     }
 
     // ─── Lookup helpers ───────────────────────────────────────────────────────
@@ -324,14 +377,27 @@ class ProductSyncService
     public function findPostByPrintfulId($printfulProductId)
     {
         $posts = get_posts([
-            'post_type'      => 'fluent_cart_product',
+            'post_type'      => [FluentProducts::CPT_NAME, 'fluent_cart_product'],
             'meta_key'       => '_printful_sync_product_id',
             'meta_value'     => (int) $printfulProductId,
             'posts_per_page' => 1,
-            'fields'         => 'ids',
+            'post_status'    => 'any',
         ]);
 
-        return !empty($posts) ? (int) $posts[0] : 0;
+        if (empty($posts)) {
+            return 0;
+        }
+
+        $post = $posts[0];
+
+        if (($post->post_type ?? '') === 'fluent_cart_product') {
+            wp_update_post([
+                'ID'        => (int) $post->ID,
+                'post_type' => FluentProducts::CPT_NAME,
+            ]);
+        }
+
+        return (int) $post->ID;
     }
 
     /**
@@ -444,6 +510,24 @@ class ProductSyncService
         }
 
         return implode(' / ', array_values($attributes));
+    }
+
+    /**
+     * Prefer SKU for admin readability, but fall back to the Printful sync ID
+     * so every variation stays uniquely addressable inside FluentCart.
+     *
+     * @param array $syncVariant
+     * @return string
+     */
+    private function getVariationIdentifier(array $syncVariant)
+    {
+        $identifier = sanitize_text_field($syncVariant['sku'] ?? '');
+
+        if ($identifier !== '') {
+            return $identifier;
+        }
+
+        return (string) (int) ($syncVariant['id'] ?? 0);
     }
 
     // ─── Thumbnail ────────────────────────────────────────────────────────────

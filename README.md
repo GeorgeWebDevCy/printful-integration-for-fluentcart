@@ -222,6 +222,10 @@ This plugin self-updates from the `main` branch of this repository. When the `Ve
 
 - Fixed the GitHub updater bootstrap by explicitly loading `plugin-update-checker`'s file-based loader when Composer's generated autoloader does not expose `PucFactory`.
 
+### 1.0.24
+
+- Fixed product imports so synced Printful items are created under FluentCart's real product post type and refresh the matching product detail metadata correctly.
+
 ### 1.0.23
 
 - Test version bump to confirm the updater is visible and detecting new GitHub-tagged releases.

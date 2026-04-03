@@ -4,7 +4,7 @@ Tags: fluentcart, printful, print on demand, ecommerce, fulfillment
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.0.23
+Stable tag: 1.0.24
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,6 +32,9 @@ Features include:
 4. Open **FluentCart > Printful** and save your Printful API key.
 
 == Changelog ==
+
+= 1.0.24 =
+* Fixed product imports so synced Printful items are created under FluentCart's real product post type and refresh the matching product detail metadata correctly.
 
 = 1.0.23 =
 * Test version bump to confirm the updater is visible and detecting new GitHub-tagged releases.
